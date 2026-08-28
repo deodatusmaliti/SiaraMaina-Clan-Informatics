@@ -22,8 +22,8 @@
     .brand{display:flex;gap:10px;align-items:center;color:#fff;font-weight:900}
     .brand-mark{display:grid;place-items:center;width:43px;height:43px;border-radius:50%;background:var(--gold);color:var(--forest)}
     .brand small{display:block;color:#cae6cf;font-size:.59rem;letter-spacing:.1em;text-transform:uppercase}
-    .controls{display:flex;align-items:center;justify-content:flex-end;gap:7px;flex-wrap:wrap}
-    .search{width:180px;padding:9px 11px;border:1px solid #ffffff55;border-radius:7px;background:#ffffff12;color:#fff}
+    .controls{display:flex;align-items:center;justify-content:flex-end;gap:7px;flex-wrap:wrap;flex:1}
+    .search{width:180px;margin-right:auto;padding:9px 11px;border:1px solid #ffffff55;border-radius:7px;background:#ffffff12;color:#fff}
     .search::placeholder{color:#d4ebd8}
     .top-button,.button{padding:9px 12px;border:1px solid #ffffff44;border-radius:7px;background:#ffffff10;color:#fff;font-size:.76rem;font-weight:900}
     .top-button:hover,.top-button.add,.button.gold{border-color:var(--gold);background:var(--gold);color:var(--forest)}
@@ -79,6 +79,14 @@
     .data strong{color:var(--ink)}
     .profile-footer{padding:11px 18px;border-top:1px solid #edf1ed;background:#fbfdfb}
     .link-button{border:0;background:transparent;color:var(--green);font-size:.78rem;font-weight:900}
+    .line-view{display:grid;gap:0;border:1px solid var(--line);border-radius:12px;background:#fff;overflow:hidden}
+    .line-member{display:grid;grid-template-columns:minmax(190px,1.2fr) repeat(6,minmax(110px,1fr)) auto;gap:14px;align-items:center;padding:13px 16px;border-bottom:1px solid #edf1ed;font-size:.76rem}
+    .line-member:last-child{border-bottom:0}.line-member:hover{background:#f6fbf6}
+    .line-member strong{font-size:.82rem}.line-member span{color:var(--muted)}
+    .line-heading{background:#f1f7f2;color:var(--forest);font-weight:900;text-transform:uppercase;letter-spacing:.04em;font-size:.65rem}
+    .spouse-line{padding-left:28px;background:#fffaf0}.spouse-line strong:before{content:"↳ ";color:var(--gold)}
+    .tree-card small,.spouse-card small{display:block;margin-top:3px;color:var(--muted);font-size:.62rem}
+    .member-number{display:inline-block;margin-bottom:8px;padding:3px 7px;border-radius:5px;background:#edf6ef;color:var(--forest);font-size:.68rem;font-weight:900;letter-spacing:.04em}
     .page-header{margin:25px 0 18px;padding:25px;border-radius:14px;color:#fff;background:linear-gradient(125deg,#103d2b,#2d7650)}
     .page-header h1{margin:8px 0;font-size:2rem}
     .page-header p{margin:0;color:#dcefe1}
@@ -126,7 +134,7 @@
     .relationships{margin:18px 0;padding:14px;border-radius:8px;background:#f1f8f2;color:#435c4c;font-size:.85rem;line-height:1.75}
     .modal-actions{display:flex;justify-content:space-between;gap:10px;margin-top:20px}
     @media(max-width:1120px){.topbar-inner{display:block;padding:12px 0}.brand{margin-bottom:11px}.controls{justify-content:flex-start}.metrics{grid-template-columns:repeat(3,1fr)}.stats-grid{grid-template-columns:1fr 1fr}}
-    @media(max-width:720px){.search{width:100%}.metrics{grid-template-columns:1fr 1fr}.form-grid,.stats-grid{grid-template-columns:1fr}.field.full{grid-column:auto}.modal-actions{flex-direction:column}.classical-tree ul{justify-content:flex-start}}
+    @media(max-width:720px){.search{width:100%;margin-right:0}.metrics{grid-template-columns:1fr 1fr}.form-grid,.stats-grid{grid-template-columns:1fr}.field.full{grid-column:auto}.modal-actions{flex-direction:column}.classical-tree ul{justify-content:flex-start}.line-member{grid-template-columns:1fr 1fr;gap:5px 12px}.line-heading{display:none}}
   </style>
 </head>
 
@@ -154,6 +162,7 @@
             <button type="button" onclick="showCatalogue('siara')">Siara Branch</button>
             <button type="button" onclick="showCatalogue('maina')">Maina Branch</button>
             <button type="button" onclick="showCatalogue('maliti')">Maliti Family</button>
+            <button type="button" onclick="openCustomSearch()">Custom Search</button>
           </div>
         </div>
 
@@ -164,13 +173,30 @@
             <button type="button" onclick="showTree('siara')">Siara Branch</button>
             <button type="button" onclick="showTree('maina')">Maina Branch</button>
             <button type="button" onclick="showTree('maliti')">Maliti Family</button>
+            <button type="button" onclick="openCustomTree()">Custom View</button>
           </div>
         </div>
+
+        <div class="dropdown">
+          <button class="top-button" type="button" onclick="toggleMenu('viewMenu')">View Style ▾</button>
+          <div id="viewMenu" class="dropdown-menu">
+            <button type="button" onclick="setViewStyle('card')">Card View</button>
+            <button type="button" onclick="setViewStyle('line')">Line View</button>
+            <button id="spouseToggle" type="button" onclick="toggleSpouses()">Hide Spouses</button>
+          </div>
+        </div>
+
+        <button class="top-button" type="button" onclick="openCustomFilter()">Custom Filter</button>
 
         <button class="top-button" type="button" onclick="showStatistics()">Statistics</button>
         <button class="top-button" type="button" onclick="openRelationship()">Relationship Finder</button>
         <button class="top-button" type="button" onclick="openBiography()">Biography</button>
         <button class="top-button" type="button" onclick="exportCsv()">CSV Backup</button>
+        <button class="top-button" type="button" onclick="document.getElementById('csvImport').click()">Import CSV</button>
+        <button class="top-button" type="button" onclick="saveProjectData()">Save Project Data</button>
+        <button class="top-button" type="button" onclick="document.getElementById('projectImport').click()">Restore Project Data</button>
+        <input id="csvImport" type="file" accept=".csv,text/csv" hidden onchange="importCsv(event)">
+        <input id="projectImport" type="file" accept=".json,application/json" hidden onchange="importProjectData(event)">
         <button class="top-button add" type="button" onclick="openProfile(null)">Add Member</button>
       </div>
     </div>
@@ -255,6 +281,7 @@
         <input id="storedPhoto" type="hidden">
 
         <div class="form-grid">
+          <div class="field"><label>Clan Member Number</label><input id="clanMemberNumber" readonly></div>
           <div class="field"><label>First Name</label><input id="firstName" required></div>
           <div class="field"><label>Middle Name</label><input id="middleName"></div>
           <div class="field"><label>Last Name</label><input id="lastName"></div>
@@ -291,7 +318,8 @@
           </div>
 
           <div class="field"><label>Date of Death</label><input id="dod" type="date"></div>
-          <div class="field"><label>Age at Death</label><input id="deathAge" type="number" min="0"></div>
+          <div class="field"><label>Age Category (WHO)</label><input id="ageCategory" readonly></div>
+          <div class="field"><label>Age at Death</label><input id="deathAge" type="number" min="0" readonly></div>
 
           <div class="field">
             <label>Cause of Death</label>
@@ -379,7 +407,13 @@
             </select>
           </div>
 
-          <div class="field"><label>Denomination / Tradition</label><input id="denomination"></div>
+          <div class="field"><label>Denomination / Tradition</label>
+            <select id="denomination">
+              <option value="">Not Recorded</option><option>Catholic</option><option>Protestant</option>
+              <option>Lutheran</option><option>Anglican</option><option>Presbyterian</option>
+              <option>Methodist</option><option>Baptist</option><option>Orthodox</option><option>Other</option>
+            </select>
+          </div>
           <div class="field"><label>Telephone Number</label><input id="phone"></div>
           <div class="field"><label>WhatsApp Number</label><input id="whatsapp"></div>
           <div class="field"><label>Email Address</label><input id="email" type="email"></div>
@@ -461,9 +495,46 @@
     </div>
   </section>
 
+  <section id="customSearchModal" class="modal">
+    <div class="modal-box" style="max-width:620px">
+      <div class="modal-head"><h2>Custom Search</h2><button class="close" type="button" onclick="closeModal('customSearchModal')">×</button></div>
+      <div class="field"><label>Search any member information</label><input id="customSearchInput" type="search" oninput="runCustomSearch()" placeholder="Enter a name, occupation, location or other detail"></div>
+      <div id="customSearchResults" class="relationships">Enter a search term to find members.</div>
+    </div>
+  </section>
+
+  <section id="customTreeModal" class="modal">
+    <div class="modal-box" style="max-width:620px">
+      <div class="modal-head"><h2>Custom Family Tree View</h2><button class="close" type="button" onclick="closeModal('customTreeModal')">×</button></div>
+      <div class="field"><label>Choose a root member</label><select id="customTreeMember"></select></div>
+      <button class="button primary" type="button" onclick="showCustomTree()">Open Family Tree</button>
+    </div>
+  </section>
+
+  <section id="customFilterModal" class="modal">
+    <div class="modal-box" style="max-width:760px">
+      <div class="modal-head"><h2>Custom Member Filter</h2><button class="close" type="button" onclick="closeModal('customFilterModal')">×</button></div>
+      <div class="form-grid">
+        <div class="field"><label>Minimum Age</label><input id="filterMinAge" type="number" min="0"></div>
+        <div class="field"><label>Maximum Age</label><input id="filterMaxAge" type="number" min="0"></div>
+        <div class="field"><label>Age Category</label><select id="filterAgeCategory"><option value="">Any</option></select></div>
+        <div class="field"><label>Sex</label><select id="filterSex"><option value="">Any</option><option>Male</option><option>Female</option><option>Not Recorded</option></select></div>
+        <div class="field"><label>Life Status</label><select id="filterDeceased"><option value="">Any</option><option value="false">Living</option><option value="true">Deceased</option></select></div>
+        <div class="field"><label>Religious Affiliation</label><select id="filterReligion"><option value="">Any</option><option>Christianity</option><option>Islam</option><option>Traditionalist / Indigenous Religion</option><option>No Religious Affiliation</option><option>Other</option><option>Not Recorded</option></select></div>
+        <div class="field"><label>Denomination</label><select id="filterDenomination"><option value="">Any</option><option>Catholic</option><option>Protestant</option><option>Lutheran</option><option>Anglican</option><option>Presbyterian</option><option>Methodist</option><option>Baptist</option><option>Orthodox</option><option>Other</option><option>Not Recorded</option></select></div>
+        <div class="field"><label>Branch</label><select id="filterBranch"><option value="">Any</option><option value="heritage">Foundational Ancestry</option><option value="siara">Siara Branch</option><option value="maina">Maina Branch</option><option value="maliti">Maliti Family</option></select></div>
+      </div>
+      <div class="modal-actions"><button class="button secondary" type="button" onclick="clearCustomFilter()">Clear</button><button class="button primary" type="button" onclick="applyCustomFilter()">Apply Filter</button></div>
+    </div>
+  </section>
+
   <script>
     var STORAGE_KEY = "siaraMainaClanRecordsUpdated";
     var currentFilter = "all";
+    var viewStyle = "card";
+    var showSpouseRecords = true;
+    var customQuery = "";
+    var customFilter = {};
 
     var defaultRecords = [
       {
@@ -581,13 +652,43 @@
     var records;
 
     try {
-      records = JSON.parse(localStorage.getItem(STORAGE_KEY)) || defaultRecords;
+      var storedRecords = JSON.parse(localStorage.getItem(STORAGE_KEY));
+      records = Array.isArray(storedRecords) ? storedRecords : defaultRecords;
     } catch (error) {
       records = defaultRecords;
     }
 
     function saveRecords() {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(records));
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(records));
+      } catch (error) {
+        alert("Browser storage is unavailable. Use Save Project Data to create a project backup.");
+      }
+    }
+
+    function calculateAge(record, endDate) {
+      if (!record || !record.dob) return null;
+
+      var birth = new Date(record.dob + "T00:00:00");
+      var end = endDate ? new Date(endDate + "T00:00:00") : new Date();
+
+      if (isNaN(birth.getTime()) || isNaN(end.getTime()) || end < birth) return null;
+
+      var age = end.getFullYear() - birth.getFullYear();
+      if (end.getMonth() < birth.getMonth() || (end.getMonth() === birth.getMonth() && end.getDate() < birth.getDate())) age--;
+      return age;
+    }
+
+    function ageCategory(record) {
+      if (record && record.deceased && !record.dod) return "Historical / Unknown";
+      var age = calculateAge(record, record && record.deceased ? record.dod : "");
+      if (age === null) return "Historical / Unknown";
+      if (age < 2) return "Infant (0-1)";
+      if (age < 10) return "Child (2-9)";
+      if (age < 20) return "Adolescent (10-19)";
+      if (age < 25) return "Young Adult (20-24)";
+      if (age < 60) return "Adult (25-59)";
+      return "Older Adult (60+)";
     }
 
     function findRecord(id) {
@@ -603,6 +704,27 @@
         record.middleName,
         record.lastName
       ].filter(Boolean).join(" ");
+    }
+
+    function linkedName(id) {
+      var linked = findRecord(id);
+      return escapeHtml(linked ? fullName(linked) : "Not Recorded");
+    }
+
+    function clanMemberNumber(record) {
+      var ranked = records.slice().sort(function(first, second) {
+        if (first.id === "ngowi1") return -1;
+        if (second.id === "ngowi1") return 1;
+        var firstAge = calculateAge(first, first.deceased ? first.dod : "");
+        var secondAge = calculateAge(second, second.deceased ? second.dod : "");
+        if (firstAge !== null && secondAge !== null && firstAge !== secondAge) return secondAge - firstAge;
+        if (first.dob && second.dob && first.dob !== second.dob) return first.dob.localeCompare(second.dob);
+        if (firstAge !== null) return -1;
+        if (secondAge !== null) return 1;
+        return records.indexOf(first) - records.indexOf(second);
+      });
+      var position = ranked.findIndex(function(item) { return item.id === record.id; });
+      return "CLAN " + String(position + 1).padStart(6, "0");
     }
 
     function escapeHtml(value) {
@@ -628,50 +750,12 @@
     }
 
     function ageAtDeath(record) {
-      if (record.deathAge) return record.deathAge;
-
-      if (!record.dob || !record.dod) return "";
-
-      var birth = new Date(record.dob + "T00:00:00");
-      var death = new Date(record.dod + "T00:00:00");
-      var years = death.getFullYear() - birth.getFullYear();
-
-      if (
-        death.getMonth() < birth.getMonth() ||
-        (
-          death.getMonth() === birth.getMonth() &&
-          death.getDate() < birth.getDate()
-        )
-      ) {
-        years--;
-      }
-
-      return years > 0 ? years : "";
+      var years = calculateAge(record, record && record.dod);
+      return years === null ? "" : years;
     }
 
     function ageGroup(record) {
-      if (record.deceased) return "Deceased Ancestor";
-      if (!record.dob) return "Historical / Unknown";
-
-      var birth = new Date(record.dob + "T00:00:00");
-      var now = new Date();
-      var years = now.getFullYear() - birth.getFullYear();
-
-      if (
-        now.getMonth() < birth.getMonth() ||
-        (
-          now.getMonth() === birth.getMonth() &&
-          now.getDate() < birth.getDate()
-        )
-      ) {
-        years--;
-      }
-
-      if (years <= 9) return "Child";
-      if (years <= 17) return "Adolescent";
-      if (years <= 35) return "Youth";
-      if (years <= 59) return "Adult";
-      return "Elder";
+      return ageCategory(record);
     }
 
     function getPhoto(record) {
@@ -708,9 +792,15 @@
     }
 
     function profileCard(record) {
+      var spouseText = showSpouseRecords ? linkedName(record.spouseId) : "Hidden";
+      var children = childrenOf(record.id);
+      var childNames = children.map(function(child) {
+        return escapeHtml(child.firstName || fullName(child));
+      }).join(", ");
       return `
         <article class="profile ${record.branchType}">
           <div class="profile-body">
+            <span class="member-number">${clanMemberNumber(record)}</span>
             <div class="profile-top">
               ${getPhoto(record)}
               <div>
@@ -729,6 +819,14 @@
 
             <div class="data">
               <span><strong>Sex:</strong> ${escapeHtml(record.sex)}</span>
+              <span><strong>Age Category:</strong> ${escapeHtml(ageCategory(record))}</span>
+              <span><strong>Father:</strong> ${linkedName(record.fatherId)}</span>
+              <span><strong>Mother:</strong> ${linkedName(record.motherId)}</span>
+              <span><strong>Spouse:</strong> ${spouseText}</span>
+              <span><strong>Education:</strong> ${escapeHtml(record.education || "Not Recorded")}</span>
+              <span><strong>Children (${children.length}):</strong> ${childNames || "None Recorded"}</span>
+              ${record.deceased ? '<span><strong>Age at Death:</strong> ' + escapeHtml(ageAtDeath(record) || record.deathAge || "Not Recorded") + '</span>' : ""}
+              ${record.deceased ? '<span><strong>Cause of Death:</strong> ' + escapeHtml(record.causeOfDeath || "Not Recorded") + '</span>' : ""}
               <span><strong>Occupation:</strong> ${escapeHtml(record.occupation || "Not Recorded")}</span>
               <span><strong>Location:</strong> ${escapeHtml(record.location || "Not Recorded")}</span>
             </div>
@@ -743,8 +841,49 @@
       `;
     }
 
+    function lineMember(record, extraClass) {
+      var spouseText = showSpouseRecords ? linkedName(record.spouseId) : "Hidden";
+      return `<div class="line-member ${extraClass || ""}">
+        <strong><span class="member-number">${clanMemberNumber(record)}</span>${escapeHtml(fullName(record))}</strong>
+        <span>${escapeHtml(ageCategory(record))}</span>
+        <span>${escapeHtml(record.sex || "Not Recorded")}</span>
+        <span>${escapeHtml(record.religion || "Not Recorded")}</span>
+        <span>Father: ${linkedName(record.fatherId)}<br>Mother: ${linkedName(record.motherId)}<br>Spouse: ${spouseText}</span>
+        <span>${escapeHtml(record.occupation || "Not Recorded")}</span>
+        <span>Education: ${escapeHtml(record.education || "Not Recorded")}</span>
+        ${record.deceased ? '<span>Age at Death: ' + escapeHtml(ageAtDeath(record) || record.deathAge || "Not Recorded") + '<br>Cause: ' + escapeHtml(record.causeOfDeath || "Not Recorded") + '</span>' : '<span></span>'}
+        <button class="link-button" type="button" onclick="editRecord('${record.id}')">Open</button>
+      </div>`;
+    }
+
+    function renderCatalogue(recordsToRender) {
+      if (!recordsToRender.length) return '<div class="empty">No profiles match this selection.</div>';
+      if (viewStyle === "line") {
+        return '<section class="line-view"><div class="line-member line-heading"><span>Member</span><span>Age Category</span><span>Sex</span><span>Religion</span><span>Family Links</span><span>Occupation</span><span>Education</span><span></span></div>' +
+          recordsToRender.map(function(record) {
+            var spouse = showSpouseRecords && findRecord(record.spouseId);
+            return lineMember(record) + (spouse ? lineMember(spouse, "spouse-line") : "");
+          }).join("") + '</section>';
+      }
+      return '<section class="profiles">' + recordsToRender.map(profileCard).join("") + '</section>';
+    }
+
+    function matchesCustomFilter(record) {
+      var age = calculateAge(record, record.deceased ? record.dod : "");
+      if (customFilter.minAge !== "" && (age === null || age < Number(customFilter.minAge))) return false;
+      if (customFilter.maxAge !== "" && (age === null || age > Number(customFilter.maxAge))) return false;
+      if (customFilter.ageCategory && ageCategory(record) !== customFilter.ageCategory) return false;
+      if (customFilter.sex && record.sex !== customFilter.sex) return false;
+      if (customFilter.deceased !== "" && String(record.deceased) !== customFilter.deceased) return false;
+      if (customFilter.religion && (record.religion || "Not Recorded") !== customFilter.religion) return false;
+      if (customFilter.denomination && (record.denomination || "Not Recorded") !== customFilter.denomination) return false;
+      if (customFilter.branch && record.branchType !== customFilter.branch) return false;
+      return true;
+    }
+
     function showCatalogue(filter) {
       currentFilter = filter || "all";
+      if (!Array.isArray(records)) records = defaultRecords;
 
       document.getElementById("cataloguePage").classList.add("active");
       document.getElementById("treePage").classList.remove("active");
@@ -768,7 +907,9 @@
           record.education
         ].join(" ").toLowerCase();
 
-        return matchesFilter && searchable.indexOf(query) > -1;
+        var matchesQuery = !customQuery || searchable.indexOf(customQuery.toLowerCase()) > -1;
+        var matchesFilterForm = currentFilter !== "custom" || matchesCustomFilter(record);
+        return matchesFilter && matchesQuery && matchesFilterForm;
       });
 
       var titles = {
@@ -779,16 +920,14 @@
         siara: "Siara Branch Members",
         maina: "Maina Branch Members",
         maliti: "Maliti Family Members"
+        ,custom: "Custom Filter Results"
       };
 
       document.getElementById("catalogueTitle").textContent = titles[currentFilter];
       document.getElementById("catalogueDescription").textContent =
         filtered.length + " profile(s) displayed.";
 
-      document.getElementById("catalogueWorkspace").innerHTML =
-        filtered.length
-          ? '<section class="profiles">' + filtered.map(profileCard).join("") + "</section>"
-          : '<div class="empty">No profiles match this selection.</div>';
+      document.getElementById("catalogueWorkspace").innerHTML = renderCatalogue(filtered);
 
       updateMetrics();
       window.scrollTo(0, 0);
@@ -801,11 +940,13 @@
     }
 
     function treeCard(record) {
+      if (!record) return "";
       return `
         <div class="tree-card ${record.branchType}" onclick="editRecord('${record.id}')">
           <strong>${escapeHtml(fullName(record))}</strong>
           <span>${escapeHtml(record.honorific || "Clan Member")}</span>
           <span>${escapeHtml(record.birthPeriod || record.dob || "Date Not Recorded")}</span>
+          <small>${escapeHtml(ageCategory(record))}</small>
         </div>
       `;
     }
@@ -813,12 +954,13 @@
     function spouseCard(record) {
       var spouse = findRecord(record.spouseId);
 
-      if (!spouse) return "";
+      if (!spouse || !showSpouseRecords) return "";
 
       return `
         <div class="spouse-card" onclick="editRecord('${spouse.id}')">
           <strong>${escapeHtml(fullName(spouse))}</strong>
           <span>Spouse</span>
+          <small>${escapeHtml(ageCategory(spouse))}</small>
         </div>
       `;
     }
@@ -853,13 +995,15 @@
       `;
     }
 
-    function showTree(type) {
+    function showTree(type, selectedRootId) {
       document.getElementById("treeMenu").classList.remove("open");
       document.getElementById("cataloguePage").classList.remove("active");
       document.getElementById("statisticsPage").classList.remove("active");
       document.getElementById("treePage").classList.add("active");
 
-      var rootId = "ngowi1";
+      window.currentTreeType = type;
+      window.currentTreeRoot = selectedRootId || "";
+      var rootId = selectedRootId || "ngowi1";
       var filter = "";
       var title = "SiaraMaina Clan Tree";
 
@@ -881,7 +1025,14 @@
         title = "Maliti Family Tree";
       }
 
+      if (type === "custom") title = "Custom Family Tree View";
+
       var root = findRecord(rootId);
+
+      if (!root) {
+        document.getElementById("treeWorkspace").innerHTML = '<div class="empty">The selected tree root could not be found.</div>';
+        return;
+      }
 
       document.getElementById("treeTitle").textContent = title;
 
@@ -900,6 +1051,86 @@
       `;
 
       window.scrollTo(0, 0);
+    }
+
+    function setViewStyle(style) {
+      viewStyle = style === "line" ? "line" : "card";
+      document.getElementById("viewMenu").classList.remove("open");
+      showCatalogue(currentFilter);
+    }
+
+    function toggleSpouses() {
+      showSpouseRecords = !showSpouseRecords;
+      document.getElementById("spouseToggle").textContent = showSpouseRecords ? "Hide Spouses" : "Show Spouses";
+      if (document.getElementById("treePage").classList.contains("active")) {
+        showTree(window.currentTreeType || "clan", window.currentTreeRoot);
+      } else if (document.getElementById("cataloguePage").classList.contains("active")) {
+        showCatalogue(currentFilter);
+      }
+    }
+
+    function openCustomSearch() {
+      document.getElementById("catalogueMenu").classList.remove("open");
+      document.getElementById("customSearchInput").value = "";
+      document.getElementById("customSearchResults").innerHTML = "Enter a search term to find members.";
+      document.getElementById("customSearchModal").classList.add("open");
+    }
+
+    function runCustomSearch() {
+      var query = document.getElementById("customSearchInput").value.trim().toLowerCase();
+      var matches = records.filter(function(record) {
+        return [fullName(record), record.occupation, record.location, record.honorific, record.education, record.religion, record.denomination].join(" ").toLowerCase().indexOf(query) > -1;
+      });
+      document.getElementById("customSearchResults").innerHTML = query ? renderCatalogue(matches) : "Enter a search term to find members.";
+    }
+
+    function openCustomTree() {
+      document.getElementById("treeMenu").classList.remove("open");
+      populateMemberSelect("customTreeMember");
+      document.getElementById("customTreeModal").classList.add("open");
+    }
+
+    function showCustomTree() {
+      var rootId = document.getElementById("customTreeMember").value;
+      if (!rootId) return;
+      closeModal("customTreeModal");
+      showTree("custom", rootId);
+    }
+
+    function openCustomFilter() {
+      var categories = ["Historical / Unknown", "Infant (0-1)", "Child (2-9)", "Adolescent (10-19)", "Young Adult (20-24)", "Adult (25-59)", "Older Adult (60+)"];
+      var select = document.getElementById("filterAgeCategory");
+      select.innerHTML = '<option value="">Any</option>' + categories.map(function(category) { return '<option>' + category + '</option>'; }).join("");
+      document.getElementById("customFilterModal").classList.add("open");
+    }
+
+    function applyCustomFilter() {
+      customFilter = {
+        minAge: document.getElementById("filterMinAge").value,
+        maxAge: document.getElementById("filterMaxAge").value,
+        ageCategory: document.getElementById("filterAgeCategory").value,
+        sex: document.getElementById("filterSex").value,
+        deceased: document.getElementById("filterDeceased").value,
+        religion: document.getElementById("filterReligion").value,
+        denomination: document.getElementById("filterDenomination").value,
+        branch: document.getElementById("filterBranch").value
+      };
+      customQuery = "";
+      closeModal("customFilterModal");
+      showCatalogue("custom");
+    }
+
+    function clearCustomFilter() {
+      document.querySelectorAll("#customFilterModal input, #customFilterModal select").forEach(function(field) { field.value = ""; });
+      customFilter = {};
+      closeModal("customFilterModal");
+      showCatalogue("all");
+    }
+
+    function updateAgeFields() {
+      var draft = { dob:document.getElementById("dob").value, dod:document.getElementById("dod").value, deceased:document.getElementById("deceased").value === "true" };
+      document.getElementById("ageCategory").value = ageCategory(draft);
+      document.getElementById("deathAge").value = ageAtDeath(draft);
     }
 
     function populateMemberSelect(id, excludeId) {
@@ -956,6 +1187,7 @@
 
       document.getElementById("recordId").value = editing ? record.id : "";
       document.getElementById("storedPhoto").value = editing ? (record.photo || "") : "";
+      document.getElementById("clanMemberNumber").value = editing ? clanMemberNumber(record) : "Assigned when saved";
 
       populateMemberSelect("fatherId", editing ? record.id : "");
       populateMemberSelect("motherId", editing ? record.id : "");
@@ -964,6 +1196,7 @@
       document.getElementById("fatherId").value = editing ? (record.fatherId || "") : "";
       document.getElementById("motherId").value = editing ? (record.motherId || "") : "";
       document.getElementById("spouseId").value = editing ? (record.spouseId || "") : "";
+      updateAgeFields();
 
       var preview = document.getElementById("photoPreview");
 
@@ -1024,7 +1257,7 @@
         birthPeriod: document.getElementById("birthPeriod").value.trim(),
         deceased: document.getElementById("deceased").value === "true",
         dod: document.getElementById("dod").value,
-        deathAge: document.getElementById("deathAge").value,
+        deathAge: "",
         causeOfDeath: document.getElementById("causeOfDeath").value,
         fatherId: document.getElementById("fatherId").value,
         motherId: document.getElementById("motherId").value,
@@ -1045,6 +1278,13 @@
         photo: document.getElementById("storedPhoto").value
       };
 
+      record.deathAge = ageAtDeath(record);
+
+      var selectedFather = findRecord(record.fatherId);
+      var selectedMother = findRecord(record.motherId);
+      if (selectedFather && !record.motherId && selectedFather.spouseId) record.motherId = selectedFather.spouseId;
+      if (selectedMother && !record.fatherId && selectedMother.spouseId) record.fatherId = selectedMother.spouseId;
+
       var index = records.findIndex(function(item) {
         return item.id === id;
       });
@@ -1053,6 +1293,11 @@
         records[index] = record;
       } else {
         records.push(record);
+      }
+
+      if (index > -1 && records[index].spouseId && records[index].spouseId !== record.spouseId) {
+        var previousSpouse = findRecord(records[index].spouseId);
+        if (previousSpouse) previousSpouse.spouseId = "";
       }
 
       if (record.spouseId) {
@@ -1633,6 +1878,11 @@
         </article>
 
         <article class="stat-card">
+          <h3>WHO Age Categories</h3>
+          ${statBars(statCounts("age", ["Historical / Unknown", "Infant (0-1)", "Child (2-9)", "Adolescent (10-19)", "Young Adult (20-24)", "Adult (25-59)", "Older Adult (60+)"]), "gold")}
+        </article>
+
+        <article class="stat-card">
           <h3>Education</h3>
           ${statBars(statCounts("education", ["Not Recorded", "Primary Education", "Secondary Education", "Certificate", "Diploma", "Bachelor Degree", "Master Degree", "PhD / Doctorate", "Professor"]), "maina")}
         </article>
@@ -1689,6 +1939,105 @@
 
       URL.revokeObjectURL(url);
     }
+
+    function parseCsvLine(line) {
+      var values = [], value = "", quoted = false;
+      for (var i = 0; i < line.length; i++) {
+        var character = line.charAt(i);
+        if (character === '"' && line.charAt(i + 1) === '"' && quoted) { value += '"'; i++; }
+        else if (character === '"') quoted = !quoted;
+        else if (character === "," && !quoted) { values.push(value); value = ""; }
+        else value += character;
+      }
+      values.push(value);
+      return values;
+    }
+
+    function importCsv(event) {
+      var file = event.target.files[0];
+      if (!file) return;
+      var reader = new FileReader();
+      reader.onload = function(loadEvent) {
+        var lines = loadEvent.target.result.split(/\r?\n/).filter(function(line) { return line.trim(); });
+        if (lines.length < 2) { alert("The CSV file has no member records."); return; }
+        var fields = parseCsvLine(lines[0]), imported = 0;
+        lines.slice(1).forEach(function(line) {
+          var values = parseCsvLine(line), row = {};
+          fields.forEach(function(field, index) { row[field] = values[index] || ""; });
+          if (!row.firstName && !row.id) return;
+          row.id = row.id || "member-" + Date.now() + "-" + imported;
+          row.deceased = row.deceased === true || row.deceased === "true";
+          var existingIndex = records.findIndex(function(record) { return record.id === row.id; });
+          if (existingIndex > -1) records[existingIndex] = Object.assign({}, records[existingIndex], row);
+          else records.push(row);
+          imported++;
+        });
+        saveRecords();
+        alert(imported + " member record(s) imported or updated.");
+        showCatalogue("all");
+      };
+      reader.readAsText(file);
+      event.target.value = "";
+    }
+
+    async function saveProjectData() {
+      var data = JSON.stringify({
+        project: "SiaraMaina Clan Informatics",
+        exportedAt: new Date().toISOString(),
+        records: records
+      }, null, 2);
+      var blob = new Blob([data], { type:"application/json" });
+
+      try {
+        if (window.showSaveFilePicker) {
+          var handle = await window.showSaveFilePicker({
+            suggestedName: "siara-maina-clan-data.json",
+            types: [{ description:"Clan project data", accept:{"application/json":[".json"]} }]
+          });
+          var writable = await handle.createWritable();
+          await writable.write(data);
+          await writable.close();
+          alert("Project data saved successfully.");
+          return;
+        }
+      } catch (error) {
+        if (error.name === "AbortError") return;
+      }
+
+      var url = URL.createObjectURL(blob);
+      var link = document.createElement("a");
+      link.href = url;
+      link.download = "siara-maina-clan-data.json";
+      link.click();
+      URL.revokeObjectURL(url);
+      alert("Project data downloaded. Keep this JSON file in the project folder as your backup.");
+    }
+
+    function importProjectData(event) {
+      var file = event.target.files[0];
+      if (!file) return;
+      var reader = new FileReader();
+      reader.onload = function(loadEvent) {
+        try {
+          var payload = JSON.parse(loadEvent.target.result);
+          var importedRecords = Array.isArray(payload) ? payload : payload.records;
+          if (!Array.isArray(importedRecords)) throw new Error("Invalid project data");
+          records = importedRecords;
+          saveRecords();
+          showCatalogue("all");
+          alert(records.length + " member record(s) restored successfully.");
+        } catch (error) {
+          alert("The selected project data file is not valid.");
+        }
+      };
+      reader.readAsText(file);
+      event.target.value = "";
+    }
+
+    ["dob", "dod", "deceased"].forEach(function(id) {
+      document.getElementById(id).addEventListener("input", updateAgeFields);
+      document.getElementById(id).addEventListener("change", updateAgeFields);
+    });
 
     showCatalogue("all");
   </script>
