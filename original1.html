@@ -925,15 +925,23 @@
         return records.indexOf(first) - records.indexOf(second);
     }
 
-    function generationNumber(record, trail) {
+    function biologicalGeneration(record, trail) {
       if (!record) return 1;
       var visited = trail || {};
       if (visited[record.id]) return 1;
       visited[record.id] = true;
       var parentGenerations = [record.fatherId, record.motherId].map(function(parentId) {
-        return parentId && findRecord(parentId) ? generationNumber(findRecord(parentId), Object.assign({}, visited)) : 0;
+        return parentId && findRecord(parentId) ? biologicalGeneration(findRecord(parentId), Object.assign({}, visited)) : 0;
       });
       return Math.max.apply(null, parentGenerations) + 1;
+    }
+
+    function generationNumber(record) {
+      if (!record) return 1;
+      var generation = biologicalGeneration(record);
+      var spouse = findRecord(record.spouseId);
+      if (spouse) generation = Math.max(generation, biologicalGeneration(spouse));
+      return generation;
     }
 
     function generationLabel(record) {
