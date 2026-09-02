@@ -940,16 +940,28 @@
     }
 
     function branchLabel(record) {
-      if (record.branchType === "siara") return "Siara Branch";
+      if (isSiaraBranchMember(record)) return "Siara Branch";
       if (record.branchType === "maina") return "Maina Branch";
       if (record.branchType === "maliti") return "Maliti Family";
       return "Foundational Ancestry";
     }
 
+    function isSiaraBranchMember(record) {
+      if (!record) return false;
+      if (record.branchType === "siara" || record.id === "siara") return true;
+
+      var jamesSiara = records.find(function(member) {
+        var name = fullName(member).toLowerCase();
+        return name.indexOf("james") !== -1 && name.indexOf("siara") !== -1;
+      });
+
+      return !!jamesSiara && (record.id === jamesSiara.id || ancestorMap(record.id)[jamesSiara.id] !== undefined);
+    }
+
     function lineageClass(record) {
       if (!record) return "lineage-foundation";
       var ancestors = ancestorMap(record.id);
-      if (record.id === "siara" || ancestors.siara !== undefined) return "lineage-siara";
+      if (isSiaraBranchMember(record) || ancestors.siara !== undefined) return "lineage-siara";
       if (record.id === "maina" || ancestors.maina !== undefined) return "lineage-maina";
       return "lineage-foundation";
     }
@@ -1290,6 +1302,7 @@
           currentFilter === "custom" ||
           (currentFilter === "living" && !record.deceased) ||
           (currentFilter === "deceased" && record.deceased) ||
+          (currentFilter === "siara" && isSiaraBranchMember(record)) ||
           record.branchType === currentFilter;
 
         var searchable = [
@@ -1367,7 +1380,7 @@
         if (!filter) return true;
 
         if (filter === "siara") {
-          return record.branchType === "siara" || record.branchType === "maliti";
+          return isSiaraBranchMember(record) || record.branchType === "maliti";
         }
 
         return record.branchType === filter;
