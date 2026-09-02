@@ -147,6 +147,9 @@
     @media(max-width:720px){.search{width:100%;margin-right:0}.metrics{grid-template-columns:1fr 1fr}.form-grid,.stats-grid{grid-template-columns:1fr}.field.full{grid-column:auto}.modal-actions{flex-direction:column}.classical-tree ul{justify-content:flex-start}.line-member{grid-template-columns:1fr 1fr;gap:5px 12px}.line-heading{display:none}}
     @media(max-width:720px){
       body{overflow-x:hidden}
+      body.view-page-open{overflow:hidden}
+      body.view-page-open .topbar{display:none}
+      body.view-page-open .page.active{position:fixed;inset:0;z-index:150;display:block;overflow:auto;padding:16px 0 32px;background:var(--paper)}
       .topbar-inner{width:calc(100% - 20px);padding:12px 0}
       .brand{gap:8px;margin-bottom:12px;font-size:.86rem;line-height:1.25}
       .brand-mark{width:38px;height:38px}
@@ -289,6 +292,7 @@
             <button class="button gold" type="button" onclick="openProfile(null)">Add Clan Member</button>
             <button class="button secondary" type="button" onclick="showTree('clan')">Open Clan Hierarchy</button>
             <button class="button secondary" type="button" onclick="showStatistics()">View Statistics</button>
+            <button class="button secondary" type="button" onclick="shareVisibleView('Clan Catalogue', 'cataloguePage')">Share Catalogue</button>
           </div>
         </div>
       </section>
@@ -318,8 +322,9 @@
         <h1 id="treeTitle">SiaraMaina Clan Tree</h1>
         <p>Children are connected through their father and mother records where known.</p>
         <div class="page-actions">
-          <button class="button gold" type="button" onclick="showCatalogue('all')">Return to Catalogue</button>
+          <button class="button gold" type="button" onclick="showCatalogue('all')">Back to Home</button>
           <button class="button secondary" type="button" onclick="openProfile(null)">Add Member</button>
+          <button class="button secondary" type="button" onclick="shareVisibleView(document.getElementById('treeTitle').textContent, 'treePage')">Share Tree</button>
         </div>
       </section>
 
@@ -336,7 +341,7 @@
         <h1>SiaraMaina Statistics</h1>
         <p>Live statistics based on the details saved in individual clan member forms.</p>
         <div class="page-actions">
-          <button class="button gold" type="button" onclick="showCatalogue('all')">Return to Catalogue</button>
+          <button class="button gold" type="button" onclick="showCatalogue('all')">Back to Home</button>
           <button class="button secondary" type="button" onclick="showTree('clan')">Open Clan Tree</button>
         </div>
       </section>
@@ -523,6 +528,7 @@
         <div class="modal-actions">
           <button id="deleteButton" class="button danger" type="button" onclick="deleteProfile()">Delete Profile</button>
           <div>
+            <button class="button secondary" type="button" onclick="shareCurrentForm()">Share Form</button>
             <button class="button secondary" type="button" onclick="closeModal('profileModal')">Cancel</button>
             <button class="button primary" type="submit">Save Profile</button>
           </div>
@@ -956,6 +962,52 @@
       document.getElementById(id).classList.remove("open");
     }
 
+    function shareCurrentForm() {
+      var firstName = document.getElementById("firstName").value.trim();
+      var middleName = document.getElementById("middleName").value.trim();
+      var lastName = document.getElementById("lastName").value.trim();
+      var name = [firstName, middleName, lastName].filter(Boolean).join(" ") || "Clan Member Profile";
+      var details = [
+        "Name: " + name,
+        "Clan member number: " + document.getElementById("clanMemberNumber").value,
+        "Family classification: " + document.getElementById("branchType").value,
+        "Life status: " + document.getElementById("deceased").selectedOptions[0].textContent,
+        "Place of birth: " + document.getElementById("placeOfBirth").value,
+        "Historical narrative: " + document.getElementById("narrative").value
+      ].join("\n");
+      shareContent(name + " - Clan Profile", details, window.location.href);
+    }
+
+    function shareVisibleView(title, elementId) {
+      var view = document.getElementById(elementId);
+      var text = view.innerText.replace(/\s+/g, " ").trim();
+      shareContent(title, text.slice(0, 4000), window.location.href);
+    }
+
+    function shareContent(title, text, url) {
+      if (navigator.share) {
+        navigator.share({title: title, text: text, url: url}).catch(function(error) {
+          if (error && error.name !== "AbortError") showShareOptions(title, text, url);
+        });
+        return;
+      }
+      showShareOptions(title, text, url);
+    }
+
+    function showShareOptions(title, text, url) {
+      var choice = prompt("Share by entering: email, whatsapp, x, or copy");
+      if (!choice) return;
+      choice = choice.toLowerCase().trim();
+      var encodedText = encodeURIComponent(text + "\n" + url);
+      if (choice === "email") window.location.href = "mailto:?subject=" + encodeURIComponent(title) + "&body=" + encodedText;
+      if (choice === "whatsapp") window.open("https://wa.me/?text=" + encodedText, "_blank", "noopener");
+      if (choice === "x" || choice === "twitter") window.open("https://twitter.com/intent/tweet?text=" + encodedText, "_blank", "noopener");
+      if (choice === "copy") {
+        if (navigator.clipboard) navigator.clipboard.writeText(text + "\n" + url);
+        else window.prompt("Copy this share link:", text + "\n" + url);
+      }
+    }
+
     function toggleMenu(id) {
       document.getElementById(id).classList.toggle("open");
 
@@ -1149,6 +1201,7 @@
       currentFilter = filter || "all";
       if (!Array.isArray(records)) records = defaultRecords;
 
+      document.body.classList.remove("view-page-open");
       document.getElementById("cataloguePage").classList.add("active");
       document.getElementById("treePage").classList.remove("active");
       document.getElementById("statisticsPage").classList.remove("active");
@@ -1263,6 +1316,7 @@
     }
 
     function showTree(type, selectedRootId) {
+      document.body.classList.add("view-page-open");
       document.getElementById("treeMenu").classList.remove("open");
       document.getElementById("cataloguePage").classList.remove("active");
       document.getElementById("statisticsPage").classList.remove("active");
@@ -2364,6 +2418,7 @@
     }
 
     function showStatistics() {
+      document.body.classList.add("view-page-open");
       document.getElementById("cataloguePage").classList.remove("active");
       document.getElementById("treePage").classList.remove("active");
       document.getElementById("statisticsPage").classList.add("active");
@@ -2683,15 +2738,25 @@
               function sharePreview() {
                 var shareTitle = ${JSON.stringify(title)};
                 var shareText = shareTitle + " - SiaraMaina Clan Informatics";
+                var shareUrl = ${JSON.stringify(window.location.href)};
                 if (navigator.share) {
-                  navigator.share({ title: shareTitle, text: shareText }).catch(function() {});
+                  navigator.share({ title: shareTitle, text: shareText, url: shareUrl }).catch(function(error) {
+                    if (error && error.name !== "AbortError") showShareOptions(shareTitle, shareText, shareUrl);
+                  });
                   return;
                 }
-                var encodedText = encodeURIComponent(shareText);
-                var encodedUrl = encodeURIComponent(location.href);
-                var choice = prompt("Share by entering: email or whatsapp");
-                if (choice && choice.toLowerCase() === "email") location.href = "mailto:?subject=" + encodeURIComponent(shareTitle) + "&body=" + encodedText + "%0A" + encodedUrl;
-                if (choice && choice.toLowerCase() === "whatsapp") window.open("https://wa.me/?text=" + encodedText + "%20" + encodedUrl, "_blank");
+                showShareOptions(shareTitle, shareText, shareUrl);
+              }
+
+              function showShareOptions(shareTitle, shareText, shareUrl) {
+                var encodedText = encodeURIComponent(shareText + "\n" + shareUrl);
+                var choice = prompt("Share by entering: email, whatsapp, x, or copy");
+                if (!choice) return;
+                choice = choice.toLowerCase().trim();
+                if (choice === "email") location.href = "mailto:?subject=" + encodeURIComponent(shareTitle) + "&body=" + encodedText;
+                if (choice === "whatsapp") window.open("https://wa.me/?text=" + encodedText, "_blank", "noopener");
+                if (choice === "x" || choice === "twitter") window.open("https://twitter.com/intent/tweet?text=" + encodedText, "_blank", "noopener");
+                if (choice === "copy" && navigator.clipboard) navigator.clipboard.writeText(shareText + "\n" + shareUrl);
               }
             <\/script>
           </body>
