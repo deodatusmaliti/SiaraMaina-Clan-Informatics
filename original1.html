@@ -224,7 +224,9 @@
       </div>
 
       <div class="controls">
-        <input id="searchInput" class="search" type="search" placeholder="Search Clan Archive" oninput="showCatalogue(currentFilter)">
+        <select id="searchInput" class="search" aria-label="Choose a clan member" onchange="selectArchiveMember(this.value)">
+          <option value="">Search Clan Archive</option>
+        </select>
         <button class="mobile-menu-toggle" type="button" onclick="toggleMobileMenu()" aria-expanded="false">Menu</button>
 
         <div id="catalogueCustomSearchRow" class="inline-toolbar" aria-live="polite">
@@ -280,6 +282,7 @@
         <button class="top-button" type="button" onclick="exportCsv()">CSV Backup</button>
         <button class="top-button" type="button" onclick="document.getElementById('csvImport').click()">Import CSV</button>
         <button class="top-button" type="button" onclick="saveProjectData()">Save Project Data</button>
+        <button class="top-button" type="button" onclick="saveProjectDataToGitHub()">Save to GitHub</button>
         <button class="top-button" type="button" onclick="document.getElementById('projectImport').click()">Restore Project Data</button>
         <input id="csvImport" type="file" accept=".csv,text/csv" hidden onchange="importCsv(event)">
         <input id="projectImport" type="file" accept=".json,application/json" hidden onchange="importProjectData(event)">
@@ -331,7 +334,9 @@
         <div class="page-actions">
           <button class="button gold" type="button" onclick="showCatalogue('all')">Back to Home</button>
           <button class="button secondary" type="button" onclick="openProfile(null)">Add Member</button>
-          <button class="button secondary" type="button" onclick="shareVisibleView(document.getElementById('treeTitle').textContent, 'treePage')">Share Tree</button>
+          <button class="button secondary" type="button" onclick="shareTreeLink()">Share Tree</button>
+          <button class="button secondary" type="button" onclick="shareCardLink()">Share Card</button>
+          <button class="button secondary" type="button" onclick="shareFormLink()">Share Form</button>
         </div>
       </section>
 
@@ -666,6 +671,7 @@
     var showSpouseRecords = true;
     var customQuery = "";
     var customFilter = {};
+    var selectedMemberId = "";
 
     function loadStoredSettings() {
       try {
@@ -982,13 +988,75 @@
         "Place of birth: " + document.getElementById("placeOfBirth").value,
         "Historical narrative: " + document.getElementById("narrative").value
       ].join("\n");
-      shareContent(name + " - Clan Profile", details, window.location.href);
+      var recordId = document.getElementById("recordId").value;
+      shareContent(name + " - Clan Profile", recordId ? "" : details, recordId ? buildShareUrl("#form=" + encodeURIComponent(recordId)) : window.location.href);
+    }
+
+    function shareCardLink() {
+      var memberId = selectedMemberId || window.currentTreeRoot || (records[0] && records[0].id);
+      var record = findRecord(memberId);
+      if (!record) return;
+      shareContent(fullName(record) + " - Clan Card", "", buildShareUrl("#card=" + encodeURIComponent(record.id)));
+    }
+
+    function shareFormLink() {
+      var memberId = selectedMemberId || window.currentTreeRoot || (records[0] && records[0].id);
+      var record = findRecord(memberId);
+      if (!record) return;
+      shareContent(fullName(record) + " - Clan Form", "", buildShareUrl("#form=" + encodeURIComponent(record.id)));
+    }
+
+    function shareTreeLink() {
+      var type = window.currentTreeType || "clan";
+      var root = window.currentTreeRoot || "";
+      var hash = "#tree=" + encodeURIComponent(type) + (root ? "&root=" + encodeURIComponent(root) : "");
+      shareContent(document.getElementById("treeTitle").textContent, "", buildShareUrl(hash));
+    }
+
+    function buildShareUrl(hash) {
+      return window.location.href.split("#")[0] + hash;
     }
 
     function shareVisibleView(title, elementId) {
       var view = document.getElementById(elementId);
       var text = view.innerText.replace(/\s+/g, " ").trim();
       shareContent(title, text.slice(0, 4000), window.location.href);
+    }
+
+    function populateArchiveMemberSelect() {
+      var select = document.getElementById("searchInput");
+      select.innerHTML = '<option value="">Search Clan Archive</option>';
+      ["siara", "maina"].forEach(function(branch) {
+        var branchRecords = records.filter(function(record) { return record.branchType === branch; });
+        if (!branchRecords.length) return;
+        var group = document.createElement("optgroup");
+        group.label = branch === "siara" ? "Siara Branch" : "Maina Branch";
+        branchRecords.sort(function(a, b) { return fullName(a).localeCompare(fullName(b)); }).forEach(function(record) {
+          var option = document.createElement("option");
+          option.value = record.id;
+          option.textContent = fullName(record);
+          group.appendChild(option);
+        });
+        select.appendChild(group);
+      });
+      records.filter(function(record) { return record.branchType !== "siara" && record.branchType !== "maina"; })
+        .sort(function(a, b) { return fullName(a).localeCompare(fullName(b)); })
+        .forEach(function(record) {
+          var option = document.createElement("option");
+          option.value = record.id;
+          option.textContent = fullName(record) + " - " + branchLabel(record);
+          select.appendChild(option);
+        });
+    }
+
+    function selectArchiveMember(memberId) {
+      selectedMemberId = memberId || "";
+      customQuery = "";
+      showCatalogue("all");
+      if (memberId) {
+        var card = document.getElementById("card-" + memberId);
+        if (card) card.scrollIntoView({behavior: "smooth", block: "start"});
+      }
     }
 
     function shareContent(title, text, url) {
@@ -1040,13 +1108,15 @@
     function applyInlineCustomSearch() {
       var value = document.getElementById("catalogueCustomSearchInput").value.trim();
       customQuery = value;
-      document.getElementById("searchInput").value = value;
+      selectedMemberId = "";
+      document.getElementById("searchInput").value = "";
       showCatalogue("all");
     }
 
     function navigateCatalogue(filter) {
       customQuery = "";
       document.getElementById("searchInput").value = "";
+      selectedMemberId = "";
       document.getElementById("catalogueCustomSearchInput").value = "";
       document.getElementById("catalogueCustomSearchRow").classList.remove("visible");
       showCatalogue(filter || "all");
@@ -1106,7 +1176,7 @@
         return escapeHtml(child.firstName || fullName(child));
       }).join(", ");
       return `
-        <article class="profile ${record.branchType} ${lineageClass(record)}">
+          <article id="card-${record.id}" class="profile ${record.branchType} ${lineageClass(record)}">
           <div class="profile-body">
             <span class="member-number">${clanMemberNumber(record)}</span>
             <div class="profile-top">
@@ -1214,8 +1284,6 @@
       document.getElementById("statisticsPage").classList.remove("active");
       document.getElementById("catalogueMenu").classList.remove("open");
 
-      var query = document.getElementById("searchInput").value.toLowerCase();
-
       var filtered = records.filter(function(record) {
         var matchesFilter =
           currentFilter === "all" ||
@@ -1234,9 +1302,10 @@
           record.education
         ].join(" ").toLowerCase();
 
+        var matchesMember = !selectedMemberId || record.id === selectedMemberId;
         var matchesQuery = !customQuery || searchable.indexOf(customQuery.toLowerCase()) > -1;
         var matchesFilterForm = currentFilter !== "custom" || matchesCustomFilter(record);
-        return matchesFilter && matchesQuery && matchesFilterForm;
+        return matchesFilter && matchesMember && matchesQuery && matchesFilterForm;
       });
 
       var titles = {
@@ -1255,6 +1324,7 @@
         filtered.length + " profile(s) displayed.";
 
       document.getElementById("catalogueWorkspace").innerHTML = renderCatalogue(filtered);
+      document.getElementById("searchInput").value = selectedMemberId;
       saveStoredSettings();
       updateMetrics();
       window.scrollTo(0, 0);
@@ -2638,6 +2708,42 @@
       alert("Project data downloaded. Keep this JSON file in the project folder as your backup.");
     }
 
+    async function saveProjectDataToGitHub() {
+      var token = window.prompt("Enter a GitHub fine-grained token with Contents: Read and write permission. It will not be stored.");
+      if (!token) return;
+
+      var apiUrl = "https://api.github.com/repos/deodatusmaliti/SiaraMaina-Clan-Informatics/contents/siara-maina-clan-data.json";
+      var data = JSON.stringify({
+        project: "SiaraMaina Clan Informatics",
+        exportedAt: new Date().toISOString(),
+        records: records
+      }, null, 2);
+      var headers = {
+        "Accept": "application/vnd.github+json",
+        "Authorization": "Bearer " + token,
+        "X-GitHub-Api-Version": "2022-11-28",
+        "Content-Type": "application/json"
+      };
+
+      try {
+        var existingResponse = await fetch(apiUrl, {headers: headers});
+        var existing = existingResponse.ok ? await existingResponse.json() : {};
+        var response = await fetch(apiUrl, {
+          method: "PUT",
+          headers: headers,
+          body: JSON.stringify({
+            message: "Update clan project data",
+            content: btoa(unescape(encodeURIComponent(data))),
+            sha: existing.sha
+          })
+        });
+        if (!response.ok) throw new Error("GitHub save failed");
+        alert("Project data was saved to GitHub.");
+      } catch (error) {
+        alert("GitHub save failed. Check the token permission and repository access.");
+      }
+    }
+
     function importProjectData(event) {
       var file = event.target.files[0];
       if (!file) return;
@@ -2794,7 +2900,32 @@
       setTimeout(function() { win.print(); }, 250);
     }
 
+    function openSharedLink() {
+      var hash = window.location.hash.replace(/^#/, "");
+      if (!hash) return;
+      var params = new URLSearchParams(hash.replace(/&/g, "&"));
+      var cardId = params.get("card");
+      var formId = params.get("form");
+      var treeType = params.get("tree");
+      var treeRoot = params.get("root") || "";
+      if (cardId && findRecord(cardId)) {
+        selectedMemberId = cardId;
+        showCatalogue("all");
+        return;
+      }
+      if (formId && findRecord(formId)) {
+        selectedMemberId = formId;
+        openProfile(findRecord(formId));
+        return;
+      }
+      if (treeType && ["clan", "siara", "maina", "maliti", "custom"].indexOf(treeType) !== -1) {
+        showTree(treeType, treeRoot);
+      }
+    }
+
+    populateArchiveMemberSelect();
     showCatalogue("all");
+    openSharedLink();
   </script>
 </body>
 </html>
