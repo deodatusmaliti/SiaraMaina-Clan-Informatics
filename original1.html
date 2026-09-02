@@ -94,7 +94,7 @@
     .line-heading{background:#f1f7f2;color:var(--forest);font-weight:900;text-transform:uppercase;letter-spacing:.04em;font-size:.65rem}
     .spouse-line{padding-left:28px;background:#fffaf0}.spouse-line strong:before{content:"↳ ";color:var(--gold)}
     .tree-card small,.spouse-card small{display:block;margin-top:3px;color:var(--muted);font-size:.62rem}
-    .card-identifiers{display:flex;justify-content:flex-end;gap:6px;margin-bottom:8px}
+    .card-identifiers{display:flex;justify-content:space-between;gap:6px;margin-bottom:8px}
     .member-number,.generation-number{display:inline-block;padding:3px 7px;border-radius:5px;color:var(--forest);font-size:.68rem;font-weight:900;letter-spacing:.04em}
     .member-number{background:#edf6ef}
     .generation-number{background:#fff3cf;color:#806112}
@@ -941,21 +941,10 @@
     }
 
     function clanRanking() {
-      var remaining = records.slice();
-      var ranked = [];
-      while (remaining.length) {
-        var available = remaining.filter(function(record) {
-          return [record.fatherId, record.motherId].every(function(parentId) {
-            return !parentId || !findRecord(parentId) || !remaining.some(function(candidate) { return candidate.id === parentId; });
-          });
-        }).sort(seniorityCompare);
-        if (!available.length) available = remaining.slice().sort(seniorityCompare);
-        available.forEach(function(record) {
-          ranked.push(record);
-          remaining = remaining.filter(function(candidate) { return candidate.id !== record.id; });
-        });
-      }
-      return ranked;
+      return records.slice().sort(function(first, second) {
+        var generationDifference = generationNumber(first) - generationNumber(second);
+        return generationDifference || seniorityCompare(first, second);
+      });
     }
 
     function clanMemberNumber(record) {
