@@ -67,7 +67,7 @@
     .profile.maina{border-top:5px solid var(--maina)}
     .profile.maliti{border-top:5px solid var(--maliti)}
     .profile.lineage-foundation{border-top-color:#8b6f47}.profile.lineage-siara{border-top-color:var(--siara)}.profile.lineage-maina{border-top-color:#b23b54}
-    .profile-body{padding:18px}
+    .profile-body{position:relative;padding:18px}
     .profile-top{display:flex;gap:12px;align-items:flex-start}
     .avatar,.portrait{width:52px;height:52px;flex:0 0 auto;border-radius:50%}
     .avatar{display:grid;place-items:center;background:var(--forest);color:var(--gold);font-weight:900}
@@ -94,7 +94,10 @@
     .line-heading{background:#f1f7f2;color:var(--forest);font-weight:900;text-transform:uppercase;letter-spacing:.04em;font-size:.65rem}
     .spouse-line{padding-left:28px;background:#fffaf0}.spouse-line strong:before{content:"↳ ";color:var(--gold)}
     .tree-card small,.spouse-card small{display:block;margin-top:3px;color:var(--muted);font-size:.62rem}
-    .member-number{display:inline-block;margin-bottom:8px;padding:3px 7px;border-radius:5px;background:#edf6ef;color:var(--forest);font-size:.68rem;font-weight:900;letter-spacing:.04em}
+    .card-identifiers{display:flex;justify-content:flex-end;gap:6px;margin-bottom:8px}
+    .member-number,.generation-number{display:inline-block;padding:3px 7px;border-radius:5px;color:var(--forest);font-size:.68rem;font-weight:900;letter-spacing:.04em}
+    .member-number{background:#edf6ef}
+    .generation-number{background:#fff3cf;color:#806112}
     .page-header{margin:25px 0 18px;padding:25px;border-radius:14px;color:#fff;background:linear-gradient(125deg,#103d2b,#2d7650)}
     .page-header h1{margin:8px 0;font-size:2rem}
     .page-header p{margin:0;color:#dcefe1}
@@ -112,6 +115,7 @@
     .classical-tree ul ul:before{position:absolute;top:0;left:50%;height:27px;border-left:1px solid #9ab8a2;content:""}
     .couple{display:flex;justify-content:center;gap:5px}
     .tree-card{width:165px;padding:9px;border:2px solid var(--gold);border-radius:8px;background:#fffdf6;text-align:left;cursor:pointer}
+    .tree-card .card-identifiers{justify-content:space-between;margin:-2px 0 7px}
     .tree-card.siara{border-color:var(--siara);background:#e3f5fb}
     .tree-card.maina{border-color:var(--maina);background:#fff1dc}
     .tree-card.maliti{border-color:var(--maliti);background:#f6e5db}
@@ -909,8 +913,7 @@
       return changed;
     }
 
-    function clanMemberNumber(record) {
-      var ranked = records.slice().sort(function(first, second) {
+    function seniorityCompare(first, second) {
         if (first.id === "ngowi1") return -1;
         if (second.id === "ngowi1") return 1;
         var firstAge = calculateAge(first, first.deceased ? first.dod : "");
@@ -920,7 +923,43 @@
         if (firstAge !== null) return -1;
         if (secondAge !== null) return 1;
         return records.indexOf(first) - records.indexOf(second);
+    }
+
+    function generationNumber(record, trail) {
+      if (!record) return 1;
+      var visited = trail || {};
+      if (visited[record.id]) return 1;
+      visited[record.id] = true;
+      var parentGenerations = [record.fatherId, record.motherId].map(function(parentId) {
+        return parentId && findRecord(parentId) ? generationNumber(findRecord(parentId), Object.assign({}, visited)) : 0;
       });
+      return Math.max.apply(null, parentGenerations) + 1;
+    }
+
+    function generationLabel(record) {
+      return "GEN " + String(generationNumber(record)).padStart(3, "0");
+    }
+
+    function clanRanking() {
+      var remaining = records.slice();
+      var ranked = [];
+      while (remaining.length) {
+        var available = remaining.filter(function(record) {
+          return [record.fatherId, record.motherId].every(function(parentId) {
+            return !parentId || !findRecord(parentId) || !remaining.some(function(candidate) { return candidate.id === parentId; });
+          });
+        }).sort(seniorityCompare);
+        if (!available.length) available = remaining.slice().sort(seniorityCompare);
+        available.forEach(function(record) {
+          ranked.push(record);
+          remaining = remaining.filter(function(candidate) { return candidate.id !== record.id; });
+        });
+      }
+      return ranked;
+    }
+
+    function clanMemberNumber(record) {
+      var ranked = clanRanking();
       var position = ranked.findIndex(function(item) { return item.id === record.id; });
       return "CLAN " + String(position + 1).padStart(6, "0");
     }
@@ -1191,7 +1230,10 @@
       return `
           <article id="card-${record.id}" class="profile ${record.branchType} ${lineageClass(record)}">
           <div class="profile-body">
-            <span class="member-number">${clanMemberNumber(record)}</span>
+            <div class="card-identifiers">
+              <span class="member-number">${clanMemberNumber(record)}</span>
+              <span class="generation-number">${generationLabel(record)}</span>
+            </div>
             <div class="profile-top">
               ${getPhoto(record)}
               <div>
@@ -1354,6 +1396,10 @@
       if (!record) return "";
       return `
         <div class="tree-card ${record.branchType} ${lineageClass(record)}" onclick="editRecord('${record.id}')">
+          <div class="card-identifiers">
+            <span class="member-number">${clanMemberNumber(record)}</span>
+            <span class="generation-number">${generationLabel(record)}</span>
+          </div>
           <strong>${escapeHtml(fullName(record))}</strong>
           <span>${escapeHtml(record.honorific || "Clan Member")}</span>
           <span>${escapeHtml(record.birthPeriod || record.dob || "Date Not Recorded")}</span>
@@ -1369,6 +1415,10 @@
 
       return `
         <div class="spouse-card" onclick="editRecord('${spouse.id}')">
+          <div class="card-identifiers">
+            <span class="member-number">${clanMemberNumber(spouse)}</span>
+            <span class="generation-number">${generationLabel(spouse)}</span>
+          </div>
           <strong>${escapeHtml(fullName(spouse))}</strong>
           <span>Spouse</span>
           <small>${escapeHtml(ageCategory(spouse))}</small>
