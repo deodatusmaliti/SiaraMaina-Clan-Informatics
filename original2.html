@@ -345,6 +345,7 @@
 
           <div class="field">
             <label>Mother Profile</label>
+            <small class="field-help">Record the child's mother separately. A spouse is not automatically a parent.</small>
             <select id="motherId"></select>
           </div>
 
@@ -1224,7 +1225,7 @@
 
     function profileRelationshipSummary(record) {
       if (!record) {
-        return "<strong>Family Relationships</strong><br>Add parents and spouse to create automatic family links.";
+        return "<strong>Family Relationships</strong><br>Add each parent separately. A spouse link does not create a parent link.";
       }
 
       var father = findRecord(record.fatherId);
@@ -1280,11 +1281,6 @@
       };
 
       record.deathAge = ageAtDeath(record);
-
-      var selectedFather = findRecord(record.fatherId);
-      var selectedMother = findRecord(record.motherId);
-      if (selectedFather && !record.motherId && selectedFather.spouseId) record.motherId = selectedFather.spouseId;
-      if (selectedMother && !record.fatherId && selectedMother.spouseId) record.fatherId = selectedMother.spouseId;
 
       var index = records.findIndex(function(item) {
         return item.id === id;

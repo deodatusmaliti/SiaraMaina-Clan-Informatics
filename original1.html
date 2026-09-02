@@ -22,9 +22,13 @@
     .brand{display:flex;gap:10px;align-items:center;color:#fff;font-weight:900}
     .brand-mark{display:grid;place-items:center;width:43px;height:43px;border-radius:50%;background:var(--gold);color:var(--forest)}
     .brand small{display:block;color:#cae6cf;font-size:.59rem;letter-spacing:.1em;text-transform:uppercase}
-    .controls{display:flex;align-items:center;justify-content:flex-end;gap:7px;flex-wrap:wrap;flex:1}
-    .search{width:180px;margin-right:auto;padding:9px 11px;border:1px solid #ffffff55;border-radius:7px;background:#ffffff12;color:#fff}
+    .controls{display:flex;align-items:center;justify-content:flex-end;gap:7px;flex-wrap:wrap;flex:1;margin-left:auto}
+    .search{width:200px;margin-right:auto;padding:9px 11px;border:1px solid #ffffff55;border-radius:7px;background:#ffffff12;color:#fff}
     .search::placeholder{color:#d4ebd8}
+    .inline-toolbar{display:none;align-items:center;gap:8px;padding:6px 9px;border:1px solid rgba(255,255,255,.22);border-radius:9px;background:rgba(255,255,255,.08)}
+    .inline-toolbar.visible{display:flex}
+    .inline-toolbar input,.inline-toolbar select{min-width:170px;padding:8px 10px;border:1px solid rgba(255,255,255,.25);border-radius:6px;background:rgba(255,255,255,.12);color:#fff}
+    .inline-toolbar input::placeholder,.inline-toolbar select{color:#dfeee1}
     .top-button,.button{padding:9px 12px;border:1px solid #ffffff44;border-radius:7px;background:#ffffff10;color:#fff;font-size:.76rem;font-weight:900}
     .top-button:hover,.top-button.add,.button.gold{border-color:var(--gold);background:var(--gold);color:var(--forest)}
     .button.primary{background:var(--green);border-color:var(--green)}
@@ -60,6 +64,7 @@
     .profile.siara{border-top:5px solid var(--siara)}
     .profile.maina{border-top:5px solid var(--maina)}
     .profile.maliti{border-top:5px solid var(--maliti)}
+    .profile.lineage-foundation{border-top-color:#8b6f47}.profile.lineage-siara{border-top-color:var(--siara)}.profile.lineage-maina{border-top-color:#b23b54}
     .profile-body{padding:18px}
     .profile-top{display:flex;gap:12px;align-items:flex-start}
     .avatar,.portrait{width:52px;height:52px;flex:0 0 auto;border-radius:50%}
@@ -76,11 +81,12 @@
     .branch.maina{background:#fff1dc;color:var(--maina)}
     .branch.maliti{background:#f6e5db;color:var(--maliti)}
     .data{display:grid;gap:7px;clear:both;margin:14px 0;color:#526259;font-size:.79rem}
+    .profile .portrait{display:block;object-fit:cover;object-position:center;width:52px;height:52px;max-width:52px;max-height:52px}
     .data strong{color:var(--ink)}
     .profile-footer{padding:11px 18px;border-top:1px solid #edf1ed;background:#fbfdfb}
     .link-button{border:0;background:transparent;color:var(--green);font-size:.78rem;font-weight:900}
     .line-view{display:grid;gap:0;border:1px solid var(--line);border-radius:12px;background:#fff;overflow:hidden}
-    .line-member{display:grid;grid-template-columns:minmax(190px,1.2fr) repeat(6,minmax(110px,1fr)) auto;gap:14px;align-items:center;padding:13px 16px;border-bottom:1px solid #edf1ed;font-size:.76rem}
+    .line-member{display:grid;grid-template-columns:minmax(190px,1.2fr) repeat(8,minmax(110px,1fr)) auto;gap:14px;align-items:center;padding:13px 16px;border-bottom:1px solid #edf1ed;font-size:.76rem}
     .line-member:last-child{border-bottom:0}.line-member:hover{background:#f6fbf6}
     .line-member strong{font-size:.82rem}.line-member span{color:var(--muted)}
     .line-heading{background:#f1f7f2;color:var(--forest);font-weight:900;text-transform:uppercase;letter-spacing:.04em;font-size:.65rem}
@@ -92,6 +98,8 @@
     .page-header p{margin:0;color:#dcefe1}
     .heritage-note{margin-bottom:20px;padding:16px;border-left:4px solid var(--gold);border-radius:8px;background:#fff9e8;color:#66551b;font-size:.84rem}
     .classical-tree{overflow:auto;padding:35px 15px 22px;border:1px solid var(--line);border-radius:13px;background:#fff}
+    .tree-tools{display:flex;align-items:center;gap:8px;margin:0 0 10px;flex-wrap:wrap}.tree-tools strong{margin-right:auto;color:var(--muted);font-size:.75rem}.tree-viewport{overflow:auto;max-width:100%;padding:4px}.tree-canvas{width:max-content;min-width:100%;transform-origin:top left}
+    .tree-export{display:flex;align-items:center;gap:8px;margin:0 0 12px;flex-wrap:wrap}.tree-export select{padding:8px 10px;border:1px solid #cad7cd;border-radius:7px;background:#fff;color:var(--forest)}
     .classical-tree ul{position:relative;display:flex;justify-content:center;margin:0;padding-top:28px;list-style:none}
     .classical-tree li{position:relative;min-width:190px;padding:27px 7px 0;text-align:center}
     .classical-tree li:before,.classical-tree li:after{position:absolute;top:0;width:50%;height:27px;border-top:1px solid #9ab8a2;content:""}
@@ -105,6 +113,7 @@
     .tree-card.siara{border-color:var(--siara);background:#e3f5fb}
     .tree-card.maina{border-color:var(--maina);background:#fff1dc}
     .tree-card.maliti{border-color:var(--maliti);background:#f6e5db}
+    .tree-card.lineage-foundation{border-color:#8b6f47;background:#f2eadb}.tree-card.lineage-siara{border-color:var(--siara);background:#e3f5fb}.tree-card.lineage-maina{border-color:#b23b54;background:#fbe7ec}
     .tree-card strong,.spouse-card strong{display:block;font-size:.78rem}
     .tree-card span,.spouse-card span{display:block;margin-top:3px;color:var(--muted);font-size:.65rem}
     .spouse-card{width:125px;padding:9px;border:1px dashed #a8b9aa;border-radius:8px;background:#f8faf8;text-align:left;cursor:pointer}
@@ -152,16 +161,26 @@
       <div class="controls">
         <input id="searchInput" class="search" type="search" placeholder="Search Clan Archive" oninput="showCatalogue(currentFilter)">
 
+        <div id="catalogueCustomSearchRow" class="inline-toolbar" aria-live="polite">
+          <input id="catalogueCustomSearchInput" type="search" placeholder="Member name" oninput="applyInlineCustomSearch()" onkeydown="if(event.key==='Enter'){applyInlineCustomSearch()}" />
+          <button class="top-button" type="button" onclick="applyInlineCustomSearch()">Apply</button>
+        </div>
+
+        <div id="treeCustomRootRow" class="inline-toolbar" aria-live="polite">
+          <select id="treeCustomRootSelect"></select>
+          <button class="top-button" type="button" onclick="applyInlineCustomTree()">Open</button>
+        </div>
+
         <div class="dropdown">
           <button class="top-button" type="button" onclick="toggleMenu('catalogueMenu')">Catalogue ▾</button>
           <div id="catalogueMenu" class="dropdown-menu">
-            <button type="button" onclick="showCatalogue('all')">All Members</button>
-            <button type="button" onclick="showCatalogue('living')">Living Members</button>
-            <button type="button" onclick="showCatalogue('deceased')">Deceased Members</button>
-            <button type="button" onclick="showCatalogue('heritage')">Foundational Ancestry</button>
-            <button type="button" onclick="showCatalogue('siara')">Siara Branch</button>
-            <button type="button" onclick="showCatalogue('maina')">Maina Branch</button>
-            <button type="button" onclick="showCatalogue('maliti')">Maliti Family</button>
+            <button type="button" onclick="navigateCatalogue('all')">All Members</button>
+            <button type="button" onclick="navigateCatalogue('living')">Living Members</button>
+            <button type="button" onclick="navigateCatalogue('deceased')">Deceased Members</button>
+            <button type="button" onclick="navigateCatalogue('heritage')">Foundational Ancestry</button>
+            <button type="button" onclick="navigateCatalogue('siara')">Siara Branch</button>
+            <button type="button" onclick="navigateCatalogue('maina')">Maina Branch</button>
+            <button type="button" onclick="navigateCatalogue('maliti')">Maliti Family</button>
             <button type="button" onclick="openCustomSearch()">Custom Search</button>
           </div>
         </div>
@@ -191,6 +210,7 @@
         <button class="top-button" type="button" onclick="showStatistics()">Statistics</button>
         <button class="top-button" type="button" onclick="openRelationship()">Relationship Finder</button>
         <button class="top-button" type="button" onclick="openBiography()">Biography</button>
+        <button class="top-button" type="button" onclick="openPrintDialog()">Print</button>
         <button class="top-button" type="button" onclick="exportCsv()">CSV Backup</button>
         <button class="top-button" type="button" onclick="document.getElementById('csvImport').click()">Import CSV</button>
         <button class="top-button" type="button" onclick="saveProjectData()">Save Project Data</button>
@@ -307,6 +327,7 @@
 
           <div class="field"><label>Title / Honorific</label><input id="honorific"></div>
           <div class="field"><label>Date of Birth</label><input id="dob" type="date"></div>
+          <div class="field"><label>Place of Birth</label><input id="placeOfBirth"></div>
           <div class="field"><label>Historical Period</label><input id="birthPeriod" placeholder="Example: c. 1900"></div>
 
           <div class="field">
@@ -344,12 +365,18 @@
 
           <div class="field">
             <label>Mother Profile</label>
+            <small class="field-help">Record the child's mother separately. A spouse is not automatically a parent.</small>
             <select id="motherId"></select>
           </div>
 
           <div class="field">
             <label>Spouse Profile</label>
             <select id="spouseId"></select>
+          </div>
+
+          <div class="field full">
+            <label>Sibling Profiles</label>
+            <select id="siblingIds" title="Select a sibling profile"></select>
           </div>
 
           <div class="field">
@@ -403,6 +430,10 @@
               <option>Islam</option>
               <option>Traditionalist / Indigenous Religion</option>
               <option>No Religious Affiliation</option>
+              <option>Catholic</option>
+              <option>Protestant</option>
+              <option>Lutheran</option>
+              <option>Anglican</option>
               <option>Other</option>
             </select>
           </div>
@@ -517,10 +548,18 @@
       <div class="form-grid">
         <div class="field"><label>Minimum Age</label><input id="filterMinAge" type="number" min="0"></div>
         <div class="field"><label>Maximum Age</label><input id="filterMaxAge" type="number" min="0"></div>
+        <div class="field"><label>Name</label><input id="filterName" placeholder="Search names"></div>
         <div class="field"><label>Age Category</label><select id="filterAgeCategory"><option value="">Any</option></select></div>
         <div class="field"><label>Sex</label><select id="filterSex"><option value="">Any</option><option>Male</option><option>Female</option><option>Not Recorded</option></select></div>
         <div class="field"><label>Life Status</label><select id="filterDeceased"><option value="">Any</option><option value="false">Living</option><option value="true">Deceased</option></select></div>
-        <div class="field"><label>Religious Affiliation</label><select id="filterReligion"><option value="">Any</option><option>Christianity</option><option>Islam</option><option>Traditionalist / Indigenous Religion</option><option>No Religious Affiliation</option><option>Other</option><option>Not Recorded</option></select></div>
+        <div class="field"><label>Education Level</label><select id="filterEducation"><option value="">Any</option><option>Not Recorded</option><option>Primary Education</option><option>Secondary Education</option><option>Certificate</option><option>Diploma</option><option>Bachelor Degree</option><option>Master Degree</option><option>PhD / Doctorate</option><option>Professor</option></select></div>
+        <div class="field"><label>Place of Birth</label><input id="filterPlaceOfBirth" placeholder="Contains text"></div>
+        <div class="field"><label>Father Name</label><select id="filterFatherId"><option value="">Any</option></select></div>
+        <div class="field"><label>Mother Name</label><select id="filterMotherId"><option value="">Any</option></select></div>
+        <div class="field"><label>Minimum Age at Death</label><input id="filterMinDeathAge" type="number" min="0"></div>
+        <div class="field"><label>Maximum Age at Death</label><input id="filterMaxDeathAge" type="number" min="0"></div>
+        <div class="field"><label>Marriage Status</label><select id="filterMaritalStatus"><option value="">Any</option><option>Not Recorded</option><option>Single</option><option>Married</option><option>Widowed</option><option>Separated</option></select></div>
+        <div class="field"><label>Religious Affiliation</label><select id="filterReligion"><option value="">Any</option><option>Christianity</option><option>Islam</option><option>Traditionalist / Indigenous Religion</option><option>No Religious Affiliation</option><option>Catholic</option><option>Protestant</option><option>Lutheran</option><option>Anglican</option><option>Other</option><option>Not Recorded</option></select></div>
         <div class="field"><label>Denomination</label><select id="filterDenomination"><option value="">Any</option><option>Catholic</option><option>Protestant</option><option>Lutheran</option><option>Anglican</option><option>Presbyterian</option><option>Methodist</option><option>Baptist</option><option>Orthodox</option><option>Other</option><option>Not Recorded</option></select></div>
         <div class="field"><label>Branch</label><select id="filterBranch"><option value="">Any</option><option value="heritage">Foundational Ancestry</option><option value="siara">Siara Branch</option><option value="maina">Maina Branch</option><option value="maliti">Maliti Family</option></select></div>
       </div>
@@ -528,13 +567,63 @@
     </div>
   </section>
 
+  <section id="printModal" class="modal">
+    <div class="modal-box" style="max-width:620px">
+      <div class="modal-head"><h2>Print / Export</h2><button class="close" type="button" onclick="closeModal('printModal')">×</button></div>
+      <div class="field">
+        <label>What to print</label>
+        <select id="printTarget">
+          <option value="current">Selected View</option>
+          <option value="catalogue">Catalogue / Cards</option>
+          <option value="tree">Family Tree</option>
+        </select>
+      </div>
+      <div class="form-grid">
+        <div class="field"><label>Orientation</label><select id="printOrientation"><option value="portrait">Portrait</option><option value="landscape">Landscape</option></select></div>
+        <div class="field"><label>Scale</label><input id="printScale" type="number" min="0.5" max="2" step="0.1" value="1"></div>
+      </div>
+      <div class="modal-actions">
+        <button class="button secondary" type="button" onclick="closeModal('printModal')">Cancel</button>
+        <button class="button primary" type="button" onclick="openPrintPreview()">Print Preview</button>
+      </div>
+    </div>
+  </section>
+
   <script>
     var STORAGE_KEY = "siaraMainaClanRecordsUpdated";
+    var SETTINGS_KEY = "siaraMainaClanSettings";
     var currentFilter = "all";
     var viewStyle = "card";
     var showSpouseRecords = true;
     var customQuery = "";
     var customFilter = {};
+
+    function loadStoredSettings() {
+      try {
+        var saved = JSON.parse(localStorage.getItem(SETTINGS_KEY) || "{}");
+        if (saved.viewStyle === "line" || saved.viewStyle === "card") viewStyle = saved.viewStyle;
+        if (typeof saved.showSpouseRecords === "boolean") showSpouseRecords = saved.showSpouseRecords;
+        if (saved.currentFilter) currentFilter = saved.currentFilter;
+      } catch (error) {
+        // Ignore storage issues until user interacts.
+      }
+    }
+
+    function saveStoredSettings() {
+      try {
+        localStorage.setItem(SETTINGS_KEY, JSON.stringify({
+          viewStyle: viewStyle,
+          showSpouseRecords: showSpouseRecords,
+          currentFilter: currentFilter,
+          customFilter: customFilter,
+          customQuery: customQuery
+        }));
+      } catch (error) {
+        // Ignore storage issues when browser storage is unavailable.
+      }
+    }
+
+    loadStoredSettings();
 
     var defaultRecords = [
       {
@@ -683,12 +772,11 @@
       if (record && record.deceased && !record.dod) return "Historical / Unknown";
       var age = calculateAge(record, record && record.deceased ? record.dod : "");
       if (age === null) return "Historical / Unknown";
-      if (age < 2) return "Infant (0-1)";
-      if (age < 10) return "Child (2-9)";
-      if (age < 20) return "Adolescent (10-19)";
-      if (age < 25) return "Young Adult (20-24)";
-      if (age < 60) return "Adult (25-59)";
-      return "Older Adult (60+)";
+      if (age <= 1) return "Infant (0-1)";
+      if (age <= 9) return "Child (2-9)";
+      if (age <= 19) return "Adolescent (10-19)";
+      if (age <= 59) return "Adult / Youth (20-59)";
+      return "Elderly (60+)";
     }
 
     function findRecord(id) {
@@ -709,6 +797,40 @@
     function linkedName(id) {
       var linked = findRecord(id);
       return escapeHtml(linked ? fullName(linked) : "Not Recorded");
+    }
+
+    function linkedNames(ids) {
+      var list = Array.isArray(ids) ? ids : [];
+      var names = list.map(function(id) { return findRecord(id); }).filter(Boolean).map(fullName);
+      return escapeHtml(names.length ? names.join(", ") : "Not Recorded");
+    }
+
+    function siblingRecords(record) {
+      if (!record) return [];
+      var explicitIds = Array.isArray(record.siblingIds) ? record.siblingIds : [];
+      return records.filter(function(candidate) {
+        if (candidate.id === record.id) return false;
+        var sharesFather = record.fatherId && candidate.fatherId && record.fatherId === candidate.fatherId;
+        var sharesMother = record.motherId && candidate.motherId && record.motherId === candidate.motherId;
+        var explicitlyLinked = explicitIds.indexOf(candidate.id) !== -1 ||
+          (Array.isArray(candidate.siblingIds) && candidate.siblingIds.indexOf(record.id) !== -1);
+        return sharesFather || sharesMother || explicitlyLinked;
+      });
+    }
+
+    function siblingNames(record) {
+      var names = siblingRecords(record).map(fullName);
+      return escapeHtml(names.length ? names.join(", ") : "Not Recorded");
+    }
+    function reconcileSiblingParents() {
+      var changed = false;
+      records.forEach(function(record) {
+        siblingRecords(record).forEach(function(sibling) {
+          if (!record.fatherId && sibling.fatherId) { record.fatherId = sibling.fatherId; changed = true; }
+          if (!record.motherId && sibling.motherId) { record.motherId = sibling.motherId; changed = true; }
+        });
+      });
+      return changed;
     }
 
     function clanMemberNumber(record) {
@@ -749,6 +871,14 @@
       return "Foundational Ancestry";
     }
 
+    function lineageClass(record) {
+      if (!record) return "lineage-foundation";
+      var ancestors = ancestorMap(record.id);
+      if (record.id === "siara" || ancestors.siara !== undefined) return "lineage-siara";
+      if (record.id === "maina" || ancestors.maina !== undefined) return "lineage-maina";
+      return "lineage-foundation";
+    }
+
     function ageAtDeath(record) {
       var years = calculateAge(record, record && record.dod);
       return years === null ? "" : years;
@@ -775,6 +905,61 @@
 
       var other = id === "treeMenu" ? "catalogueMenu" : "treeMenu";
       document.getElementById(other).classList.remove("open");
+
+      if (id === "catalogueMenu") {
+        document.getElementById("treeCustomRootRow").classList.remove("visible");
+      }
+      if (id === "treeMenu") {
+        document.getElementById("catalogueCustomSearchRow").classList.remove("visible");
+      }
+    }
+
+    function applyInlineCustomSearch() {
+      var value = document.getElementById("catalogueCustomSearchInput").value.trim();
+      customQuery = value;
+      document.getElementById("searchInput").value = value;
+      showCatalogue("all");
+    }
+
+    function navigateCatalogue(filter) {
+      customQuery = "";
+      document.getElementById("searchInput").value = "";
+      document.getElementById("catalogueCustomSearchInput").value = "";
+      document.getElementById("catalogueCustomSearchRow").classList.remove("visible");
+      showCatalogue(filter || "all");
+    }
+
+    function toggleCatalogueCustomSearch() {
+      var row = document.getElementById("catalogueCustomSearchRow");
+      row.classList.toggle("visible");
+      document.getElementById("treeCustomRootRow").classList.remove("visible");
+      if (row.classList.contains("visible")) {
+        var input = document.getElementById("catalogueCustomSearchInput");
+        input.focus();
+        if (!input.value) {
+          input.value = document.getElementById("searchInput").value || "";
+        }
+      } else {
+        customQuery = "";
+        document.getElementById("searchInput").value = "";
+        showCatalogue(currentFilter);
+      }
+    }
+
+    function applyInlineCustomTree() {
+      var rootId = document.getElementById("treeCustomRootSelect").value;
+      if (!rootId) return;
+      showTree("custom", rootId);
+      document.getElementById("treeCustomRootRow").classList.remove("visible");
+    }
+
+    function toggleTreeCustomView() {
+      var row = document.getElementById("treeCustomRootRow");
+      row.classList.toggle("visible");
+      document.getElementById("catalogueCustomSearchRow").classList.remove("visible");
+      if (row.classList.contains("visible")) {
+        populateMemberSelect("treeCustomRootSelect");
+      }
     }
 
     function updateMetrics() {
@@ -798,7 +983,7 @@
         return escapeHtml(child.firstName || fullName(child));
       }).join(", ");
       return `
-        <article class="profile ${record.branchType}">
+        <article class="profile ${record.branchType} ${lineageClass(record)}">
           <div class="profile-body">
             <span class="member-number">${clanMemberNumber(record)}</span>
             <div class="profile-top">
@@ -823,6 +1008,8 @@
               <span><strong>Father:</strong> ${linkedName(record.fatherId)}</span>
               <span><strong>Mother:</strong> ${linkedName(record.motherId)}</span>
               <span><strong>Spouse:</strong> ${spouseText}</span>
+              <span><strong>Siblings:</strong> ${siblingNames(record)}</span>
+              <span><strong>Place of Birth:</strong> ${escapeHtml(record.placeOfBirth || "Not Recorded")}</span>
               <span><strong>Education:</strong> ${escapeHtml(record.education || "Not Recorded")}</span>
               <span><strong>Children (${children.length}):</strong> ${childNames || "None Recorded"}</span>
               ${record.deceased ? '<span><strong>Age at Death:</strong> ' + escapeHtml(ageAtDeath(record) || record.deathAge || "Not Recorded") + '</span>' : ""}
@@ -848,18 +1035,19 @@
         <span>${escapeHtml(ageCategory(record))}</span>
         <span>${escapeHtml(record.sex || "Not Recorded")}</span>
         <span>${escapeHtml(record.religion || "Not Recorded")}</span>
-        <span>Father: ${linkedName(record.fatherId)}<br>Mother: ${linkedName(record.motherId)}<br>Spouse: ${spouseText}</span>
+        <span>Father: ${linkedName(record.fatherId)}<br>Mother: ${linkedName(record.motherId)}<br>Spouse: ${spouseText}<br>Siblings: ${siblingNames(record)}</span>
         <span>${escapeHtml(record.occupation || "Not Recorded")}</span>
         <span>Education: ${escapeHtml(record.education || "Not Recorded")}</span>
+        <span>Born: ${escapeHtml(record.placeOfBirth || "Not Recorded")}</span>
         ${record.deceased ? '<span>Age at Death: ' + escapeHtml(ageAtDeath(record) || record.deathAge || "Not Recorded") + '<br>Cause: ' + escapeHtml(record.causeOfDeath || "Not Recorded") + '</span>' : '<span></span>'}
         <button class="link-button" type="button" onclick="editRecord('${record.id}')">Open</button>
       </div>`;
     }
 
-    function renderCatalogue(recordsToRender) {
+    function renderCatalogue(recordsToRender, forceCards) {
       if (!recordsToRender.length) return '<div class="empty">No profiles match this selection.</div>';
-      if (viewStyle === "line") {
-        return '<section class="line-view"><div class="line-member line-heading"><span>Member</span><span>Age Category</span><span>Sex</span><span>Religion</span><span>Family Links</span><span>Occupation</span><span>Education</span><span></span></div>' +
+      if (viewStyle === "line" && !forceCards) {
+        return '<section class="line-view"><div class="line-member line-heading"><span>Member</span><span>Age Category</span><span>Sex</span><span>Religion</span><span>Family Links</span><span>Occupation</span><span>Education</span><span>Place of Birth</span><span>Life Details</span><span></span></div>' +
           recordsToRender.map(function(record) {
             var spouse = showSpouseRecords && findRecord(record.spouseId);
             return lineMember(record) + (spouse ? lineMember(spouse, "spouse-line") : "");
@@ -869,15 +1057,27 @@
     }
 
     function matchesCustomFilter(record) {
+      var filter = customFilter || {};
+      var value = function(key) { return filter[key] === undefined || filter[key] === null ? "" : String(filter[key]).trim(); };
       var age = calculateAge(record, record.deceased ? record.dod : "");
-      if (customFilter.minAge !== "" && (age === null || age < Number(customFilter.minAge))) return false;
-      if (customFilter.maxAge !== "" && (age === null || age > Number(customFilter.maxAge))) return false;
-      if (customFilter.ageCategory && ageCategory(record) !== customFilter.ageCategory) return false;
-      if (customFilter.sex && record.sex !== customFilter.sex) return false;
-      if (customFilter.deceased !== "" && String(record.deceased) !== customFilter.deceased) return false;
-      if (customFilter.religion && (record.religion || "Not Recorded") !== customFilter.religion) return false;
-      if (customFilter.denomination && (record.denomination || "Not Recorded") !== customFilter.denomination) return false;
-      if (customFilter.branch && record.branchType !== customFilter.branch) return false;
+      var deathAgeValue = record.deceased ? (ageAtDeath(record) || record.deathAge) : "";
+      var deathAge = deathAgeValue === "" ? null : Number(deathAgeValue);
+      if (value("name") && fullName(record).toLowerCase().indexOf(value("name").toLowerCase()) === -1) return false;
+      if (value("minAge") && (age === null || age < Number(value("minAge")))) return false;
+      if (value("maxAge") && (age === null || age > Number(value("maxAge")))) return false;
+      if (value("minDeathAge") && (deathAge === null || isNaN(deathAge) || deathAge < Number(value("minDeathAge")))) return false;
+      if (value("maxDeathAge") && (deathAge === null || isNaN(deathAge) || deathAge > Number(value("maxDeathAge")))) return false;
+      if (value("ageCategory") && ageCategory(record) !== value("ageCategory")) return false;
+      if (value("sex") && record.sex !== value("sex")) return false;
+      if (value("deceased") && String(record.deceased) !== value("deceased")) return false;
+      if (value("education") && (record.education || "Not Recorded") !== value("education")) return false;
+      if (value("placeOfBirth") && (record.placeOfBirth || "").toLowerCase().indexOf(value("placeOfBirth").toLowerCase()) === -1) return false;
+      if (value("fatherId") && record.fatherId !== value("fatherId")) return false;
+      if (value("motherId") && record.motherId !== value("motherId")) return false;
+      if (value("maritalStatus") && (record.maritalStatus || "Not Recorded") !== value("maritalStatus")) return false;
+      if (value("religion") && (record.religion || "Not Recorded") !== value("religion")) return false;
+      if (value("denomination") && (record.denomination || "Not Recorded") !== value("denomination")) return false;
+      if (value("branch") && record.branchType !== value("branch")) return false;
       return true;
     }
 
@@ -895,12 +1095,15 @@
       var filtered = records.filter(function(record) {
         var matchesFilter =
           currentFilter === "all" ||
+          currentFilter === "custom" ||
           (currentFilter === "living" && !record.deceased) ||
           (currentFilter === "deceased" && record.deceased) ||
           record.branchType === currentFilter;
 
         var searchable = [
           fullName(record),
+          fullName(findRecord(record.fatherId)),
+          fullName(findRecord(record.motherId)),
           record.occupation,
           record.location,
           record.honorific,
@@ -928,7 +1131,7 @@
         filtered.length + " profile(s) displayed.";
 
       document.getElementById("catalogueWorkspace").innerHTML = renderCatalogue(filtered);
-
+      saveStoredSettings();
       updateMetrics();
       window.scrollTo(0, 0);
     }
@@ -942,7 +1145,7 @@
     function treeCard(record) {
       if (!record) return "";
       return `
-        <div class="tree-card ${record.branchType}" onclick="editRecord('${record.id}')">
+        <div class="tree-card ${record.branchType} ${lineageClass(record)}" onclick="editRecord('${record.id}')">
           <strong>${escapeHtml(fullName(record))}</strong>
           <span>${escapeHtml(record.honorific || "Clan Member")}</span>
           <span>${escapeHtml(record.birthPeriod || record.dob || "Date Not Recorded")}</span>
@@ -1037,31 +1240,134 @@
       document.getElementById("treeTitle").textContent = title;
 
       document.getElementById("treeWorkspace").innerHTML = `
-        <div class="classical-tree">
-          <ul>
-            <li>
-              <div class="couple">
-                ${treeCard(root)}
-                ${spouseCard(root)}
-              </div>
-              ${buildTree(root.id, filter)}
-            </li>
-          </ul>
+        <div class="tree-tools">
+          <strong>Tree view: <span id="treeZoomLabel">100%</span></strong>
+          <button class="button secondary" type="button" onclick="adjustTreeZoom(-0.1)">Zoom Out</button>
+          <button class="button secondary" type="button" onclick="adjustTreeZoom(0.1)">Zoom In</button>
+          <button class="button secondary" type="button" onclick="resetTreeZoom()">Reset</button>
+          <button class="button primary" type="button" onclick="fitTreeToWidth()">Fit to Width</button>
+        </div>
+        <div class="tree-export">
+          <label for="treeExportFormat"><strong>Export tree</strong></label>
+          <select id="treeExportFormat">
+            <option value="png">PNG image</option>
+            <option value="jpg">JPG image</option>
+            <option value="svg">SVG document</option>
+            <option value="html">HTML document</option>
+            <option value="pdf">PDF / Print</option>
+          </select>
+          <button class="button secondary" type="button" onclick="exportTree(document.getElementById('treeExportFormat').value)">Export</button>
+        </div>
+        <div id="treeViewport" class="tree-viewport">
+          <div id="treeCanvas" class="tree-canvas">
+            <div class="classical-tree">
+              <ul>
+                <li>
+                  <div class="couple">
+                    ${treeCard(root)}
+                    ${spouseCard(root)}
+                  </div>
+                  ${buildTree(root.id, filter)}
+                </li>
+              </ul>
+            </div>
+          </div>
         </div>
       `;
 
+      resetTreeZoom();
+
       window.scrollTo(0, 0);
+    }
+
+    function setTreeZoom(value) {
+      var canvas = document.getElementById("treeCanvas");
+      var label = document.getElementById("treeZoomLabel");
+      if (!canvas || !label) return;
+      var zoom = Math.max(0.25, Math.min(1.5, value));
+      canvas.style.zoom = zoom;
+      label.textContent = Math.round(zoom * 100) + "%";
+    }
+
+    function adjustTreeZoom(delta) {
+      var label = document.getElementById("treeZoomLabel");
+      var current = label ? parseInt(label.textContent, 10) / 100 : 1;
+      setTreeZoom(current + delta);
+    }
+
+    function resetTreeZoom() {
+      setTreeZoom(1);
+    }
+
+    function fitTreeToWidth() {
+      var viewport = document.getElementById("treeViewport");
+      var canvas = document.getElementById("treeCanvas");
+      if (!viewport || !canvas) return;
+      setTreeZoom(Math.min(1, viewport.clientWidth / canvas.scrollWidth));
+    }
+
+    function downloadFile(contents, filename, type) {
+      var isDataUrl = typeof contents === "string" && contents.indexOf("data:") === 0;
+      var url = isDataUrl ? contents : URL.createObjectURL(new Blob([contents], { type:type }));
+      var link = document.createElement("a");
+      link.href = url;
+      link.download = filename;
+      link.click();
+      if (!isDataUrl) setTimeout(function() { URL.revokeObjectURL(url); }, 500);
+    }
+
+    function exportTree(format) {
+      var tree = document.querySelector("#treeCanvas .classical-tree");
+      if (!tree) return;
+      if (format === "pdf") {
+        document.getElementById("printTarget").value = "tree";
+        openPrintDialog();
+        return;
+      }
+
+      var title = document.getElementById("treeTitle").textContent.trim() || "SiaraMaina Clan Tree";
+      var width = Math.max(900, tree.scrollWidth || tree.offsetWidth);
+      var height = Math.max(500, tree.scrollHeight || tree.offsetHeight);
+      var styles = document.querySelector("style").textContent;
+      var treeMarkup = tree.outerHTML.replace(/onclick="[^"]*"/g, "");
+      var svg = '<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="' + width + '" height="' + height + '" viewBox="0 0 ' + width + ' ' + height + '"><foreignObject width="100%" height="100%"><div xmlns="http://www.w3.org/1999/xhtml"><style>' + styles + '</style>' + treeMarkup + '</div></foreignObject></svg>';
+
+      if (format === "svg") {
+        downloadFile(svg, title.replace(/[^a-z0-9]+/gi, "-").toLowerCase() + ".svg", "image/svg+xml");
+        return;
+      }
+      if (format === "html") {
+        downloadFile("<!doctype html><html><head><meta charset=\"utf-8\"><title>" + escapeHtml(title) + "</title><style>" + styles + "</style></head><body><h1>" + escapeHtml(title) + "</h1>" + treeMarkup + "</body></html>", title.replace(/[^a-z0-9]+/gi, "-").toLowerCase() + ".html", "text/html");
+        return;
+      }
+
+      var image = new Image();
+      image.onload = function() {
+        var canvas = document.createElement("canvas");
+        canvas.width = width * 2;
+        canvas.height = height * 2;
+        var context = canvas.getContext("2d");
+        context.fillStyle = "#ffffff";
+        context.fillRect(0, 0, canvas.width, canvas.height);
+        context.drawImage(image, 0, 0, canvas.width, canvas.height);
+        var extension = format === "jpg" ? "jpg" : "png";
+        var mime = extension === "jpg" ? "image/jpeg" : "image/png";
+        downloadFile(canvas.toDataURL(mime, .95), title.replace(/[^a-z0-9]+/gi, "-").toLowerCase() + "." + extension, mime);
+      };
+      image.src = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(svg);
     }
 
     function setViewStyle(style) {
       viewStyle = style === "line" ? "line" : "card";
       document.getElementById("viewMenu").classList.remove("open");
+      saveStoredSettings();
       showCatalogue(currentFilter);
     }
 
     function toggleSpouses() {
       showSpouseRecords = !showSpouseRecords;
       document.getElementById("spouseToggle").textContent = showSpouseRecords ? "Hide Spouses" : "Show Spouses";
+      saveStoredSettings();
       if (document.getElementById("treePage").classList.contains("active")) {
         showTree(window.currentTreeType || "clan", window.currentTreeRoot);
       } else if (document.getElementById("cataloguePage").classList.contains("active")) {
@@ -1071,21 +1377,36 @@
 
     function openCustomSearch() {
       document.getElementById("catalogueMenu").classList.remove("open");
-      document.getElementById("customSearchInput").value = "";
-      document.getElementById("customSearchResults").innerHTML = "Enter a search term to find members.";
-      document.getElementById("customSearchModal").classList.add("open");
+      var row = document.getElementById("catalogueCustomSearchRow");
+      if (!row.classList.contains("visible")) toggleCatalogueCustomSearch();
+      document.getElementById("catalogueCustomSearchInput").value = document.getElementById("searchInput").value || "";
+      customQuery = document.getElementById("catalogueCustomSearchInput").value.trim();
+      showCatalogue("all");
+      document.getElementById("catalogueCustomSearchInput").focus();
     }
 
     function runCustomSearch() {
       var query = document.getElementById("customSearchInput").value.trim().toLowerCase();
       var matches = records.filter(function(record) {
-        return [fullName(record), record.occupation, record.location, record.honorific, record.education, record.religion, record.denomination].join(" ").toLowerCase().indexOf(query) > -1;
+        return [
+          fullName(record),
+          fullName(findRecord(record.fatherId)),
+          fullName(findRecord(record.motherId)),
+          record.occupation,
+          record.location,
+          record.honorific,
+          record.education,
+          record.religion,
+          record.denomination,
+          record.placeOfBirth
+        ].join(" ").toLowerCase().indexOf(query) > -1;
       });
-      document.getElementById("customSearchResults").innerHTML = query ? renderCatalogue(matches) : "Enter a search term to find members.";
+      document.getElementById("customSearchResults").innerHTML = renderCatalogue(matches, true);
     }
 
     function openCustomTree() {
       document.getElementById("treeMenu").classList.remove("open");
+      toggleTreeCustomView();
       populateMemberSelect("customTreeMember");
       document.getElementById("customTreeModal").classList.add("open");
     }
@@ -1101,6 +1422,10 @@
       var categories = ["Historical / Unknown", "Infant (0-1)", "Child (2-9)", "Adolescent (10-19)", "Young Adult (20-24)", "Adult (25-59)", "Older Adult (60+)"];
       var select = document.getElementById("filterAgeCategory");
       select.innerHTML = '<option value="">Any</option>' + categories.map(function(category) { return '<option>' + category + '</option>'; }).join("");
+      populateMemberSelect("filterFatherId");
+      populateMemberSelect("filterMotherId");
+      document.getElementById("filterFatherId").insertAdjacentHTML("afterbegin", '<option value="" selected>Any</option>');
+      document.getElementById("filterMotherId").insertAdjacentHTML("afterbegin", '<option value="" selected>Any</option>');
       document.getElementById("customFilterModal").classList.add("open");
     }
 
@@ -1108,9 +1433,17 @@
       customFilter = {
         minAge: document.getElementById("filterMinAge").value,
         maxAge: document.getElementById("filterMaxAge").value,
+        name: document.getElementById("filterName").value.trim(),
+        minDeathAge: document.getElementById("filterMinDeathAge").value,
+        maxDeathAge: document.getElementById("filterMaxDeathAge").value,
         ageCategory: document.getElementById("filterAgeCategory").value,
         sex: document.getElementById("filterSex").value,
         deceased: document.getElementById("filterDeceased").value,
+        education: document.getElementById("filterEducation").value,
+        placeOfBirth: document.getElementById("filterPlaceOfBirth").value.trim(),
+        fatherId: document.getElementById("filterFatherId").value,
+        motherId: document.getElementById("filterMotherId").value,
+        maritalStatus: document.getElementById("filterMaritalStatus").value,
         religion: document.getElementById("filterReligion").value,
         denomination: document.getElementById("filterDenomination").value,
         branch: document.getElementById("filterBranch").value
@@ -1162,7 +1495,7 @@
 
       var textFields = [
         "firstName", "middleName", "lastName", "honorific",
-        "dob", "birthPeriod", "dod", "deathAge",
+        "dob", "placeOfBirth", "birthPeriod", "dod", "deathAge",
         "course", "occupation", "organization",
         "denomination", "phone", "whatsapp", "email",
         "location", "narrative"
@@ -1192,6 +1525,23 @@
       populateMemberSelect("fatherId", editing ? record.id : "");
       populateMemberSelect("motherId", editing ? record.id : "");
       populateMemberSelect("spouseId", editing ? record.id : "");
+
+      var siblingSelect = document.getElementById("siblingIds");
+      siblingSelect.innerHTML = '<option value="">Not Recorded</option>';
+      records
+        .slice()
+        .sort(function(a, b) { return fullName(a).localeCompare(fullName(b)); })
+        .forEach(function(member) {
+          if (member.id === (editing ? record.id : "")) return;
+          var option = document.createElement("option");
+          option.value = member.id;
+          option.textContent = fullName(member) + " — " + branchLabel(member);
+          siblingSelect.appendChild(option);
+        });
+
+      if (editing && Array.isArray(record.siblingIds) && record.siblingIds.length) {
+        siblingSelect.value = record.siblingIds[0];
+      }
 
       document.getElementById("fatherId").value = editing ? (record.fatherId || "") : "";
       document.getElementById("motherId").value = editing ? (record.motherId || "") : "";
@@ -1223,7 +1573,7 @@
 
     function profileRelationshipSummary(record) {
       if (!record) {
-        return "<strong>Family Relationships</strong><br>Add parents and spouse to create automatic family links.";
+        return "<strong>Family Relationships</strong><br>Add each parent separately. A spouse link does not create a parent link.";
       }
 
       var father = findRecord(record.fatherId);
@@ -1236,6 +1586,7 @@
         Father: ${escapeHtml(father ? fullName(father) : "Not Recorded")}<br>
         Mother: ${escapeHtml(mother ? fullName(mother) : "Not Recorded")}<br>
         Spouse: ${escapeHtml(spouse ? fullName(spouse) : "Not Recorded")}<br>
+        Siblings: ${siblingNames(record)}<br>
         Children: ${escapeHtml(children.length ? children.map(fullName).join(", ") : "No Linked Children")}
       `;
     }
@@ -1255,6 +1606,7 @@
         honorific: document.getElementById("honorific").value.trim(),
         dob: document.getElementById("dob").value,
         birthPeriod: document.getElementById("birthPeriod").value.trim(),
+        placeOfBirth: document.getElementById("placeOfBirth").value.trim(),
         deceased: document.getElementById("deceased").value === "true",
         dod: document.getElementById("dod").value,
         deathAge: "",
@@ -1262,6 +1614,7 @@
         fatherId: document.getElementById("fatherId").value,
         motherId: document.getElementById("motherId").value,
         spouseId: document.getElementById("spouseId").value,
+        siblingIds: document.getElementById("siblingIds").value ? [document.getElementById("siblingIds").value] : [],
         maritalStatus: document.getElementById("maritalStatus").value,
         education: document.getElementById("education").value,
         course: document.getElementById("course").value.trim(),
@@ -1280,11 +1633,20 @@
 
       record.deathAge = ageAtDeath(record);
 
-      var selectedFather = findRecord(record.fatherId);
-      var selectedMother = findRecord(record.motherId);
-      if (selectedFather && !record.motherId && selectedFather.spouseId) record.motherId = selectedFather.spouseId;
-      if (selectedMother && !record.fatherId && selectedMother.spouseId) record.fatherId = selectedMother.spouseId;
-
+      var selectedSibling = findRecord(record.siblingIds[0]);
+      if (selectedSibling) {
+        if (!record.fatherId && selectedSibling.fatherId) record.fatherId = selectedSibling.fatherId;
+        if (!record.motherId && selectedSibling.motherId) record.motherId = selectedSibling.motherId;
+        if ((!record.fatherId || !record.motherId) && Array.isArray(selectedSibling.siblingIds)) {
+          selectedSibling.siblingIds.some(function(siblingId) {
+            var sibling = findRecord(siblingId);
+            if (!sibling) return false;
+            if (!record.fatherId && sibling.fatherId) record.fatherId = sibling.fatherId;
+            if (!record.motherId && sibling.motherId) record.motherId = sibling.motherId;
+            return !!(record.fatherId && record.motherId);
+          });
+        }
+      }
       var index = records.findIndex(function(item) {
         return item.id === id;
       });
@@ -1308,6 +1670,15 @@
         }
       }
 
+      records.forEach(function(member) {
+        if (!Array.isArray(member.siblingIds)) member.siblingIds = [];
+        if (member.id === record.id) return;
+        var selected = record.siblingIds.indexOf(member.id) !== -1;
+        var position = member.siblingIds.indexOf(record.id);
+        if (selected && position === -1) member.siblingIds.push(record.id);
+        if (!selected && position !== -1) member.siblingIds.splice(position, 1);
+      });
+
       saveRecords();
       closeModal("profileModal");
       showCatalogue("all");
@@ -1329,6 +1700,7 @@
         if (item.fatherId === id) item.fatherId = "";
         if (item.motherId === id) item.motherId = "";
         if (item.spouseId === id) item.spouseId = "";
+        if (Array.isArray(item.siblingIds)) item.siblingIds = item.siblingIds.filter(function(siblingId) { return siblingId !== id; });
       });
 
       saveRecords();
@@ -1419,6 +1791,73 @@
       );
     }
 
+    function areSiblings(first, second) {
+      if (!first || !second) return false;
+      return siblingRecords(first).some(function(record) { return record.id === second.id; });
+    }
+
+    function inLawTitle(record) {
+      return genderedTerm(record, "brother-in-law", "sister-in-law", "sibling-in-law");
+    }
+
+    function inLawParentTitle(record) {
+      return genderedTerm(record, "father-in-law", "mother-in-law", "parent-in-law");
+    }
+
+    function descendantTitle(record, distance) {
+      if (distance === 1) return genderedTerm(record, "son", "daughter", "child");
+      var prefix = distance === 2 ? "grand" : Array(distance - 2).fill("great-").join("") + "grand";
+      return prefix + genderedTerm(record, "son", "daughter", "child");
+    }
+
+    function relationshipDescription(first, second) {
+      var firstName = fullName(first);
+      var secondName = fullName(second);
+      if (first.spouseId === second.id || second.spouseId === first.id) return firstName + " and " + secondName + " are spouses";
+      if (areSiblings(first, second)) return firstName + " and " + secondName + " are siblings";
+
+      var firstSpouse = findRecord(first.spouseId);
+      var secondSpouse = findRecord(second.spouseId);
+      if (firstSpouse && areSiblings(firstSpouse, second)) return secondName + " is the in-law of " + firstName;
+      if (secondSpouse && areSiblings(secondSpouse, first)) return firstName + " is the in-law of " + secondName;
+
+      var firstSpouseParents = [firstSpouse && findRecord(firstSpouse.fatherId), firstSpouse && findRecord(firstSpouse.motherId)].filter(Boolean);
+      var secondSpouseParents = [secondSpouse && findRecord(secondSpouse.fatherId), secondSpouse && findRecord(secondSpouse.motherId)].filter(Boolean);
+      if (firstSpouseParents.some(function(parent) { return parent.id === second.id; })) return secondName + " is the " + inLawParentTitle(second) + " of " + firstName;
+      if (secondSpouseParents.some(function(parent) { return parent.id === first.id; })) return firstName + " is the " + inLawParentTitle(first) + " of " + secondName;
+
+      var firstAncestors = ancestorMap(first.id);
+      var secondAncestors = ancestorMap(second.id);
+      if (firstAncestors[second.id] > 0) return secondName + " is the " + ancestorTitle(second, firstAncestors[second.id]) + " of " + firstName;
+      if (secondAncestors[first.id] > 0) return secondName + " is the " + descendantTitle(second, secondAncestors[first.id]) + " of " + firstName;
+
+      var sharedAncestor = null;
+      var shortestDistance = Infinity;
+      Object.keys(firstAncestors).forEach(function(id) {
+        if (id !== first.id && id !== second.id && secondAncestors[id] !== undefined) {
+          var distance = firstAncestors[id] + secondAncestors[id];
+          if (distance < shortestDistance) {
+            sharedAncestor = id;
+            shortestDistance = distance;
+          }
+        }
+      });
+      if (!sharedAncestor) return "No direct relationship could be calculated from the recorded family links";
+
+      var firstDistance = firstAncestors[sharedAncestor];
+      var secondDistance = secondAncestors[sharedAncestor];
+      if (firstDistance === 2 && secondDistance === 1) return secondName + " is the " + genderedTerm(second, "uncle", "aunt", "aunt/uncle") + " of " + firstName;
+      if (firstDistance === 1 && secondDistance === 2) return secondName + " is the " + genderedTerm(second, "nephew", "niece", "niece/nephew") + " of " + firstName;
+
+      var cousinLevel = Math.min(firstDistance, secondDistance) - 1;
+      var labels = {1:"first", 2:"second", 3:"third", 4:"fourth"};
+      var relationship = (labels[cousinLevel] || cousinLevel + "th") + " cousins";
+      var removed = Math.abs(firstDistance - secondDistance);
+      if (removed === 1) relationship += ", once removed";
+      if (removed === 2) relationship += ", twice removed";
+      return firstName + " and " + secondName + " are " + relationship;
+    }
+
     function openRelationship() {
       populateMemberSelect("personA");
       populateMemberSelect("personB");
@@ -1440,11 +1879,13 @@
       }
 
       if (personA.id === personB.id) {
-        result.innerHTML =
-          "<strong>" + escapeHtml(fullName(personA)) +
-          "</strong> is the same selected member.";
+        result.innerHTML = "<strong>Same member</strong>";
         return;
       }
+
+      var description = relationshipDescription(personA, personB);
+      result.innerHTML = "<strong>" + escapeHtml(description) + ".</strong>";
+      return;
 
       if (
         personA.spouseId === personB.id ||
@@ -1455,6 +1896,22 @@
           "</strong> and <strong>" +
           escapeHtml(fullName(personB)) +
           "</strong> are spouses.";
+        return;
+      }
+
+      if (areSiblings(personA, personB)) {
+        result.innerHTML = "<strong>" + escapeHtml(fullName(personA)) + "</strong> and <strong>" + escapeHtml(fullName(personB)) + "</strong> are siblings.";
+        return;
+      }
+
+      var spouseOfB = findRecord(personB.spouseId);
+      var spouseOfA = findRecord(personA.spouseId);
+      if (spouseOfB && areSiblings(personA, spouseOfB)) {
+        result.innerHTML = "<strong>" + escapeHtml(fullName(personB)) + "</strong> is the " + inLawTitle(personB) + " of <strong>" + escapeHtml(fullName(personA)) + "</strong>.";
+        return;
+      }
+      if (spouseOfA && areSiblings(personB, spouseOfA)) {
+        result.innerHTML = "<strong>" + escapeHtml(fullName(personA)) + "</strong> is the " + inLawTitle(personA) + " of <strong>" + escapeHtml(fullName(personB)) + "</strong>.";
         return;
       }
 
@@ -1519,6 +1976,10 @@
 
       if (distanceA === 1 && distanceB === 1) {
         relationship = "siblings";
+      } else if (distanceA === 2 && distanceB === 1) {
+        relationship = genderedTerm(personB, "uncle", "aunt", "aunt/uncle") + " of " + fullName(personA);
+      } else if (distanceA === 1 && distanceB === 2) {
+        relationship = genderedTerm(personB, "nephew", "niece", "niece/nephew") + " of " + fullName(personA);
       } else {
         var cousinLevel = Math.min(distanceA, distanceB) - 1;
         var removed = Math.abs(distanceA - distanceB);
@@ -1543,7 +2004,7 @@
         "</strong> and <strong>" +
         escapeHtml(fullName(personB)) +
         "</strong> are <strong>" +
-        relationship +
+        escapeHtml(relationship) +
         "</strong>.<br><br>Closest shared ancestor: <strong>" +
         escapeHtml(fullName(findRecord(sharedAncestor))) +
         "</strong>.";
@@ -1893,6 +2354,31 @@
         </article>
 
         <article class="stat-card">
+          <h3>Marriage Status</h3>
+          ${statBars(statCounts("maritalStatus", ["Not Recorded", "Single", "Married", "Widowed", "Separated"]), "siara")}
+        </article>
+
+        <article class="stat-card">
+          <h3>Religious Affiliation</h3>
+          ${statBars(statCounts("religion", ["Not Recorded", "Christianity", "Islam", "Traditionalist / Indigenous Religion", "No Religious Affiliation"]), "gold")}
+        </article>
+
+        <article class="stat-card">
+          <h3>Family Linkage</h3>
+          ${statBars({
+            "With father or mother": records.filter(function(r) { return r.fatherId || r.motherId; }).length,
+            "With spouse": records.filter(function(r) { return r.spouseId; }).length,
+            "With sibling profiles": records.filter(function(r) { return Array.isArray(r.siblingIds) && r.siblingIds.length; }).length,
+            "With place of birth": records.filter(function(r) { return r.placeOfBirth; }).length
+          }, "siara")}
+        </article>
+
+        <article class="stat-card">
+          <h3>Birthplaces</h3>
+          ${statBars(statCounts("placeOfBirth", []), "maina") || '<p>No places of birth recorded.</p>'}
+        </article>
+
+        <article class="stat-card">
           <h3>Cause of Death</h3>
           ${statBars(statCounts("causeOfDeath", ["Not Recorded", "Natural Causes / Old Age", "Disease or Illness", "Cancer", "Accident", "Road Traffic Accident", "Childbirth-Related Cause", "Violence / Homicide", "Unknown", "Other"]), "gold")}
         </article>
@@ -1909,9 +2395,9 @@
       var fields = [
         "id", "firstName", "middleName", "lastName",
         "sex", "branchType", "honorific", "dob",
-        "birthPeriod", "deceased", "dod", "deathAge",
+        "birthPeriod", "placeOfBirth", "deceased", "dod", "deathAge",
         "causeOfDeath", "fatherId", "motherId",
-        "spouseId", "maritalStatus", "education",
+        "spouseId", "siblingIds", "maritalStatus", "education",
         "course", "employment", "occupation",
         "organization", "religion", "denomination",
         "phone", "whatsapp", "email", "location",
@@ -1922,7 +2408,10 @@
 
       records.forEach(function(record) {
         csv += fields.map(function(field) {
-          return '"' + String(record[field] || "").replace(/"/g, '""') + '"';
+          var value = record[field];
+          if (field === "siblingIds" && Array.isArray(value)) value = value.join(";");
+          if (field === "siblingIds" && value === undefined) value = "";
+          return '"' + String(value || "").replace(/"/g, '""') + '"';
         }).join(",") + "\n";
       });
 
@@ -1967,7 +2456,11 @@
           if (!row.firstName && !row.id) return;
           row.id = row.id || "member-" + Date.now() + "-" + imported;
           row.deceased = row.deceased === true || row.deceased === "true";
-          var existingIndex = records.findIndex(function(record) { return record.id === row.id; });
+          row.siblingIds = Array.isArray(row.siblingIds) ? row.siblingIds : (row.siblingIds ? String(row.siblingIds).split(";").filter(Boolean) : []);
+          var existingIndex = records.findIndex(function(record) {
+            if (record.id && row.id && record.id === row.id) return true;
+            return !!(record.firstName && row.firstName && record.firstName === row.firstName && record.dob && row.dob && record.dob === row.dob);
+          });
           if (existingIndex > -1) records[existingIndex] = Object.assign({}, records[existingIndex], row);
           else records.push(row);
           imported++;
@@ -2023,6 +2516,7 @@
           var importedRecords = Array.isArray(payload) ? payload : payload.records;
           if (!Array.isArray(importedRecords)) throw new Error("Invalid project data");
           records = importedRecords;
+          reconcileSiblingParents();
           saveRecords();
           showCatalogue("all");
           alert(records.length + " member record(s) restored successfully.");
@@ -2038,6 +2532,125 @@
       document.getElementById(id).addEventListener("input", updateAgeFields);
       document.getElementById(id).addEventListener("change", updateAgeFields);
     });
+
+    function openPrintDialog() {
+      document.getElementById("printTarget").value = document.getElementById("treePage").classList.contains("active") ? "tree" : "current";
+      document.getElementById("printModal").classList.add("open");
+    }
+
+    function getPrintableMarkup(target) {
+      var title = "SiaraMaina Clan Informatics";
+      var content = "";
+
+      if (target === "tree") {
+        if (window.currentTreeType === "clan") title = "SiaraMaina Clan Tree";
+        else if (window.currentTreeType === "siara") title = "Siara Branch";
+        else if (window.currentTreeType === "maina") title = "Maina Branch";
+        else if (window.currentTreeType === "maliti") title = "Maliti Family";
+        else if (window.currentTreeType === "custom") title = fullName(findRecord(window.currentTreeRoot)) || "Custom Family Tree";
+        else title = "Family Tree";
+        content = document.getElementById("treeWorkspace").innerHTML;
+      } else if (target === "catalogue") {
+        title = "Catalogue";
+        content = document.getElementById("catalogueWorkspace").innerHTML;
+      } else {
+        title = document.getElementById("treePage").classList.contains("active") ? "Family Tree" : "Catalogue";
+        content = document.getElementById(document.getElementById("treePage").classList.contains("active") ? "treeWorkspace" : "catalogueWorkspace").innerHTML;
+      }
+
+      return `
+        <!doctype html>
+        <html>
+          <head>
+            <meta charset="utf-8">
+            <title>${title}</title>
+            <style>
+              * { box-sizing: border-box; }
+              body { font-family: Arial, sans-serif; color: #14241b; margin: 18mm; background: white; }
+              .preview-actions { display: flex; gap: 8px; justify-content: flex-end; margin-bottom: 12px; }
+              .preview-actions button { padding: 8px 14px; border: 1px solid #cad7cd; border-radius: 6px; background: #edf6ef; color: #103d2b; font-weight: 700; cursor: pointer; }
+              @media print { .preview-actions { display: none; } }
+              .profiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; }
+              .tree-tools { display: none; }
+              .tree-export { display: none; }
+              .tree-canvas { width: auto; }
+              .profile, .tree-card, .spouse-card, .line-member, .stat-card { box-sizing: border-box; }
+              .profile { break-inside: avoid; page-break-inside: avoid; border: 1px solid #d5dfd7; border-radius: 12px; padding: 14px; overflow: hidden; }
+              .profile-top { display: flex; align-items: flex-start; gap: 12px; }
+              .portrait { display: block; width: 52px; height: 52px; max-width: 52px; max-height: 52px; flex: 0 0 52px; border-radius: 50%; object-fit: cover; object-position: center; }
+              .avatar { display: grid; place-items: center; width: 52px; height: 52px; flex: 0 0 52px; border-radius: 50%; background: #103d2b; color: #e9bf52; font-weight: 900; }
+              .profile-body { padding: 4px; }
+              .profile-footer { padding-top: 11px; }
+              .data { display: grid; gap: 7px; margin: 14px 0; font-size: 11px; }
+              .classical-tree { overflow: visible; padding: 18px 8px; border: 1px solid #d5dfd7; border-radius: 12px; background: #fff; }
+              .classical-tree ul { position: relative; display: flex; justify-content: center; margin: 0; padding-top: 28px; list-style: none; }
+              .classical-tree li { position: relative; min-width: 190px; padding: 27px 7px 0; text-align: center; }
+              .classical-tree li:before, .classical-tree li:after { position: absolute; top: 0; width: 50%; height: 27px; border-top: 2px solid #7fa38c; content: ""; }
+              .classical-tree li:before { right: 50%; border-right: 2px solid #7fa38c; }
+              .classical-tree li:after { left: 50%; border-left: 2px solid #7fa38c; }
+              .classical-tree li:only-child:before, .classical-tree li:only-child:after { display: none; }
+              .classical-tree li:first-child:before, .classical-tree li:last-child:after { border: 0; }
+              .classical-tree ul ul:before { position: absolute; top: 0; left: 50%; height: 27px; border-left: 2px solid #7fa38c; content: ""; }
+              .couple { display: flex; justify-content: center; gap: 6px; }
+              .tree-card { width: 165px; padding: 9px; border: 2px solid #e9bf52; border-radius: 8px; background: #fffdf6; text-align: left; display: inline-block; }
+              .tree-card.siara { border-color: #176d8c; background: #e3f5fb; }
+              .tree-card.maina { border-color: #98591f; background: #fff1dc; }
+              .tree-card.maliti { border-color: #713b20; background: #f6e5db; }
+              .tree-card.lineage-foundation { border-color: #8b6f47; background: #f2eadb; }
+              .tree-card.lineage-siara { border-color: #176d8c; background: #e3f5fb; }
+              .tree-card.lineage-maina { border-color: #b23b54; background: #fbe7ec; }
+              .profile.lineage-foundation { border-top-color: #8b6f47; }
+              .profile.lineage-siara { border-top-color: #176d8c; }
+              .profile.lineage-maina { border-top-color: #b23b54; }
+              .tree-card strong, .spouse-card strong { display: block; font-size: 12px; }
+              .tree-card span, .spouse-card span { display: block; margin-top: 3px; color: #64746a; font-size: 11px; }
+              .tree-card small, .spouse-card small { display: block; margin-top: 3px; color: #64746a; font-size: 10px; }
+              .spouse-card { width: 125px; padding: 9px; border: 1px dashed #a8b9aa; border-radius: 8px; background: #f8faf8; text-align: left; display: inline-block; }
+              .member-number { display: inline-block; margin-bottom: 8px; padding: 3px 7px; border-radius: 5px; background: #edf6ef; color: #103d2b; font-size: 10px; font-weight: 900; letter-spacing: .04em; }
+              .spouse-card strong:before { content: "Spouse "; }
+              @page { size: ${document.getElementById("printOrientation").value}; margin: 18mm; }
+            </style>
+          </head>
+          <body>
+            <div class="preview-actions"><button type="button" onclick="sharePreview()">Share</button><button type="button" onclick="window.print()">Print</button></div>
+            <h1>${escapeHtml(title)}</h1>
+            ${content}
+            <script>
+              function sharePreview() {
+                var shareTitle = ${JSON.stringify(title)};
+                var shareText = shareTitle + " - SiaraMaina Clan Informatics";
+                if (navigator.share) {
+                  navigator.share({ title: shareTitle, text: shareText }).catch(function() {});
+                  return;
+                }
+                var encodedText = encodeURIComponent(shareText);
+                var encodedUrl = encodeURIComponent(location.href);
+                var choice = prompt("Share by entering: email or whatsapp");
+                if (choice && choice.toLowerCase() === "email") location.href = "mailto:?subject=" + encodeURIComponent(shareTitle) + "&body=" + encodedText + "%0A" + encodedUrl;
+                if (choice && choice.toLowerCase() === "whatsapp") window.open("https://wa.me/?text=" + encodedText + "%20" + encodedUrl, "_blank");
+              }
+            <\/script>
+          </body>
+        </html>
+      `;
+    }
+
+    function openPrintPreview() {
+      var target = document.getElementById("printTarget").value;
+      var scale = Number(document.getElementById("printScale").value) || 1;
+      var win = window.open("", "_blank", "width=1200,height=900");
+      if (!win) {
+        alert("Your browser blocked the print window. Please allow pop-ups and try again.");
+        return;
+      }
+      win.document.write(getPrintableMarkup(target));
+      win.document.title = "Print Preview";
+      win.document.body.style.zoom = scale;
+      win.document.close();
+      closeModal("printModal");
+      win.focus();
+      setTimeout(function() { win.print(); }, 250);
+    }
 
     showCatalogue("all");
   </script>
