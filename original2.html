@@ -24,6 +24,7 @@
     .brand-mark{display:grid;place-items:center;width:43px;height:43px;border-radius:50%;background:var(--gold);color:var(--forest)}
     .brand small{display:block;color:#cae6cf;font-size:.59rem;letter-spacing:.1em;text-transform:uppercase}
     .controls{display:flex;align-items:center;justify-content:flex-end;gap:7px;flex-wrap:wrap;flex:1}
+    .mobile-menu-toggle{display:none}
     .search{width:180px;margin-right:auto;padding:9px 11px;border:1px solid #ffffff55;border-radius:7px;background:#ffffff12;color:#fff}
     .search::placeholder{color:#d4ebd8}
     .top-button,.button{padding:9px 12px;border:1px solid #ffffff44;border-radius:7px;background:#ffffff10;color:#fff;font-size:.76rem;font-weight:900}
@@ -142,11 +143,15 @@
       .brand{gap:8px;margin-bottom:12px;font-size:.86rem;line-height:1.25}
       .brand-mark{width:38px;height:38px}
       .brand small{font-size:.5rem;letter-spacing:.06em}
-      .controls{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));width:100%;gap:8px}
-      .search{grid-column:1/-1;width:100%;margin:0}
-      .top-button{width:100%;min-height:42px;padding:10px 8px;font-size:.7rem}
-      .dropdown{width:100%}
-      .dropdown>.top-button{width:100%}
+      .controls{display:grid;grid-template-columns:minmax(0,1fr) auto;width:100%;gap:8px}
+      .search{grid-column:1;width:100%;margin:0}
+      .mobile-menu-toggle{display:block;grid-column:2;min-width:74px;min-height:42px;padding:10px 12px;border:1px solid var(--gold);border-radius:7px;background:var(--gold);color:var(--forest);font-size:.72rem;font-weight:900}
+      .controls>.dropdown,.controls>.top-button.add,.controls>.top-button:not(.mobile-menu-toggle){display:none}
+      .controls.mobile-open{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}
+      .controls.mobile-open>.search{grid-column:1/-1}
+      .controls.mobile-open>.dropdown,.controls.mobile-open>.top-button.add,.controls.mobile-open>.top-button:not(.mobile-menu-toggle){display:block;width:100%}
+      .controls.mobile-open>.dropdown>.top-button{width:100%;min-height:42px;padding:10px 8px;font-size:.7rem}
+      .controls.mobile-open>.top-button:not(.mobile-menu-toggle){min-height:42px;padding:10px 8px;font-size:.7rem}
       .dropdown-menu{left:0;right:0;top:47px;min-width:0}
       .shell{width:calc(100% - 20px)}
       main{padding:16px 0 32px}
@@ -198,6 +203,7 @@
 
       <div class="controls">
         <input id="searchInput" class="search" type="search" placeholder="Search Clan Archive" oninput="showCatalogue(currentFilter)">
+        <button class="mobile-menu-toggle" type="button" onclick="toggleMobileMenu()" aria-expanded="false">Menu</button>
 
         <div class="dropdown">
           <button class="top-button" type="button" onclick="toggleMenu('catalogueMenu')">Catalogue ▾</button>
@@ -823,6 +829,14 @@
 
       var other = id === "treeMenu" ? "catalogueMenu" : "treeMenu";
       document.getElementById(other).classList.remove("open");
+    }
+
+    function toggleMobileMenu() {
+      var controls = document.querySelector(".controls");
+      var toggle = document.querySelector(".mobile-menu-toggle");
+      var isOpen = controls.classList.toggle("mobile-open");
+      toggle.setAttribute("aria-expanded", String(isOpen));
+      toggle.textContent = isOpen ? "Close" : "Menu";
     }
 
     function updateMetrics() {
