@@ -144,6 +144,56 @@
     .modal-actions{display:flex;justify-content:space-between;gap:10px;margin-top:20px}
     @media(max-width:1120px){.topbar-inner{display:block;padding:12px 0}.brand{margin-bottom:11px}.controls{justify-content:flex-start}.metrics{grid-template-columns:repeat(3,1fr)}.stats-grid{grid-template-columns:1fr 1fr}}
     @media(max-width:720px){.search{width:100%;margin-right:0}.metrics{grid-template-columns:1fr 1fr}.form-grid,.stats-grid{grid-template-columns:1fr}.field.full{grid-column:auto}.modal-actions{flex-direction:column}.classical-tree ul{justify-content:flex-start}.line-member{grid-template-columns:1fr 1fr;gap:5px 12px}.line-heading{display:none}}
+    @media(max-width:720px){
+      body{overflow-x:hidden}
+      .topbar-inner{width:calc(100% - 20px);padding:12px 0}
+      .brand{gap:8px;margin-bottom:12px;font-size:.86rem;line-height:1.25}
+      .brand-mark{width:38px;height:38px}
+      .brand small{font-size:.5rem;letter-spacing:.06em}
+      .controls{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));width:100%;margin:0;gap:8px}
+      .search,.inline-toolbar{grid-column:1/-1;width:100%;margin:0}
+      .inline-toolbar{min-width:0;flex-wrap:wrap}
+      .inline-toolbar input,.inline-toolbar select{min-width:0;flex:1;width:100%}
+      .top-button{width:100%;min-height:42px;padding:10px 8px;font-size:.7rem}
+      .dropdown{width:100%}
+      .dropdown>.top-button{width:100%}
+      .dropdown-menu{left:0;right:0;top:47px;min-width:0}
+      .shell{width:calc(100% - 20px)}
+      main{padding:16px 0 32px}
+      .hero{padding:24px 18px;border-radius:11px}
+      h1{font-size:2rem;line-height:1.08}
+      .hero-actions,.page-actions{display:grid;grid-template-columns:1fr;gap:8px}
+      .hero-actions .button,.page-actions .button{width:100%;min-height:44px}
+      .metrics{gap:8px;margin:14px 0}
+      .metric-button{min-width:0;padding:12px}
+      .metric-button strong{font-size:1.3rem}
+      .heading{display:block;margin:20px 0 12px}
+      .heading h2{font-size:1.25rem}
+      .profiles{grid-template-columns:1fr;gap:10px}
+      .profile-body{padding:15px}
+      .profile-footer{padding:10px 15px}
+      .page-header{margin:16px 0 12px;padding:20px 18px;border-radius:11px}
+      .page-header h1{font-size:1.7rem}
+      .classical-tree{padding:20px 8px 16px;border-radius:10px}
+      .classical-tree li{min-width:165px;padding-left:4px;padding-right:4px}
+      .tree-card{width:145px;padding:8px}
+      .spouse-card{width:108px;padding:8px}
+      .line-view{overflow-x:auto}
+      .line-member{min-width:900px}
+      .modal{padding:8px}
+      .modal-box{max-height:95vh;padding:18px 14px;border-radius:10px}
+      .modal-head{gap:10px}
+      .modal-head h2{font-size:1.2rem}
+      .field input,.field select,.field textarea{min-height:44px}
+      .tree-tools,.tree-export{align-items:stretch}
+      .tree-tools .button,.tree-export select{width:100%;min-height:42px}
+    }
+    @media(max-width:420px){
+      .metrics{grid-template-columns:1fr}
+      .hero p{font-size:.9rem}
+      .tree-card{width:132px}
+      .spouse-card{width:100px}
+    }
   </style>
 </head>
 
