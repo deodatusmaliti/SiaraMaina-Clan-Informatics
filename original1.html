@@ -99,7 +99,7 @@
     .page-header p{margin:0;color:#dcefe1}
     .heritage-note{margin-bottom:20px;padding:16px;border-left:4px solid var(--gold);border-radius:8px;background:#fff9e8;color:#66551b;font-size:.84rem}
     .classical-tree{overflow:auto;padding:35px 15px 22px;border:1px solid var(--line);border-radius:13px;background:#fff}
-    .tree-tools{display:flex;align-items:center;gap:8px;margin:0 0 10px;flex-wrap:wrap}.tree-tools strong{margin-right:auto;color:var(--muted);font-size:.75rem}.tree-viewport{overflow:auto;max-width:100%;padding:4px}.tree-canvas{width:max-content;min-width:100%;transform-origin:top left}
+    .tree-tools{display:flex;align-items:center;gap:8px;margin:0 0 10px;flex-wrap:wrap}.tree-tools strong{margin-right:auto;color:var(--muted);font-size:.75rem}.tree-viewport{height:68vh;min-height:430px;overflow:auto;max-width:100%;padding:4px;border:1px solid var(--line);border-radius:10px;background:#f8fbf8;overscroll-behavior:contain}.tree-canvas{width:max-content;min-width:100%;transform-origin:top left;padding-bottom:20px}
     .tree-export{display:flex;align-items:center;gap:8px;margin:0 0 12px;flex-wrap:wrap}.tree-export select{padding:8px 10px;border:1px solid #cad7cd;border-radius:7px;background:#fff;color:var(--forest)}
     .classical-tree ul{position:relative;display:flex;justify-content:center;margin:0;padding-top:28px;list-style:none}
     .classical-tree li{position:relative;min-width:190px;padding:27px 7px 0;text-align:center}
@@ -194,7 +194,14 @@
       .modal-head h2{font-size:1.2rem}
       .field input,.field select,.field textarea{min-height:44px}
       .tree-tools,.tree-export{align-items:stretch}
-      .tree-tools .button,.tree-export select{width:100%;min-height:42px}
+      .tree-tools .button{min-height:42px}
+      .tree-tools strong{width:100%;margin-right:0}
+      .tree-tools .button{flex:1}
+      .tree-export{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+      .tree-export label,.tree-export select{grid-column:1/-1}
+      .tree-export select,.tree-export .button{width:100%;min-height:42px}
+      .tree-viewport{height:calc(100vh - 360px);min-height:360px;padding:2px;-webkit-overflow-scrolling:touch}
+      .tree-canvas{padding:0 12px 24px}
     }
     @media(max-width:420px){
       .metrics{grid-template-columns:1fr}
@@ -1375,6 +1382,7 @@
             <option value="pdf">PDF / Print</option>
           </select>
           <button class="button secondary" type="button" onclick="exportTree(document.getElementById('treeExportFormat').value)">Export</button>
+          <button class="button primary" type="button" onclick="printTreeView()">Print</button>
         </div>
         <div id="treeViewport" class="tree-viewport">
           <div id="treeCanvas" class="tree-canvas">
@@ -1415,6 +1423,11 @@
 
     function resetTreeZoom() {
       setTreeZoom(1);
+    }
+
+    function printTreeView() {
+      document.getElementById("printTarget").value = "tree";
+      openPrintDialog();
     }
 
     function fitTreeToWidth() {
