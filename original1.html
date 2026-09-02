@@ -438,23 +438,23 @@
 
           <div class="field">
             <label>Father Profile</label>
-            <select id="fatherId"></select>
+            <select id="fatherId" onchange="handleRelationshipName(this)"></select>
           </div>
 
           <div class="field">
             <label>Mother Profile</label>
             <small class="field-help">Record the child's mother separately. A spouse is not automatically a parent.</small>
-            <select id="motherId"></select>
+            <select id="motherId" onchange="handleRelationshipName(this)"></select>
           </div>
 
           <div class="field">
             <label>Spouse Profile</label>
-            <select id="spouseId"></select>
+            <select id="spouseId" onchange="handleRelationshipName(this)"></select>
           </div>
 
           <div class="field full">
             <label>Sibling Profiles</label>
-            <select id="siblingIds" title="Select a sibling profile"></select>
+            <select id="siblingIds" title="Select a sibling profile" onchange="handleRelationshipName(this)"></select>
           </div>
 
           <div class="field">
@@ -874,9 +874,9 @@
       ].filter(Boolean).join(" ");
     }
 
-    function linkedName(id) {
+    function linkedName(id, customName) {
       var linked = findRecord(id);
-      return escapeHtml(linked ? fullName(linked) : "Not Recorded");
+      return escapeHtml(linked ? fullName(linked) : (customName || "Not Recorded"));
     }
 
     function linkedNames(ids) {
@@ -900,6 +900,7 @@
 
     function siblingNames(record) {
       var names = siblingRecords(record).map(fullName);
+      if (Array.isArray(record.siblingNames)) names = names.concat(record.siblingNames);
       return escapeHtml(names.length ? names.join(", ") : "Not Recorded");
     }
     function reconcileSiblingParents() {
@@ -1219,7 +1220,7 @@
     }
 
     function profileCard(record) {
-      var spouseText = showSpouseRecords ? linkedName(record.spouseId) : "Hidden";
+      var spouseText = showSpouseRecords ? linkedName(record.spouseId, record.spouseName) : "Hidden";
       var children = childrenOf(record.id);
       var childNames = children.map(function(child) {
         return escapeHtml(child.firstName || fullName(child));
@@ -1250,8 +1251,8 @@
             <div class="data">
               <span><strong>Sex:</strong> ${escapeHtml(record.sex)}</span>
               <span><strong>Age Category:</strong> ${escapeHtml(ageCategory(record))}</span>
-              <span><strong>Father:</strong> ${linkedName(record.fatherId)}</span>
-              <span><strong>Mother:</strong> ${linkedName(record.motherId)}</span>
+              <span><strong>Father:</strong> ${linkedName(record.fatherId, record.fatherName)}</span>
+              <span><strong>Mother:</strong> ${linkedName(record.motherId, record.motherName)}</span>
               <span><strong>Spouse:</strong> ${spouseText}</span>
               <span><strong>Siblings:</strong> ${siblingNames(record)}</span>
               <span><strong>Place of Birth:</strong> ${escapeHtml(record.placeOfBirth || "Not Recorded")}</span>
@@ -1274,13 +1275,13 @@
     }
 
     function lineMember(record, extraClass) {
-      var spouseText = showSpouseRecords ? linkedName(record.spouseId) : "Hidden";
+      var spouseText = showSpouseRecords ? linkedName(record.spouseId, record.spouseName) : "Hidden";
       return `<div class="line-member ${extraClass || ""}">
         <strong><span class="member-number">${clanMemberNumber(record)}</span>${escapeHtml(fullName(record))}</strong>
         <span>${escapeHtml(ageCategory(record))}</span>
         <span>${escapeHtml(record.sex || "Not Recorded")}</span>
         <span>${escapeHtml(record.religion || "Not Recorded")}</span>
-        <span>Father: ${linkedName(record.fatherId)}<br>Mother: ${linkedName(record.motherId)}<br>Spouse: ${spouseText}<br>Siblings: ${siblingNames(record)}</span>
+        <span>Father: ${linkedName(record.fatherId, record.fatherName)}<br>Mother: ${linkedName(record.motherId, record.motherName)}<br>Spouse: ${spouseText}<br>Siblings: ${siblingNames(record)}</span>
         <span>${escapeHtml(record.occupation || "Not Recorded")}</span>
         <span>Education: ${escapeHtml(record.education || "Not Recorded")}</span>
         <span>Born: ${escapeHtml(record.placeOfBirth || "Not Recorded")}</span>
@@ -1728,10 +1729,11 @@
       document.getElementById("deathAge").value = ageAtDeath(draft);
     }
 
-    function populateMemberSelect(id, excludeId) {
+    function populateMemberSelect(id, excludeId, customName, allowCustomName) {
       var select = document.getElementById(id);
 
       select.innerHTML = '<option value="">Not Recorded</option>';
+      select.dataset.customName = allowCustomName ? (customName || "") : "";
 
       records
         .slice()
@@ -1747,6 +1749,30 @@
             </option>
           `;
         });
+      if (allowCustomName && customName) {
+        select.insertAdjacentHTML("beforeend", '<option value="__custom_name__">' + escapeHtml(customName) + '</option>');
+        select.value = "__custom_name__";
+      }
+      if (allowCustomName) select.insertAdjacentHTML("beforeend", '<option value="__add_name__">Add name</option>');
+    }
+
+    function handleRelationshipName(select) {
+      if (select.value === "__add_name__") {
+        var name = window.prompt("Enter the name for this relationship:");
+        if (name && name.trim()) {
+          select.dataset.customName = name.trim();
+          var customOption = document.createElement("option");
+          customOption.value = "__custom_name__";
+          customOption.textContent = name.trim();
+          select.insertBefore(customOption, select.lastElementChild);
+          select.value = customOption.value;
+        } else {
+          select.value = "";
+          select.dataset.customName = "";
+        }
+      } else if (select.value !== "__custom_name__") {
+        select.dataset.customName = "";
+      }
     }
 
     function openProfile(record) {
@@ -1784,12 +1810,13 @@
       document.getElementById("storedPhoto").value = editing ? (record.photo || "") : "";
       document.getElementById("clanMemberNumber").value = editing ? clanMemberNumber(record) : "Assigned when saved";
 
-      populateMemberSelect("fatherId", editing ? record.id : "");
-      populateMemberSelect("motherId", editing ? record.id : "");
-      populateMemberSelect("spouseId", editing ? record.id : "");
+      populateMemberSelect("fatherId", editing ? record.id : "", editing ? record.fatherName : "", true);
+      populateMemberSelect("motherId", editing ? record.id : "", editing ? record.motherName : "", true);
+      populateMemberSelect("spouseId", editing ? record.id : "", editing ? record.spouseName : "", true);
 
       var siblingSelect = document.getElementById("siblingIds");
       siblingSelect.innerHTML = '<option value="">Not Recorded</option>';
+      siblingSelect.dataset.customName = editing && Array.isArray(record.siblingNames) ? (record.siblingNames[0] || "") : "";
       records
         .slice()
         .sort(function(a, b) { return fullName(a).localeCompare(fullName(b)); })
@@ -1800,14 +1827,23 @@
           option.textContent = fullName(member) + " — " + branchLabel(member);
           siblingSelect.appendChild(option);
         });
+      if (siblingSelect.dataset.customName) {
+        var customSiblingOption = document.createElement("option");
+        customSiblingOption.value = "__custom_name__";
+        customSiblingOption.textContent = siblingSelect.dataset.customName;
+        siblingSelect.appendChild(customSiblingOption);
+        siblingSelect.value = customSiblingOption.value;
+      }
+      siblingSelect.insertAdjacentHTML("beforeend", '<option value="__add_name__">Add name</option>');
 
       if (editing && Array.isArray(record.siblingIds) && record.siblingIds.length) {
         siblingSelect.value = record.siblingIds[0];
+        siblingSelect.dataset.customName = "";
       }
 
-      document.getElementById("fatherId").value = editing ? (record.fatherId || "") : "";
-      document.getElementById("motherId").value = editing ? (record.motherId || "") : "";
-      document.getElementById("spouseId").value = editing ? (record.spouseId || "") : "";
+      if (editing && record.fatherId) document.getElementById("fatherId").value = record.fatherId;
+      if (editing && record.motherId) document.getElementById("motherId").value = record.motherId;
+      if (editing && record.spouseId) document.getElementById("spouseId").value = record.spouseId;
       updateAgeFields();
 
       var preview = document.getElementById("photoPreview");
@@ -1845,9 +1881,9 @@
 
       return `
         <strong>Family Relationships</strong><br>
-        Father: ${escapeHtml(father ? fullName(father) : "Not Recorded")}<br>
-        Mother: ${escapeHtml(mother ? fullName(mother) : "Not Recorded")}<br>
-        Spouse: ${escapeHtml(spouse ? fullName(spouse) : "Not Recorded")}<br>
+        Father: ${linkedName(record.fatherId, record.fatherName)}<br>
+        Mother: ${linkedName(record.motherId, record.motherName)}<br>
+        Spouse: ${linkedName(record.spouseId, record.spouseName)}<br>
         Siblings: ${siblingNames(record)}<br>
         Children: ${escapeHtml(children.length ? children.map(fullName).join(", ") : "No Linked Children")}
       `;
@@ -1873,10 +1909,14 @@
         dod: document.getElementById("dod").value,
         deathAge: "",
         causeOfDeath: document.getElementById("causeOfDeath").value,
-        fatherId: document.getElementById("fatherId").value,
-        motherId: document.getElementById("motherId").value,
-        spouseId: document.getElementById("spouseId").value,
-        siblingIds: document.getElementById("siblingIds").value ? [document.getElementById("siblingIds").value] : [],
+        fatherId: document.getElementById("fatherId").value === "__custom_name__" ? "" : document.getElementById("fatherId").value,
+        fatherName: document.getElementById("fatherId").dataset.customName || "",
+        motherId: document.getElementById("motherId").value === "__custom_name__" ? "" : document.getElementById("motherId").value,
+        motherName: document.getElementById("motherId").dataset.customName || "",
+        spouseId: document.getElementById("spouseId").value === "__custom_name__" ? "" : document.getElementById("spouseId").value,
+        spouseName: document.getElementById("spouseId").dataset.customName || "",
+        siblingIds: document.getElementById("siblingIds").value && document.getElementById("siblingIds").value !== "__custom_name__" ? [document.getElementById("siblingIds").value] : [],
+        siblingNames: document.getElementById("siblingIds").dataset.customName ? [document.getElementById("siblingIds").dataset.customName] : [],
         maritalStatus: document.getElementById("maritalStatus").value,
         education: document.getElementById("education").value,
         course: document.getElementById("course").value.trim(),
