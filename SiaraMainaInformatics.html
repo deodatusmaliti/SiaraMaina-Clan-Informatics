@@ -1,0 +1,2952 @@
+
+
+
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>SiaraMaina Clan Informatics</title>
+
+  <style>
+    :root{
+      --forest:#103d2b;--green:#1e754c;--gold:#e9bf52;
+      --siara:#176d8c;--maina:#98591f;--maliti:#713b20;
+      --paper:#edf3ed;--ink:#14241b;--muted:#64746a;
+      --line:#d5dfd7;--white:#fff
+    }
+    *{box-sizing:border-box}
+    body{margin:0;background:var(--paper);color:var(--ink);font-family:Arial,Helvetica,sans-serif;line-height:1.5}
+    button,input,select,textarea{font:inherit}
+    button{cursor:pointer}
+    .topbar{position:sticky;top:0;z-index:100;background:var(--forest);border-bottom:2px solid var(--gold)}
+    .topbar-inner{width:min(1450px,calc(100% - 30px));margin:auto;min-height:76px;display:flex;align-items:center;justify-content:space-between;gap:15px}
+    .brand{display:flex;gap:10px;align-items:center;color:#fff;font-weight:900}
+    .brand-mark{display:grid;place-items:center;width:43px;height:43px;border-radius:50%;background:var(--gold);color:var(--forest)}
+    .brand small{display:block;color:#cae6cf;font-size:.59rem;letter-spacing:.1em;text-transform:uppercase}
+    .controls{display:flex;align-items:center;justify-content:flex-end;gap:7px;flex-wrap:wrap;flex:1;margin-left:auto}
+    .mobile-menu-toggle{display:none}
+    .search{width:200px;margin-right:auto;padding:9px 11px;border:1px solid #ffffff55;border-radius:7px;background:#ffffff12;color:#fff}
+    .search option{background:#fff;color:var(--forest)}
+    .search::placeholder{color:#d4ebd8}
+    .inline-toolbar{display:none;align-items:center;gap:8px;padding:6px 9px;border:1px solid rgba(255,255,255,.22);border-radius:9px;background:rgba(255,255,255,.08)}
+    .inline-toolbar.visible{display:flex}
+    .inline-toolbar input,.inline-toolbar select{min-width:170px;padding:8px 10px;border:1px solid rgba(255,255,255,.25);border-radius:6px;background:rgba(255,255,255,.12);color:#fff}
+    .inline-toolbar input::placeholder,.inline-toolbar select{color:#dfeee1}
+    .top-button,.button{padding:9px 12px;border:1px solid #ffffff44;border-radius:7px;background:#ffffff10;color:#fff;font-size:.76rem;font-weight:900}
+    .top-button:hover,.top-button.add,.button.gold{border-color:var(--gold);background:var(--gold);color:var(--forest)}
+    .button.primary{background:var(--green);border-color:var(--green)}
+    .button.secondary{background:#fff;border-color:#cad7cd;color:var(--forest)}
+    .button.danger{background:#fff;border-color:#e2aaaa;color:#a43b3b}
+    .dropdown{position:relative}
+    .dropdown-menu{position:absolute;right:0;top:42px;z-index:110;display:none;min-width:185px;padding:7px;border:1px solid var(--line);border-radius:8px;background:#fff;box-shadow:0 10px 25px #10251c33}
+    .dropdown-menu.open{display:grid}
+    .dropdown-menu button{padding:9px;border:0;border-radius:5px;background:transparent;color:var(--forest);text-align:left;font-size:.79rem;font-weight:900}
+    .dropdown-menu button:hover{background:#e9f5eb}
+    .shell{width:min(1400px,calc(100% - 34px));margin:auto}
+    main{padding:28px 0 50px}
+    .page{display:none}.page.active{display:block}
+    .hero{padding:38px;border-radius:15px;color:#fff;background:radial-gradient(circle at 90% 16%,#8fd88655,transparent 20%),linear-gradient(125deg,#092e20,#1e754c 62%,#266040)}
+    .hero-content{max-width:800px}
+    .eyebrow{color:#c1edc8;font-size:.73rem;font-weight:900;letter-spacing:.13em;text-transform:uppercase}
+    h1,h2,h3,p{margin-top:0}
+    h1{margin:12px 0;font-size:clamp(2rem,4vw,3.6rem);line-height:1.05;letter-spacing:-.05em}
+    h1 span{color:var(--gold)}
+    .hero p{max-width:680px;color:#dcefe1}
+    .hero-actions,.page-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:21px}
+    .metrics{display:grid;grid-template-columns:repeat(6,1fr);gap:13px;margin:21px 0}
+    .metric-button{padding:16px;border:1px solid var(--line);border-radius:11px;background:#fff;color:var(--ink);text-align:left}
+    .metric-button:hover{border-color:var(--green);background:#f6fbf6}
+    .metric-button strong{display:block;color:var(--green);font-size:1.55rem}
+    .metric-button span{color:var(--muted);font-size:.68rem;font-weight:900}
+    .heading{display:flex;align-items:end;justify-content:space-between;gap:15px;margin:26px 0 14px}
+    .heading h2{margin:0;font-size:1.48rem}
+    .heading p{margin:4px 0;color:var(--muted);font-size:.84rem}
+    .profiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(285px,1fr));gap:16px}
+    .profile{overflow:hidden;border:1px solid var(--line);border-radius:12px;background:#fff;box-shadow:0 7px 22px #103d2b0b}
+    .profile.heritage{border-top:5px solid var(--gold)}
+    .profile.siara{border-top:5px solid var(--siara)}
+    .profile.maina{border-top:5px solid var(--maina)}
+    .profile.maliti{border-top:5px solid var(--maliti)}
+    .profile.lineage-foundation{border-top-color:#8b6f47}.profile.lineage-siara{border-top-color:var(--siara)}.profile.lineage-maina{border-top-color:#b23b54}
+    .profile-body{position:relative;padding:18px}
+    .profile-top{display:flex;gap:12px;align-items:flex-start}
+    .avatar,.portrait{width:52px;height:52px;flex:0 0 auto;border-radius:50%}
+    .avatar{display:grid;place-items:center;background:var(--forest);color:var(--gold);font-weight:900}
+    .portrait{border:2px solid var(--gold);object-fit:cover}
+    .profile h3{margin:2px 0;font-size:1rem}
+    .profile p{margin:0;color:var(--muted);font-size:.77rem}
+    .badge,.branch{display:inline-block;margin-top:13px;padding:4px 7px;border-radius:99px;font-size:.66rem;font-weight:900}
+    .badge{background:#e4f5e7;color:var(--green)}
+    .badge.dead{background:#edf0f1;color:#59676f}
+    .branch{float:right}
+    .branch.heritage{background:#fff5cd;color:#806112}
+    .branch.siara{background:#e3f5fb;color:var(--siara)}
+    .branch.maina{background:#fff1dc;color:var(--maina)}
+    .branch.maliti{background:#f6e5db;color:var(--maliti)}
+    .data{display:grid;gap:7px;clear:both;margin:14px 0;color:#526259;font-size:.79rem}
+    .profile .portrait{display:block;object-fit:cover;object-position:center;width:52px;height:52px;max-width:52px;max-height:52px}
+    .data strong{color:var(--ink)}
+    .profile-footer{padding:11px 18px;border-top:1px solid #edf1ed;background:#fbfdfb}
+    .link-button{border:0;background:transparent;color:var(--green);font-size:.78rem;font-weight:900}
+    .line-view{display:grid;gap:0;border:1px solid var(--line);border-radius:12px;background:#fff;overflow:hidden}
+    .line-member{display:grid;grid-template-columns:minmax(190px,1.2fr) repeat(8,minmax(110px,1fr)) auto;gap:14px;align-items:center;padding:13px 16px;border-bottom:1px solid #edf1ed;font-size:.76rem}
+    .line-member:last-child{border-bottom:0}.line-member:hover{background:#f6fbf6}
+    .line-member strong{font-size:.82rem}.line-member span{color:var(--muted)}
+    .line-heading{background:#f1f7f2;color:var(--forest);font-weight:900;text-transform:uppercase;letter-spacing:.04em;font-size:.65rem}
+    .spouse-line{padding-left:28px;background:#fffaf0}.spouse-line strong:before{content:"↳ ";color:var(--gold)}
+    .tree-card small,.spouse-card small{display:block;margin-top:3px;color:var(--muted);font-size:.62rem}
+    .card-identifiers{display:flex;justify-content:space-between;gap:6px;margin-bottom:8px}
+    .member-number,.generation-number{display:inline-block;padding:3px 7px;border-radius:5px;color:var(--forest);font-size:.68rem;font-weight:900;letter-spacing:.04em}
+    .member-number{background:#edf6ef}
+    .generation-number{background:#fff3cf;color:#806112}
+    .page-header{margin:25px 0 18px;padding:25px;border-radius:14px;color:#fff;background:linear-gradient(125deg,#103d2b,#2d7650)}
+    .page-header h1{margin:8px 0;font-size:2rem}
+    .page-header p{margin:0;color:#dcefe1}
+    .heritage-note{margin-bottom:20px;padding:16px;border-left:4px solid var(--gold);border-radius:8px;background:#fff9e8;color:#66551b;font-size:.84rem}
+    .classical-tree{overflow:auto;padding:35px 15px 22px;border:1px solid var(--line);border-radius:13px;background:#fff}
+    .tree-tools{display:flex;align-items:center;gap:8px;margin:0 0 10px;flex-wrap:wrap}.tree-tools strong{margin-right:auto;color:var(--muted);font-size:.75rem}.tree-viewport{height:68vh;min-height:430px;overflow:auto;max-width:100%;padding:4px;border:1px solid var(--line);border-radius:10px;background:#f8fbf8;overscroll-behavior:contain}.tree-canvas{width:max-content;min-width:100%;transform-origin:top left;padding-bottom:20px}
+    .tree-export{display:flex;align-items:center;gap:8px;margin:0 0 12px;flex-wrap:wrap}.tree-export select{padding:8px 10px;border:1px solid #cad7cd;border-radius:7px;background:#fff;color:var(--forest)}
+    .classical-tree ul{position:relative;display:flex;justify-content:center;margin:0;padding-top:28px;list-style:none}
+    .classical-tree li{position:relative;min-width:190px;padding:27px 7px 0;text-align:center}
+    .classical-tree li:before,.classical-tree li:after{position:absolute;top:0;width:50%;height:27px;border-top:1px solid #9ab8a2;content:""}
+    .classical-tree li:before{right:50%;border-right:1px solid #9ab8a2}
+    .classical-tree li:after{left:50%;border-left:1px solid #9ab8a2}
+    .classical-tree li:only-child:before,.classical-tree li:only-child:after{display:none}
+    .classical-tree li:first-child:before,.classical-tree li:last-child:after{border:0}
+    .classical-tree ul ul:before{position:absolute;top:0;left:50%;height:27px;border-left:1px solid #9ab8a2;content:""}
+    .couple{display:flex;justify-content:center;gap:5px}
+    .tree-card{width:165px;padding:9px;border:2px solid var(--gold);border-radius:8px;background:#fffdf6;text-align:left;cursor:pointer}
+    .tree-card .card-identifiers{justify-content:space-between;margin:-2px 0 7px}
+    .tree-card.siara{border-color:var(--siara);background:#e3f5fb}
+    .tree-card.maina{border-color:var(--maina);background:#fff1dc}
+    .tree-card.maliti{border-color:var(--maliti);background:#f6e5db}
+    .tree-card.lineage-foundation{border-color:#8b6f47;background:#f2eadb}.tree-card.lineage-siara{border-color:var(--siara);background:#e3f5fb}.tree-card.lineage-maina{border-color:#b23b54;background:#fbe7ec}
+    .tree-card strong,.spouse-card strong{display:block;font-size:.78rem}
+    .tree-card span,.spouse-card span{display:block;margin-top:3px;color:var(--muted);font-size:.65rem}
+    .spouse-card{width:125px;padding:9px;border:1px dashed #a8b9aa;border-radius:8px;background:#f8faf8;text-align:left;cursor:pointer}
+    .stats-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:17px}
+    .stat-card{padding:20px;border:1px solid var(--line);border-radius:12px;background:#fff}
+    .stat-card h3{margin:0 0 15px;font-size:1rem}
+    .stat-row{display:grid;grid-template-columns:120px 1fr 25px;gap:7px;align-items:center;margin:10px 0;font-size:.75rem}
+    .bar{height:9px;overflow:hidden;border-radius:99px;background:#e7eee8}
+    .bar span{display:block;height:100%;border-radius:99px;background:var(--green)}
+    .bar.gold span{background:var(--gold)}
+    .bar.siara span{background:var(--siara)}
+    .bar.maina span{background:var(--maina)}
+    .empty{padding:44px;border:1px dashed #b9c9bb;border-radius:12px;background:#fff;color:var(--muted);text-align:center}
+    .modal{position:fixed;inset:0;z-index:200;display:none;align-items:center;justify-content:center;padding:18px;background:#04160eb8}
+    .modal.open{display:flex}
+    .modal-box{width:min(960px,100%);max-height:92vh;overflow:auto;padding:25px;border-radius:14px;background:#fff}
+    .modal-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px}
+    .modal-head h2{margin:0;font-size:1.42rem}
+    .close{width:34px;height:34px;border:0;border-radius:50%;font-size:1.2rem}
+    .form-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:13px}
+    .field{display:grid;gap:6px;margin-bottom:13px}
+    .field.full{grid-column:1/-1}
+    .field label{color:#41574a;font-size:.78rem;font-weight:900}
+    .field input,.field select,.field textarea{width:100%;padding:10px;border:1px solid #cbd8ce;border-radius:7px}
+    .field textarea{min-height:92px;resize:vertical}
+    .preview{display:none;width:76px;height:76px;border:2px solid var(--gold);border-radius:8px;object-fit:cover}
+    .relationships{margin:18px 0;padding:14px;border-radius:8px;background:#f1f8f2;color:#435c4c;font-size:.85rem;line-height:1.75}
+    .modal-actions{display:flex;justify-content:space-between;gap:10px;margin-top:20px}
+    @media(max-width:1120px){.topbar-inner{display:block;padding:12px 0}.brand{margin-bottom:11px}.controls{justify-content:flex-start}.metrics{grid-template-columns:repeat(3,1fr)}.stats-grid{grid-template-columns:1fr 1fr}}
+    @media(max-width:720px){.search{width:100%;margin-right:0}.metrics{grid-template-columns:1fr 1fr}.form-grid,.stats-grid{grid-template-columns:1fr}.field.full{grid-column:auto}.modal-actions{flex-direction:column}.classical-tree ul{justify-content:flex-start}.line-member{grid-template-columns:1fr 1fr;gap:5px 12px}.line-heading{display:none}}
+    @media(max-width:720px){
+      body{overflow-x:hidden}
+      body.view-page-open{overflow:hidden}
+      body.view-page-open .topbar{display:none}
+      body.view-page-open .page.active{position:fixed;inset:0;z-index:150;display:block;overflow:auto;padding:16px 0 32px;background:var(--paper)}
+      .topbar-inner{width:calc(100% - 20px);padding:12px 0}
+      .brand{gap:8px;margin-bottom:12px;font-size:.86rem;line-height:1.25}
+      .brand-mark{width:38px;height:38px}
+      .brand small{font-size:.5rem;letter-spacing:.06em}
+      .controls{display:grid;grid-template-columns:minmax(0,1fr) auto;width:100%;margin:0;gap:8px}
+      .search{grid-column:1;width:100%;margin:0}
+      .mobile-menu-toggle{display:block;grid-column:2;min-width:74px;min-height:42px;padding:10px 12px;border:1px solid var(--gold);border-radius:7px;background:var(--gold);color:var(--forest);font-size:.72rem;font-weight:900}
+      .controls>.inline-toolbar,.controls>.dropdown,.controls>.top-button.add,.controls>.top-button:not(.mobile-menu-toggle){display:none}
+      .controls.mobile-open{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}
+      .controls.mobile-open>.search{grid-column:1/-1}
+      .controls.mobile-open>.inline-toolbar.visible{display:flex;grid-column:1/-1;min-width:0;flex-wrap:wrap}
+      .controls.mobile-open>.inline-toolbar.visible input,.controls.mobile-open>.inline-toolbar.visible select{min-width:0;flex:1;width:100%}
+      .controls.mobile-open>.dropdown,.controls.mobile-open>.top-button.add,.controls.mobile-open>.top-button:not(.mobile-menu-toggle){display:block;width:100%}
+      .controls.mobile-open>.dropdown>.top-button{width:100%;min-height:42px;padding:10px 8px;font-size:.7rem}
+      .controls.mobile-open>.top-button:not(.mobile-menu-toggle){min-height:42px;padding:10px 8px;font-size:.7rem}
+      .dropdown-menu{left:0;right:0;top:47px;min-width:0}
+      .shell{width:calc(100% - 20px)}
+      main{padding:16px 0 32px}
+      .hero{padding:24px 18px;border-radius:11px}
+      h1{font-size:2rem;line-height:1.08}
+      .hero-actions,.page-actions{display:grid;grid-template-columns:1fr;gap:8px}
+      .hero-actions .button,.page-actions .button{width:100%;min-height:44px}
+      .metrics{gap:8px;margin:14px 0}
+      .metric-button{min-width:0;padding:12px}
+      .metric-button strong{font-size:1.3rem}
+      .heading{display:block;margin:20px 0 12px}
+      .heading h2{font-size:1.25rem}
+      .profiles{grid-template-columns:1fr;gap:10px}
+      .profile-body{padding:15px}
+      .profile-footer{padding:10px 15px}
+      .page-header{margin:16px 0 12px;padding:20px 18px;border-radius:11px}
+      .page-header h1{font-size:1.7rem}
+      .classical-tree{padding:20px 8px 16px;border-radius:10px}
+      .classical-tree li{min-width:165px;padding-left:4px;padding-right:4px}
+      .tree-card{width:145px;padding:8px}
+      .spouse-card{width:108px;padding:8px}
+      .line-view{overflow-x:auto}
+      .line-member{min-width:900px}
+      .modal{padding:8px}
+      .modal-box{max-height:95vh;padding:18px 14px;border-radius:10px}
+      .modal-head{gap:10px}
+      .modal-head h2{font-size:1.2rem}
+      .field input,.field select,.field textarea{min-height:44px}
+      .tree-tools,.tree-export{align-items:stretch}
+      .tree-tools .button{min-height:42px}
+      .tree-tools strong{width:100%;margin-right:0}
+      .tree-tools .button{flex:1}
+      .tree-export{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+      .tree-export label,.tree-export select{grid-column:1/-1}
+      .tree-export select,.tree-export .button{width:100%;min-height:42px}
+      .tree-viewport{height:calc(100vh - 360px);min-height:360px;padding:2px;-webkit-overflow-scrolling:touch}
+      .tree-canvas{padding:0 12px 24px}
+    }
+    @media(max-width:420px){
+      .metrics{grid-template-columns:1fr}
+      .hero p{font-size:.9rem}
+      .tree-card{width:132px}
+      .spouse-card{width:100px}
+    }
+
+    /* Professional command-bar redesign: all existing actions are retained and organised by task. */
+    .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+    .topbar{background:linear-gradient(105deg,#0a3525 0%,#103d2b 54%,#15583d 100%);border-bottom:1px solid rgba(233,191,82,.85);box-shadow:0 8px 24px rgba(5,37,24,.22)}
+    .topbar-inner{min-height:88px;gap:20px}.commandbar{display:grid;grid-template-columns:minmax(190px,250px) 1fr;align-items:center;gap:14px;flex:1;margin-left:auto}.command-search{min-width:0}.commandbar .search{width:100%;margin:0;border-radius:10px;background:rgba(255,255,255,.12);box-shadow:inset 0 1px 0 rgba(255,255,255,.10)}
+    .command-groups{display:flex;align-items:center;justify-content:flex-end;gap:10px;min-width:0;flex-wrap:wrap}.command-group{display:flex;align-items:center;gap:6px;padding:5px 8px;border:1px solid rgba(255,255,255,.14);border-radius:11px;background:rgba(255,255,255,.06)}.command-label{padding:0 3px;color:#cce5d1;font-size:.59rem;font-weight:900;letter-spacing:.11em;text-transform:uppercase}
+    .commandbar .top-button{min-height:34px;padding:8px 10px;border-radius:8px;background:rgba(255,255,255,.08);font-size:.7rem;white-space:nowrap;transition:transform .16s ease,background .16s ease,border-color .16s ease}.commandbar .top-button:hover{transform:translateY(-1px);background:rgba(255,255,255,.18);border-color:rgba(233,191,82,.9);color:#fff}.commandbar .command-add{background:var(--gold);color:var(--forest);border-color:var(--gold);box-shadow:0 5px 13px rgba(0,0,0,.18)}.commandbar .command-add:hover{background:#f3ce70;color:#08291b}.commandbar .dropdown-menu{top:40px;min-width:210px;padding:8px;border-radius:11px;box-shadow:0 16px 36px rgba(4,31,20,.26)}.commandbar .dropdown-menu button{padding:10px;border-radius:7px}
+    @media(max-width:1120px){.commandbar{grid-template-columns:1fr}.command-groups{justify-content:flex-start}.topbar-inner{display:block;padding:12px 0}.brand{margin-bottom:10px}}@media(max-width:720px){.commandbar{display:grid;grid-template-columns:minmax(0,1fr) auto}.command-groups{display:none}.commandbar.mobile-open{grid-template-columns:repeat(2,minmax(0,1fr))}.commandbar.mobile-open .command-search{grid-column:1/-1}.commandbar.mobile-open .command-groups{display:flex;grid-column:1/-1;align-items:stretch;flex-direction:column}.commandbar.mobile-open .command-group{display:grid;grid-template-columns:1fr 1fr;padding:8px}.commandbar.mobile-open .command-label{grid-column:1/-1}.commandbar.mobile-open .dropdown,.commandbar.mobile-open .top-button{width:100%}.commandbar.mobile-open .command-add{min-height:44px}.commandbar .dropdown-menu{left:0;right:auto;top:45px}.commandbar.mobile-open .inline-toolbar.visible{grid-column:1/-1}}
+
+  </style>
+</head>
+
+<body>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <div class="brand">
+        <div class="brand-mark">SM</div>
+        <div>
+          SiaraMaina Clan Informatics
+          <small>Private Heritage and Demographic Ledger</small>
+        </div>
+      </div>
+
+      <div class="controls commandbar" aria-label="Clan archive controls">
+        <div class="command-search"><label class="sr-only" for="searchInput">Search Clan Archive</label><select id="searchInput" class="search" aria-label="Choose a clan member" onchange="selectArchiveMember(this.value)"><option value="">Search Clan Archive</option></select></div>
+        <button class="mobile-menu-toggle" type="button" onclick="toggleMobileMenu()" aria-expanded="false">Menu</button>
+        <div class="command-groups">
+          <div class="command-group"><span class="command-label">Explore</span>
+            <div class="dropdown"><button class="top-button" type="button" onclick="toggleMenu('catalogueMenu')">Catalogue <span aria-hidden="true">▾</span></button><div id="catalogueMenu" class="dropdown-menu"><button type="button" onclick="navigateCatalogue('all')">All Members</button><button type="button" onclick="navigateCatalogue('living')">Living Members</button><button type="button" onclick="navigateCatalogue('deceased')">Deceased Members</button><button type="button" onclick="navigateCatalogue('heritage')">Foundational Ancestry</button><button type="button" onclick="navigateCatalogue('siara')">Siara Branch</button><button type="button" onclick="navigateCatalogue('maina')">Maina Branch</button><button type="button" onclick="navigateCatalogue('maliti')">Maliti Family</button><button type="button" onclick="openCustomSearch()">Custom Search</button></div></div>
+            <div class="dropdown"><button class="top-button" type="button" onclick="toggleMenu('treeMenu')">Family Tree <span aria-hidden="true">▾</span></button><div id="treeMenu" class="dropdown-menu"><button type="button" onclick="showTree('clan')">Clan Tree</button><button type="button" onclick="showTree('siara')">Siara Branch</button><button type="button" onclick="showTree('maina')">Maina Branch</button><button type="button" onclick="showTree('maliti')">Maliti Family</button><button type="button" onclick="openCustomTree()">Custom View</button></div></div>
+            <button class="top-button" type="button" onclick="openCustomFilter()">Filter</button><button class="top-button" type="button" onclick="showStatistics()">Statistics</button>
+          </div>
+          <div class="command-group"><span class="command-label">Tools</span>
+            <div class="dropdown"><button class="top-button" type="button" onclick="toggleMenu('viewMenu')">View <span aria-hidden="true">▾</span></button><div id="viewMenu" class="dropdown-menu"><button type="button" onclick="setViewStyle('card')">Card View</button><button type="button" onclick="setViewStyle('line')">Line View</button><button id="spouseToggle" type="button" onclick="toggleSpouses()">Hide Spouses</button></div></div>
+            <div class="dropdown"><button class="top-button" type="button" onclick="toggleMenu('utilitiesMenu')">Utilities <span aria-hidden="true">▾</span></button><div id="utilitiesMenu" class="dropdown-menu"><button type="button" onclick="openRelationship()">Relationship Finder</button><button type="button" onclick="openBiography()">Biography</button><button type="button" onclick="openPrintDialog()">Print / Export</button><button type="button" onclick="exportCsv()">CSV Backup</button><button type="button" onclick="document.getElementById('csvImport').click()">Import CSV</button><button type="button" onclick="saveProjectData()">Save Project Data</button><button type="button" onclick="saveProjectDataToGitHub()">Save to GitHub</button><button type="button" onclick="document.getElementById('projectImport').click()">Restore Project Data</button></div></div>
+          </div>
+          <button class="top-button add command-add" type="button" onclick="openProfile(null)">+ Add Member</button>
+        </div>
+        <div id="catalogueCustomSearchRow" class="inline-toolbar" aria-live="polite"><input id="catalogueCustomSearchInput" type="search" placeholder="Member name" oninput="applyInlineCustomSearch()" onkeydown="if(event.key==='Enter'){applyInlineCustomSearch()}"><button class="top-button" type="button" onclick="applyInlineCustomSearch()">Apply</button></div>
+        <div id="treeCustomRootRow" class="inline-toolbar" aria-live="polite"><select id="treeCustomRootSelect"></select><button class="top-button" type="button" onclick="applyInlineCustomTree()">Open</button></div>
+        <input id="csvImport" type="file" accept=".csv,text/csv" hidden onchange="importCsv(event)"><input id="projectImport" type="file" accept=".json,application/json" hidden onchange="importProjectData(event)">
+      </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="shell">
+    <section id="cataloguePage" class="page active">
+      <section class="hero">
+        <div class="hero-content">
+          <span class="eyebrow">Kilimanjaro Slopes • Heritage • Continuity</span>
+          <h1>A living record of <span>lineage, legacy and belonging.</span></h1>
+          <p>A private, editable archive beginning with NGOWI I, known as Mkamba Aliyetokea Marangu Moye, preserving Siara, Maina and Maliti family history.</p>
+          <div class="hero-actions">
+            <button class="button gold" type="button" onclick="openProfile(null)">Add Clan Member</button>
+            <button class="button secondary" type="button" onclick="showTree('clan')">Open Clan Hierarchy</button>
+            <button class="button secondary" type="button" onclick="showStatistics()">View Statistics</button>
+            <button class="button secondary" type="button" onclick="shareVisibleView('Clan Catalogue', 'cataloguePage')">Share Catalogue</button>
+          </div>
+        </div>
+      </section>
+
+      <section class="metrics">
+        <button class="metric-button" type="button" onclick="showCatalogue('all')"><strong id="totalMetric">0</strong><span>Total Members</span></button>
+        <button class="metric-button" type="button" onclick="showCatalogue('living')"><strong id="livingMetric">0</strong><span>Living Members</span></button>
+        <button class="metric-button" type="button" onclick="showCatalogue('deceased')"><strong id="deadMetric">0</strong><span>Deceased Members</span></button>
+        <button class="metric-button" type="button" onclick="showCatalogue('heritage')"><strong id="heritageMetric">0</strong><span>Foundational Ancestry</span></button>
+        <button class="metric-button" type="button" onclick="showCatalogue('siara')"><strong id="siaraMetric">0</strong><span>Siara Branch</span></button>
+        <button class="metric-button" type="button" onclick="showCatalogue('maina')"><strong id="mainaMetric">0</strong><span>Maina Branch</span></button>
+      </section>
+
+      <section class="heading">
+        <div>
+          <h2 id="catalogueTitle">Clan Member Catalogue</h2>
+          <p id="catalogueDescription">Search, review and edit clan profiles.</p>
+        </div>
+      </section>
+
+      <section id="catalogueWorkspace"></section>
+    </section>
+
+    <section id="treePage" class="page">
+      <section class="page-header">
+        <span class="eyebrow">Couple-Led Classical Family Tree</span>
+        <h1 id="treeTitle">SiaraMaina Clan Tree</h1>
+        <p>Children are connected through their father and mother records where known.</p>
+        <div class="page-actions">
+          <button class="button gold" type="button" onclick="showCatalogue('all')">Back to Home</button>
+          <button class="button secondary" type="button" onclick="openProfile(null)">Add Member</button>
+          <button class="button secondary" type="button" onclick="shareTreeLink()">Share Tree</button>
+          <button class="button secondary" type="button" onclick="shareCardLink()">Share Card</button>
+          <button class="button secondary" type="button" onclick="shareFormLink()">Share Form</button>
+        </div>
+      </section>
+
+      <section class="heritage-note">
+        <strong>Tree colours:</strong> Gold is foundational ancestry, blue is Siara Branch, brown is Maina Branch and dark brown is the Maliti Family.
+      </section>
+
+      <section id="treeWorkspace"></section>
+    </section>
+
+    <section id="statisticsPage" class="page">
+      <section class="page-header">
+        <span class="eyebrow">Clan Demographic Intelligence</span>
+        <h1>SiaraMaina Statistics</h1>
+        <p>Live statistics based on the details saved in individual clan member forms.</p>
+        <div class="page-actions">
+          <button class="button gold" type="button" onclick="showCatalogue('all')">Back to Home</button>
+          <button class="button secondary" type="button" onclick="showTree('clan')">Open Clan Tree</button>
+        </div>
+      </section>
+
+      <section id="statisticsWorkspace" class="stats-grid"></section>
+    </section>
+  </main>
+
+  <section id="profileModal" class="modal">
+    <div class="modal-box">
+      <div class="modal-head">
+        <h2 id="modalTitle">Add Clan Profile</h2>
+        <button class="close" type="button" onclick="closeModal('profileModal')">×</button>
+      </div>
+
+      <form onsubmit="saveProfile(event)">
+        <input id="recordId" type="hidden">
+        <input id="storedPhoto" type="hidden">
+
+        <div class="form-grid">
+          <div class="field"><label>Clan Member Number</label><input id="clanMemberNumber" readonly></div>
+          <div class="field"><label>First Name</label><input id="firstName" required></div>
+          <div class="field"><label>Middle Name</label><input id="middleName"></div>
+          <div class="field"><label>Last Name</label><input id="lastName"></div>
+
+          <div class="field">
+            <label>Sex</label>
+            <select id="sex">
+              <option>Male</option>
+              <option>Female</option>
+              <option>Not Recorded</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label>Family Classification</label>
+            <select id="branchType">
+              <option value="heritage">Foundational Ancestry</option>
+              <option value="siara">Siara Branch</option>
+              <option value="maina">Maina Branch</option>
+              <option value="maliti">Maliti Family</option>
+            </select>
+          </div>
+
+          <div class="field"><label>Title / Honorific</label><input id="honorific"></div>
+          <div class="field"><label>Date of Birth</label><input id="dob" type="date"></div>
+          <div class="field"><label>Place of Birth</label><input id="placeOfBirth"></div>
+          <div class="field"><label>Historical Period</label><input id="birthPeriod" placeholder="Example: c. 1900"></div>
+
+          <div class="field">
+            <label>Life Status</label>
+            <select id="deceased">
+              <option value="false">Living</option>
+              <option value="true">Deceased</option>
+            </select>
+          </div>
+
+          <div class="field"><label>Date of Death</label><input id="dod" type="date"></div>
+          <div class="field"><label>Age Category (WHO)</label><input id="ageCategory" readonly></div>
+          <div class="field"><label>Age at Death</label><input id="deathAge" type="number" min="0" readonly></div>
+
+          <div class="field">
+            <label>Cause of Death</label>
+            <select id="causeOfDeath">
+              <option>Not Recorded</option>
+              <option>Natural Causes / Old Age</option>
+              <option>Disease or Illness</option>
+              <option>Cancer</option>
+              <option>Accident</option>
+              <option>Road Traffic Accident</option>
+              <option>Childbirth-Related Cause</option>
+              <option>Violence / Homicide</option>
+              <option>Unknown</option>
+              <option>Other</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label>Father Profile</label>
+            <select id="fatherId"></select>
+          </div>
+
+          <div class="field">
+            <label>Mother Profile</label>
+            <small class="field-help">Record the child's mother separately. A spouse is not automatically a parent.</small>
+            <select id="motherId"></select>
+          </div>
+
+          <div class="field">
+            <label>Spouse Profile</label>
+            <select id="spouseId"></select>
+          </div>
+
+          <div class="field full">
+            <label>Sibling Profiles</label>
+            <select id="siblingIds" title="Select a sibling profile"></select>
+          </div>
+
+          <div class="field">
+            <label>Marital Status</label>
+            <select id="maritalStatus">
+              <option>Not Recorded</option>
+              <option>Single</option>
+              <option>Married</option>
+              <option>Widowed</option>
+              <option>Separated</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label>Education Level</label>
+            <select id="education">
+              <option>Not Recorded</option>
+              <option>Primary Education</option>
+              <option>Secondary Education</option>
+              <option>Certificate</option>
+              <option>Diploma</option>
+              <option>Bachelor Degree</option>
+              <option>Master Degree</option>
+              <option>PhD / Doctorate</option>
+              <option>Professor</option>
+            </select>
+          </div>
+
+          <div class="field"><label>Course / Area of Study</label><input id="course"></div>
+
+          <div class="field">
+            <label>Employment Status</label>
+            <select id="employment">
+              <option>Not Recorded</option>
+              <option>Employed</option>
+              <option>Self-employed</option>
+              <option>Student</option>
+              <option>Unemployed</option>
+              <option>Retired</option>
+            </select>
+          </div>
+
+          <div class="field"><label>Occupation</label><input id="occupation"></div>
+          <div class="field"><label>Organisation / Employer</label><input id="organization"></div>
+
+          <div class="field">
+            <label>Religious Affiliation</label>
+            <select id="religion">
+              <option>Not Recorded</option>
+              <option>Christianity</option>
+              <option>Islam</option>
+              <option>Traditionalist / Indigenous Religion</option>
+              <option>No Religious Affiliation</option>
+              <option>Catholic</option>
+              <option>Protestant</option>
+              <option>Lutheran</option>
+              <option>Anglican</option>
+              <option>Other</option>
+            </select>
+          </div>
+
+          <div class="field"><label>Denomination / Tradition</label>
+            <select id="denomination">
+              <option value="">Not Recorded</option><option>Catholic</option><option>Protestant</option>
+              <option>Lutheran</option><option>Anglican</option><option>Presbyterian</option>
+              <option>Methodist</option><option>Baptist</option><option>Orthodox</option><option>Other</option>
+            </select>
+          </div>
+          <div class="field"><label>Telephone Number</label><input id="phone"></div>
+          <div class="field"><label>WhatsApp Number</label><input id="whatsapp"></div>
+          <div class="field"><label>Email Address</label><input id="email" type="email"></div>
+          <div class="field"><label>Current Location</label><input id="location"></div>
+
+          <div class="field">
+            <label>Passport-Style Image</label>
+            <input id="photoFile" type="file" accept="image/png,image/jpeg,image/webp" onchange="loadPhoto(event)">
+            <img id="photoPreview" class="preview" alt="Profile preview">
+          </div>
+
+          <div class="field full">
+            <label>Historical Narrative / Notes</label>
+            <textarea id="narrative"></textarea>
+          </div>
+        </div>
+
+        <div id="relationshipSummary" class="relationships"></div>
+
+        <div class="modal-actions">
+          <button id="deleteButton" class="button danger" type="button" onclick="deleteProfile()">Delete Profile</button>
+          <div>
+            <button class="button secondary" type="button" onclick="shareCurrentForm()">Share Form</button>
+            <button class="button secondary" type="button" onclick="closeModal('profileModal')">Cancel</button>
+            <button class="button primary" type="submit">Save Profile</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </section>
+
+  <section id="relationshipModal" class="modal">
+    <div class="modal-box" style="max-width:650px">
+      <div class="modal-head">
+        <h2>Relationship Finder</h2>
+        <button class="close" type="button" onclick="closeModal('relationshipModal')">×</button>
+      </div>
+
+      <div class="field">
+        <label>First Clan Member</label>
+        <select id="personA"></select>
+      </div>
+
+      <div class="field">
+        <label>Second Clan Member</label>
+        <select id="personB"></select>
+      </div>
+
+      <button class="button primary" type="button" onclick="findRelationship()">Find Relationship</button>
+
+      <div id="relationshipResult" class="relationships">
+        Select two members to calculate their relationship.
+      </div>
+    </div>
+  </section>
+
+  <section id="biographyModal" class="modal">
+    <div class="modal-box" style="max-width:760px">
+      <div class="modal-head">
+        <h2>Member Biography Generator</h2>
+        <button class="close" type="button" onclick="closeModal('biographyModal')">×</button>
+      </div>
+
+      <p style="color:#64746a;font-size:.88rem">
+        Select a clan member. The biography is generated from information saved in that member’s profile form.
+      </p>
+
+      <div class="field">
+        <label>Select Clan Member</label>
+        <select id="biographyMember" onchange="generateBiography()">
+          <option value="">Select a member</option>
+        </select>
+      </div>
+
+      <button class="button primary" type="button" onclick="generateBiography()">Generate Biography</button>
+
+      <div id="biographyResult" class="relationships">
+        Select a member to generate a biography.
+      </div>
+    </div>
+  </section>
+
+  <section id="customSearchModal" class="modal">
+    <div class="modal-box" style="max-width:620px">
+      <div class="modal-head"><h2>Custom Search</h2><button class="close" type="button" onclick="closeModal('customSearchModal')">×</button></div>
+      <div class="field"><label>Search any member information</label><input id="customSearchInput" type="search" oninput="runCustomSearch()" placeholder="Enter a name, occupation, location or other detail"></div>
+      <div id="customSearchResults" class="relationships">Enter a search term to find members.</div>
+    </div>
+  </section>
+
+  <section id="customTreeModal" class="modal">
+    <div class="modal-box" style="max-width:620px">
+      <div class="modal-head"><h2>Custom Family Tree View</h2><button class="close" type="button" onclick="closeModal('customTreeModal')">×</button></div>
+      <div class="field"><label>Choose a root member</label><select id="customTreeMember"></select></div>
+      <button class="button primary" type="button" onclick="showCustomTree()">Open Family Tree</button>
+    </div>
+  </section>
+
+  <section id="customFilterModal" class="modal">
+    <div class="modal-box" style="max-width:760px">
+      <div class="modal-head"><h2>Custom Member Filter</h2><button class="close" type="button" onclick="closeModal('customFilterModal')">×</button></div>
+      <div class="form-grid">
+        <div class="field"><label>Minimum Age</label><input id="filterMinAge" type="number" min="0"></div>
+        <div class="field"><label>Maximum Age</label><input id="filterMaxAge" type="number" min="0"></div>
+        <div class="field"><label>Name</label><input id="filterName" placeholder="Search names"></div>
+        <div class="field"><label>Age Category</label><select id="filterAgeCategory"><option value="">Any</option></select></div>
+        <div class="field"><label>Sex</label><select id="filterSex"><option value="">Any</option><option>Male</option><option>Female</option><option>Not Recorded</option></select></div>
+        <div class="field"><label>Life Status</label><select id="filterDeceased"><option value="">Any</option><option value="false">Living</option><option value="true">Deceased</option></select></div>
+        <div class="field"><label>Education Level</label><select id="filterEducation"><option value="">Any</option><option>Not Recorded</option><option>Primary Education</option><option>Secondary Education</option><option>Certificate</option><option>Diploma</option><option>Bachelor Degree</option><option>Master Degree</option><option>PhD / Doctorate</option><option>Professor</option></select></div>
+        <div class="field"><label>Place of Birth</label><input id="filterPlaceOfBirth" placeholder="Contains text"></div>
+        <div class="field"><label>Father Name</label><select id="filterFatherId"><option value="">Any</option></select></div>
+        <div class="field"><label>Mother Name</label><select id="filterMotherId"><option value="">Any</option></select></div>
+        <div class="field"><label>Minimum Age at Death</label><input id="filterMinDeathAge" type="number" min="0"></div>
+        <div class="field"><label>Maximum Age at Death</label><input id="filterMaxDeathAge" type="number" min="0"></div>
+        <div class="field"><label>Marriage Status</label><select id="filterMaritalStatus"><option value="">Any</option><option>Not Recorded</option><option>Single</option><option>Married</option><option>Widowed</option><option>Separated</option></select></div>
+        <div class="field"><label>Religious Affiliation</label><select id="filterReligion"><option value="">Any</option><option>Christianity</option><option>Islam</option><option>Traditionalist / Indigenous Religion</option><option>No Religious Affiliation</option><option>Catholic</option><option>Protestant</option><option>Lutheran</option><option>Anglican</option><option>Other</option><option>Not Recorded</option></select></div>
+        <div class="field"><label>Denomination</label><select id="filterDenomination"><option value="">Any</option><option>Catholic</option><option>Protestant</option><option>Lutheran</option><option>Anglican</option><option>Presbyterian</option><option>Methodist</option><option>Baptist</option><option>Orthodox</option><option>Other</option><option>Not Recorded</option></select></div>
+        <div class="field"><label>Branch</label><select id="filterBranch"><option value="">Any</option><option value="heritage">Foundational Ancestry</option><option value="siara">Siara Branch</option><option value="maina">Maina Branch</option><option value="maliti">Maliti Family</option></select></div>
+      </div>
+      <div class="modal-actions"><button class="button secondary" type="button" onclick="clearCustomFilter()">Clear</button><button class="button primary" type="button" onclick="applyCustomFilter()">Apply Filter</button></div>
+    </div>
+  </section>
+
+  <section id="printModal" class="modal">
+    <div class="modal-box" style="max-width:620px">
+      <div class="modal-head"><h2>Print / Export</h2><button class="close" type="button" onclick="closeModal('printModal')">×</button></div>
+      <div class="field">
+        <label>What to print</label>
+        <select id="printTarget">
+          <option value="current">Selected View</option>
+          <option value="catalogue">Catalogue / Cards</option>
+          <option value="tree">Family Tree</option>
+        </select>
+      </div>
+      <div class="form-grid">
+        <div class="field"><label>Orientation</label><select id="printOrientation"><option value="portrait">Portrait</option><option value="landscape">Landscape</option></select></div>
+        <div class="field"><label>Scale</label><input id="printScale" type="number" min="0.5" max="2" step="0.1" value="1"></div>
+      </div>
+      <div class="modal-actions">
+        <button class="button secondary" type="button" onclick="closeModal('printModal')">Cancel</button>
+        <button class="button primary" type="button" onclick="openPrintPreview()">Print Preview</button>
+      </div>
+    </div>
+  </section>
+
+  <script>
+    var STORAGE_KEY = "siaraMainaClanRecordsUpdated";
+    var SETTINGS_KEY = "siaraMainaClanSettings";
+    var currentFilter = "all";
+    var viewStyle = "card";
+    var showSpouseRecords = true;
+    var customQuery = "";
+    var customFilter = {};
+    var selectedMemberId = "";
+
+    function loadStoredSettings() {
+      try {
+        var saved = JSON.parse(localStorage.getItem(SETTINGS_KEY) || "{}");
+        if (saved.viewStyle === "line" || saved.viewStyle === "card") viewStyle = saved.viewStyle;
+        if (typeof saved.showSpouseRecords === "boolean") showSpouseRecords = saved.showSpouseRecords;
+        if (saved.currentFilter) currentFilter = saved.currentFilter;
+      } catch (error) {
+        // Ignore storage issues until user interacts.
+      }
+    }
+
+    function saveStoredSettings() {
+      try {
+        localStorage.setItem(SETTINGS_KEY, JSON.stringify({
+          viewStyle: viewStyle,
+          showSpouseRecords: showSpouseRecords,
+          currentFilter: currentFilter,
+          customFilter: customFilter,
+          customQuery: customQuery
+        }));
+      } catch (error) {
+        // Ignore storage issues when browser storage is unavailable.
+      }
+    }
+
+    loadStoredSettings();
+
+    var defaultRecords = [
+      {
+        id:"ngowi1", firstName:"NGOWI I", middleName:"",
+        lastName:"Mkamba Aliyetokea Marangu Moye",
+        sex:"Male", branchType:"heritage",
+        honorific:"Foundational Ancestor", dob:"",
+        birthPeriod:"c. 1600s", deceased:true, dod:"",
+        deathAge:"", causeOfDeath:"Not Recorded",
+        fatherId:"", motherId:"", spouseId:"",
+        maritalStatus:"Not Recorded", education:"Not Recorded",
+        course:"", employment:"Not Recorded",
+        occupation:"Clan Founder", organization:"",
+        religion:"Not Recorded", denomination:"",
+        phone:"", whatsapp:"", email:"",
+        location:"Marangu Moye, Kilimanjaro, Tanzania",
+        narrative:"Known foundational ancestor of the recorded lineage.",
+        photo:""
+      },
+      {
+        id:"mremi", firstName:"Mremi", middleName:"",
+        lastName:"", sex:"Male", branchType:"heritage",
+        honorific:"Ancestral Generation", dob:"",
+        birthPeriod:"After NGOWI I", deceased:true, dod:"",
+        deathAge:"", causeOfDeath:"Not Recorded",
+        fatherId:"ngowi1", motherId:"", spouseId:"",
+        maritalStatus:"Not Recorded", education:"Not Recorded",
+        course:"", employment:"Not Recorded",
+        occupation:"Ancestral Record", organization:"",
+        religion:"Not Recorded", denomination:"",
+        phone:"", whatsapp:"", email:"",
+        location:"Kilimanjaro Slopes, Tanzania",
+        narrative:"Direct lineage after NGOWI I.", photo:""
+      },
+      {
+        id:"ngowi2", firstName:"Ngowi II", middleName:"",
+        lastName:"", sex:"Male", branchType:"heritage",
+        honorific:"Ancestral Generation", dob:"",
+        birthPeriod:"After Mremi", deceased:true, dod:"",
+        deathAge:"", causeOfDeath:"Not Recorded",
+        fatherId:"mremi", motherId:"", spouseId:"",
+        maritalStatus:"Not Recorded", education:"Not Recorded",
+        course:"", employment:"Not Recorded",
+        occupation:"Ancestral Record", organization:"",
+        religion:"Not Recorded", denomination:"",
+        phone:"", whatsapp:"", email:"",
+        location:"Kilimanjaro Slopes, Tanzania",
+        narrative:"Direct lineage after Mremi.", photo:""
+      },
+      {
+        id:"nyange", firstName:"Nyange", middleName:"",
+        lastName:"", sex:"Male", branchType:"heritage",
+        honorific:"Ancestral Generation", dob:"",
+        birthPeriod:"Before Siara and Maina", deceased:true, dod:"",
+        deathAge:"", causeOfDeath:"Not Recorded",
+        fatherId:"ngowi2", motherId:"", spouseId:"",
+        maritalStatus:"Not Recorded", education:"Not Recorded",
+        course:"", employment:"Not Recorded",
+        occupation:"Ancestral Record", organization:"",
+        religion:"Not Recorded", denomination:"",
+        phone:"", whatsapp:"", email:"",
+        location:"Kilimanjaro Slopes, Tanzania",
+        narrative:"Recorded predecessor of Siara and Maina.", photo:""
+      },
+      {
+        id:"siara", firstName:"Siara", middleName:"",
+        lastName:"", sex:"Male", branchType:"siara",
+        honorific:"Founding Ancestor", dob:"",
+        birthPeriod:"c. 1900s", deceased:true, dod:"",
+        deathAge:"", causeOfDeath:"Not Recorded",
+        fatherId:"nyange", motherId:"", spouseId:"",
+        maritalStatus:"Not Recorded", education:"Not Recorded",
+        course:"", employment:"Not Recorded",
+        occupation:"Founding Brother", organization:"",
+        religion:"Not Recorded", denomination:"",
+        phone:"", whatsapp:"", email:"",
+        location:"Kilimanjaro Slopes, Tanzania",
+        narrative:"Brother of Maina and founder of the Siara Branch.",
+        photo:""
+      },
+      {
+        id:"maina", firstName:"Maina", middleName:"",
+        lastName:"", sex:"Male", branchType:"maina",
+        honorific:"Founding Ancestor", dob:"",
+        birthPeriod:"c. 1900s", deceased:true, dod:"",
+        deathAge:"", causeOfDeath:"Not Recorded",
+        fatherId:"nyange", motherId:"", spouseId:"",
+        maritalStatus:"Not Recorded", education:"Not Recorded",
+        course:"", employment:"Not Recorded",
+        occupation:"Founding Brother", organization:"",
+        religion:"Not Recorded", denomination:"",
+        phone:"", whatsapp:"", email:"",
+        location:"Kilimanjaro Slopes, Tanzania",
+        narrative:"Brother of Siara and founder of the Maina Branch.",
+        photo:""
+      },
+      {
+        id:"josephMaliti", firstName:"Joseph", middleName:"",
+        lastName:"Maliti", sex:"Male", branchType:"maliti",
+        honorific:"Earliest Known Maliti Ancestor", dob:"",
+        birthPeriod:"Historical Maliti Family Record", deceased:true,
+        dod:"", deathAge:"", causeOfDeath:"Not Recorded",
+        fatherId:"siara", motherId:"", spouseId:"",
+        maritalStatus:"Not Recorded", education:"Not Recorded",
+        course:"", employment:"Not Recorded",
+        occupation:"Maliti Family Founder", organization:"",
+        religion:"Not Recorded", denomination:"",
+        phone:"", whatsapp:"", email:"",
+        location:"Kilimanjaro Slopes, Tanzania",
+        narrative:"Earliest recorded Maliti sub-branch ancestor under Siara.",
+        photo:""
+      }
+    ];
+
+    var records;
+
+    try {
+      var storedRecords = JSON.parse(localStorage.getItem(STORAGE_KEY));
+      records = Array.isArray(storedRecords) ? storedRecords : defaultRecords;
+    } catch (error) {
+      records = defaultRecords;
+    }
+
+    function saveRecords() {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(records));
+      } catch (error) {
+        alert("Browser storage is unavailable. Use Save Project Data to create a project backup.");
+      }
+    }
+
+    function calculateAge(record, endDate) {
+      if (!record || !record.dob) return null;
+
+      var birth = new Date(record.dob + "T00:00:00");
+      var end = endDate ? new Date(endDate + "T00:00:00") : new Date();
+
+      if (isNaN(birth.getTime()) || isNaN(end.getTime()) || end < birth) return null;
+
+      var age = end.getFullYear() - birth.getFullYear();
+      if (end.getMonth() < birth.getMonth() || (end.getMonth() === birth.getMonth() && end.getDate() < birth.getDate())) age--;
+      return age;
+    }
+
+    function ageCategory(record) {
+      if (record && record.deceased && !record.dod) return "Historical / Unknown";
+      var age = calculateAge(record, record && record.deceased ? record.dod : "");
+      if (age === null) return "Historical / Unknown";
+      if (age <= 1) return "Infant (0-1)";
+      if (age <= 9) return "Child (2-9)";
+      if (age <= 19) return "Adolescent (10-19)";
+      if (age <= 59) return "Adult / Youth (20-59)";
+      return "Elderly (60+)";
+    }
+
+    function findRecord(id) {
+      return records.find(function(record) {
+        return record.id === id;
+      });
+    }
+
+    function fullName(record) {
+      if (!record) return "";
+      return [
+        record.firstName,
+        record.middleName,
+        record.lastName
+      ].filter(Boolean).join(" ");
+    }
+
+    function linkedName(id) {
+      var linked = findRecord(id);
+      return escapeHtml(linked ? fullName(linked) : "Not Recorded");
+    }
+
+    function linkedNames(ids) {
+      var list = Array.isArray(ids) ? ids : [];
+      var names = list.map(function(id) { return findRecord(id); }).filter(Boolean).map(fullName);
+      return escapeHtml(names.length ? names.join(", ") : "Not Recorded");
+    }
+
+    function siblingRecords(record) {
+      if (!record) return [];
+      var explicitIds = Array.isArray(record.siblingIds) ? record.siblingIds : [];
+      return records.filter(function(candidate) {
+        if (candidate.id === record.id) return false;
+        var sharesFather = record.fatherId && candidate.fatherId && record.fatherId === candidate.fatherId;
+        var sharesMother = record.motherId && candidate.motherId && record.motherId === candidate.motherId;
+        var explicitlyLinked = explicitIds.indexOf(candidate.id) !== -1 ||
+          (Array.isArray(candidate.siblingIds) && candidate.siblingIds.indexOf(record.id) !== -1);
+        return sharesFather || sharesMother || explicitlyLinked;
+      });
+    }
+
+    function siblingNames(record) {
+      var names = siblingRecords(record).map(fullName);
+      return escapeHtml(names.length ? names.join(", ") : "Not Recorded");
+    }
+    function reconcileSiblingParents() {
+      var changed = false;
+      records.forEach(function(record) {
+        siblingRecords(record).forEach(function(sibling) {
+          if (!record.fatherId && sibling.fatherId) { record.fatherId = sibling.fatherId; changed = true; }
+          if (!record.motherId && sibling.motherId) { record.motherId = sibling.motherId; changed = true; }
+        });
+      });
+      return changed;
+    }
+
+    function seniorityCompare(first, second) {
+        if (first.id === "ngowi1") return -1;
+        if (second.id === "ngowi1") return 1;
+        var firstAge = calculateAge(first, first.deceased ? first.dod : "");
+        var secondAge = calculateAge(second, second.deceased ? second.dod : "");
+        if (firstAge !== null && secondAge !== null && firstAge !== secondAge) return secondAge - firstAge;
+        if (first.dob && second.dob && first.dob !== second.dob) return first.dob.localeCompare(second.dob);
+        if (firstAge !== null) return -1;
+        if (secondAge !== null) return 1;
+        return records.indexOf(first) - records.indexOf(second);
+    }
+
+    function biologicalGeneration(record, trail) {
+      if (!record) return 1;
+      var visited = trail || {};
+      if (visited[record.id]) return 1;
+      visited[record.id] = true;
+      var parentGenerations = [record.fatherId, record.motherId].map(function(parentId) {
+        return parentId && findRecord(parentId) ? biologicalGeneration(findRecord(parentId), Object.assign({}, visited)) : 0;
+      });
+      return Math.max.apply(null, parentGenerations) + 1;
+    }
+
+    function generationNumber(record) {
+      if (!record) return 1;
+      var generation = biologicalGeneration(record);
+      var spouse = findRecord(record.spouseId);
+      if (spouse) generation = Math.max(generation, biologicalGeneration(spouse));
+      return generation;
+    }
+
+    function generationLabel(record) {
+      return "GEN " + String(generationNumber(record)).padStart(3, "0");
+    }
+
+    function clanRanking() {
+      return records.slice().sort(function(first, second) {
+        var generationDifference = generationNumber(first) - generationNumber(second);
+        return generationDifference || seniorityCompare(first, second);
+      });
+    }
+
+    function clanMemberNumber(record) {
+      var ranked = clanRanking();
+      var position = ranked.findIndex(function(item) { return item.id === record.id; });
+      return "CLAN " + String(position + 1).padStart(6, "0");
+    }
+
+    function escapeHtml(value) {
+      return String(value || "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;");
+    }
+
+    function initials(record) {
+      var words = fullName(record).split(/\s+/);
+      var first = (words[0] || "S").charAt(0);
+      var last = (words[words.length - 1] || "M").charAt(0);
+      return (first + last).toUpperCase();
+    }
+
+    function branchLabel(record) {
+      if (isSiaraBranchMember(record)) return "Siara Branch";
+      if (record.branchType === "maina") return "Maina Branch";
+      if (record.branchType === "maliti") return "Maliti Family";
+      return "Foundational Ancestry";
+    }
+
+    function isSiaraBranchMember(record) {
+      if (!record) return false;
+      if (record.branchType === "siara" || record.id === "siara") return true;
+
+      var jamesSiara = records.find(function(member) {
+        var name = fullName(member).toLowerCase();
+        return name.indexOf("james") !== -1 && name.indexOf("siara") !== -1;
+      });
+
+      return !!jamesSiara && (record.id === jamesSiara.id || ancestorMap(record.id)[jamesSiara.id] !== undefined);
+    }
+
+    function lineageClass(record) {
+      if (!record) return "lineage-foundation";
+      var ancestors = ancestorMap(record.id);
+      if (isSiaraBranchMember(record) || ancestors.siara !== undefined) return "lineage-siara";
+      if (record.id === "maina" || ancestors.maina !== undefined) return "lineage-maina";
+      return "lineage-foundation";
+    }
+
+    function ageAtDeath(record) {
+      var years = calculateAge(record, record && record.dod);
+      return years === null ? "" : years;
+    }
+
+    function ageGroup(record) {
+      return ageCategory(record);
+    }
+
+    function getPhoto(record) {
+      if (record.photo) {
+        return '<img class="portrait" src="' + record.photo + '" alt="Profile image">';
+      }
+
+      return '<div class="avatar">' + initials(record) + '</div>';
+    }
+
+    function closeModal(id) {
+      document.getElementById(id).classList.remove("open");
+    }
+
+    function shareCurrentForm() {
+      var firstName = document.getElementById("firstName").value.trim();
+      var middleName = document.getElementById("middleName").value.trim();
+      var lastName = document.getElementById("lastName").value.trim();
+      var name = [firstName, middleName, lastName].filter(Boolean).join(" ") || "Clan Member Profile";
+      var details = [
+        "Name: " + name,
+        "Clan member number: " + document.getElementById("clanMemberNumber").value,
+        "Family classification: " + document.getElementById("branchType").value,
+        "Life status: " + document.getElementById("deceased").selectedOptions[0].textContent,
+        "Place of birth: " + document.getElementById("placeOfBirth").value,
+        "Historical narrative: " + document.getElementById("narrative").value
+      ].join("\n");
+      var recordId = document.getElementById("recordId").value;
+      shareContent(name + " - Clan Profile", recordId ? "" : details, recordId ? buildShareUrl("#form=" + encodeURIComponent(recordId)) : window.location.href);
+    }
+
+    function shareCardLink() {
+      var memberId = selectedMemberId || window.currentTreeRoot || (records[0] && records[0].id);
+      var record = findRecord(memberId);
+      if (!record) return;
+      shareContent(fullName(record) + " - Clan Card", "", buildShareUrl("#card=" + encodeURIComponent(record.id)));
+    }
+
+    function shareFormLink() {
+      var memberId = selectedMemberId || window.currentTreeRoot || (records[0] && records[0].id);
+      var record = findRecord(memberId);
+      if (!record) return;
+      shareContent(fullName(record) + " - Clan Form", "", buildShareUrl("#form=" + encodeURIComponent(record.id)));
+    }
+
+    function shareTreeLink() {
+      var type = window.currentTreeType || "clan";
+      var root = window.currentTreeRoot || "";
+      var hash = "#tree=" + encodeURIComponent(type) + (root ? "&root=" + encodeURIComponent(root) : "");
+      shareContent(document.getElementById("treeTitle").textContent, "", buildShareUrl(hash));
+    }
+
+    function buildShareUrl(hash) {
+      return window.location.href.split("#")[0] + hash;
+    }
+
+    function shareVisibleView(title, elementId) {
+      var view = document.getElementById(elementId);
+      var text = view.innerText.replace(/\s+/g, " ").trim();
+      shareContent(title, text.slice(0, 4000), window.location.href);
+    }
+
+    function populateArchiveMemberSelect() {
+      var select = document.getElementById("searchInput");
+      select.innerHTML = '<option value="">Search Clan Archive</option>';
+      ["siara", "maina"].forEach(function(branch) {
+        var branchRecords = records.filter(function(record) { return record.branchType === branch; });
+        if (!branchRecords.length) return;
+        var group = document.createElement("optgroup");
+        group.label = branch === "siara" ? "Siara Branch" : "Maina Branch";
+        branchRecords.sort(function(a, b) { return fullName(a).localeCompare(fullName(b)); }).forEach(function(record) {
+          var option = document.createElement("option");
+          option.value = record.id;
+          option.textContent = fullName(record);
+          group.appendChild(option);
+        });
+        select.appendChild(group);
+      });
+      records.filter(function(record) { return record.branchType !== "siara" && record.branchType !== "maina"; })
+        .sort(function(a, b) { return fullName(a).localeCompare(fullName(b)); })
+        .forEach(function(record) {
+          var option = document.createElement("option");
+          option.value = record.id;
+          option.textContent = fullName(record) + " - " + branchLabel(record);
+          select.appendChild(option);
+        });
+    }
+
+    function selectArchiveMember(memberId) {
+      selectedMemberId = memberId || "";
+      customQuery = "";
+      showCatalogue("all");
+      if (memberId) {
+        var card = document.getElementById("card-" + memberId);
+        if (card) card.scrollIntoView({behavior: "smooth", block: "start"});
+      }
+    }
+
+    function shareContent(title, text, url) {
+      if (navigator.share) {
+        navigator.share({title: title, text: text, url: url}).catch(function(error) {
+          if (error && error.name !== "AbortError") showShareOptions(title, text, url);
+        });
+        return;
+      }
+      showShareOptions(title, text, url);
+    }
+
+    function showShareOptions(title, text, url) {
+      var choice = prompt("Share by entering: email, whatsapp, x, or copy");
+      if (!choice) return;
+      choice = choice.toLowerCase().trim();
+      var encodedText = encodeURIComponent(text + "\n" + url);
+      if (choice === "email") window.location.href = "mailto:?subject=" + encodeURIComponent(title) + "&body=" + encodedText;
+      if (choice === "whatsapp") window.open("https://wa.me/?text=" + encodedText, "_blank", "noopener");
+      if (choice === "x" || choice === "twitter") window.open("https://twitter.com/intent/tweet?text=" + encodedText, "_blank", "noopener");
+      if (choice === "copy") {
+        if (navigator.clipboard) navigator.clipboard.writeText(text + "\n" + url);
+        else window.prompt("Copy this share link:", text + "\n" + url);
+      }
+    }
+
+    function toggleMenu(id) {
+      var menu = document.getElementById(id); var shouldOpen = !menu.classList.contains("open");
+      ["catalogueMenu","treeMenu","viewMenu","utilitiesMenu"].forEach(function(menuId){var item=document.getElementById(menuId);if(item)item.classList.remove("open");});
+      if(shouldOpen)menu.classList.add("open");
+      if(id==="catalogueMenu")document.getElementById("treeCustomRootRow").classList.remove("visible");
+      if(id==="treeMenu")document.getElementById("catalogueCustomSearchRow").classList.remove("visible");
+    }
+
+    function toggleMobileMenu() {
+      var controls = document.querySelector(".controls");
+      var toggle = document.querySelector(".mobile-menu-toggle");
+      var isOpen = controls.classList.toggle("mobile-open");
+      toggle.setAttribute("aria-expanded", String(isOpen));
+      toggle.textContent = isOpen ? "Close" : "Menu";
+    }
+
+    function applyInlineCustomSearch() {
+      var value = document.getElementById("catalogueCustomSearchInput").value.trim();
+      customQuery = value;
+      selectedMemberId = "";
+      document.getElementById("searchInput").value = "";
+      showCatalogue("all");
+    }
+
+    function navigateCatalogue(filter) {
+      customQuery = "";
+      document.getElementById("searchInput").value = "";
+      selectedMemberId = "";
+      document.getElementById("catalogueCustomSearchInput").value = "";
+      document.getElementById("catalogueCustomSearchRow").classList.remove("visible");
+      showCatalogue(filter || "all");
+    }
+
+    function toggleCatalogueCustomSearch() {
+      var row = document.getElementById("catalogueCustomSearchRow");
+      row.classList.toggle("visible");
+      document.getElementById("treeCustomRootRow").classList.remove("visible");
+      if (row.classList.contains("visible")) {
+        var input = document.getElementById("catalogueCustomSearchInput");
+        input.focus();
+        if (!input.value) {
+          input.value = document.getElementById("searchInput").value || "";
+        }
+      } else {
+        customQuery = "";
+        document.getElementById("searchInput").value = "";
+        showCatalogue(currentFilter);
+      }
+    }
+
+    function applyInlineCustomTree() {
+      var rootId = document.getElementById("treeCustomRootSelect").value;
+      if (!rootId) return;
+      showTree("custom", rootId);
+      document.getElementById("treeCustomRootRow").classList.remove("visible");
+    }
+
+    function toggleTreeCustomView() {
+      var row = document.getElementById("treeCustomRootRow");
+      row.classList.toggle("visible");
+      document.getElementById("catalogueCustomSearchRow").classList.remove("visible");
+      if (row.classList.contains("visible")) {
+        populateMemberSelect("treeCustomRootSelect");
+      }
+    }
+
+    function updateMetrics() {
+      document.getElementById("totalMetric").textContent = records.length;
+      document.getElementById("livingMetric").textContent =
+        records.filter(function(r) { return !r.deceased; }).length;
+      document.getElementById("deadMetric").textContent =
+        records.filter(function(r) { return r.deceased; }).length;
+      document.getElementById("heritageMetric").textContent =
+        records.filter(function(r) { return r.branchType === "heritage"; }).length;
+      document.getElementById("siaraMetric").textContent =
+        records.filter(function(r) { return r.branchType === "siara"; }).length;
+      document.getElementById("mainaMetric").textContent =
+        records.filter(function(r) { return r.branchType === "maina"; }).length;
+    }
+
+    function profileCard(record) {
+      var spouseText = showSpouseRecords ? linkedName(record.spouseId) : "Hidden";
+      var children = childrenOf(record.id);
+      var childNames = children.map(function(child) {
+        return escapeHtml(child.firstName || fullName(child));
+      }).join(", ");
+      return `
+          <article id="card-${record.id}" class="profile ${record.branchType} ${lineageClass(record)}">
+          <div class="profile-body">
+            <div class="card-identifiers">
+              <span class="member-number">${clanMemberNumber(record)}</span>
+              <span class="generation-number">${generationLabel(record)}</span>
+            </div>
+            <div class="profile-top">
+              ${getPhoto(record)}
+              <div>
+                <h3>${escapeHtml(fullName(record))}</h3>
+                <p>${escapeHtml(record.honorific || "Clan Member")}</p>
+              </div>
+            </div>
+
+            <span class="badge ${record.deceased ? "dead" : ""}">
+              ${record.deceased ? "Deceased" : "Living · " + ageGroup(record)}
+            </span>
+
+            <span class="branch ${record.branchType}">
+              ${branchLabel(record)}
+            </span>
+
+            <div class="data">
+              <span><strong>Sex:</strong> ${escapeHtml(record.sex)}</span>
+              <span><strong>Age Category:</strong> ${escapeHtml(ageCategory(record))}</span>
+              <span><strong>Father:</strong> ${linkedName(record.fatherId)}</span>
+              <span><strong>Mother:</strong> ${linkedName(record.motherId)}</span>
+              <span><strong>Spouse:</strong> ${spouseText}</span>
+              <span><strong>Siblings:</strong> ${siblingNames(record)}</span>
+              <span><strong>Place of Birth:</strong> ${escapeHtml(record.placeOfBirth || "Not Recorded")}</span>
+              <span><strong>Education:</strong> ${escapeHtml(record.education || "Not Recorded")}</span>
+              <span><strong>Children (${children.length}):</strong> ${childNames || "None Recorded"}</span>
+              ${record.deceased ? '<span><strong>Age at Death:</strong> ' + escapeHtml(ageAtDeath(record) || record.deathAge || "Not Recorded") + '</span>' : ""}
+              ${record.deceased ? '<span><strong>Cause of Death:</strong> ' + escapeHtml(record.causeOfDeath || "Not Recorded") + '</span>' : ""}
+              <span><strong>Occupation:</strong> ${escapeHtml(record.occupation || "Not Recorded")}</span>
+              <span><strong>Location:</strong> ${escapeHtml(record.location || "Not Recorded")}</span>
+            </div>
+          </div>
+
+          <div class="profile-footer">
+            <button class="link-button" type="button" onclick="editRecord('${record.id}')">
+              Open Full Profile
+            </button>
+          </div>
+        </article>
+      `;
+    }
+
+    function lineMember(record, extraClass) {
+      var spouseText = showSpouseRecords ? linkedName(record.spouseId) : "Hidden";
+      return `<div class="line-member ${extraClass || ""}">
+        <strong><span class="member-number">${clanMemberNumber(record)}</span>${escapeHtml(fullName(record))}</strong>
+        <span>${escapeHtml(ageCategory(record))}</span>
+        <span>${escapeHtml(record.sex || "Not Recorded")}</span>
+        <span>${escapeHtml(record.religion || "Not Recorded")}</span>
+        <span>Father: ${linkedName(record.fatherId)}<br>Mother: ${linkedName(record.motherId)}<br>Spouse: ${spouseText}<br>Siblings: ${siblingNames(record)}</span>
+        <span>${escapeHtml(record.occupation || "Not Recorded")}</span>
+        <span>Education: ${escapeHtml(record.education || "Not Recorded")}</span>
+        <span>Born: ${escapeHtml(record.placeOfBirth || "Not Recorded")}</span>
+        ${record.deceased ? '<span>Age at Death: ' + escapeHtml(ageAtDeath(record) || record.deathAge || "Not Recorded") + '<br>Cause: ' + escapeHtml(record.causeOfDeath || "Not Recorded") + '</span>' : '<span></span>'}
+        <button class="link-button" type="button" onclick="editRecord('${record.id}')">Open</button>
+      </div>`;
+    }
+
+    function renderCatalogue(recordsToRender, forceCards) {
+      if (!recordsToRender.length) return '<div class="empty">No profiles match this selection.</div>';
+      if (viewStyle === "line" && !forceCards) {
+        return '<section class="line-view"><div class="line-member line-heading"><span>Member</span><span>Age Category</span><span>Sex</span><span>Religion</span><span>Family Links</span><span>Occupation</span><span>Education</span><span>Place of Birth</span><span>Life Details</span><span></span></div>' +
+          recordsToRender.map(function(record) {
+            var spouse = showSpouseRecords && findRecord(record.spouseId);
+            return lineMember(record) + (spouse ? lineMember(spouse, "spouse-line") : "");
+          }).join("") + '</section>';
+      }
+      return '<section class="profiles">' + recordsToRender.map(profileCard).join("") + '</section>';
+    }
+
+    function matchesCustomFilter(record) {
+      var filter = customFilter || {};
+      var value = function(key) { return filter[key] === undefined || filter[key] === null ? "" : String(filter[key]).trim(); };
+      var age = calculateAge(record, record.deceased ? record.dod : "");
+      var deathAgeValue = record.deceased ? (ageAtDeath(record) || record.deathAge) : "";
+      var deathAge = deathAgeValue === "" ? null : Number(deathAgeValue);
+      if (value("name") && fullName(record).toLowerCase().indexOf(value("name").toLowerCase()) === -1) return false;
+      if (value("minAge") && (age === null || age < Number(value("minAge")))) return false;
+      if (value("maxAge") && (age === null || age > Number(value("maxAge")))) return false;
+      if (value("minDeathAge") && (deathAge === null || isNaN(deathAge) || deathAge < Number(value("minDeathAge")))) return false;
+      if (value("maxDeathAge") && (deathAge === null || isNaN(deathAge) || deathAge > Number(value("maxDeathAge")))) return false;
+      if (value("ageCategory") && ageCategory(record) !== value("ageCategory")) return false;
+      if (value("sex") && record.sex !== value("sex")) return false;
+      if (value("deceased") && String(record.deceased) !== value("deceased")) return false;
+      if (value("education") && (record.education || "Not Recorded") !== value("education")) return false;
+      if (value("placeOfBirth") && (record.placeOfBirth || "").toLowerCase().indexOf(value("placeOfBirth").toLowerCase()) === -1) return false;
+      if (value("fatherId") && record.fatherId !== value("fatherId")) return false;
+      if (value("motherId") && record.motherId !== value("motherId")) return false;
+      if (value("maritalStatus") && (record.maritalStatus || "Not Recorded") !== value("maritalStatus")) return false;
+      if (value("religion") && (record.religion || "Not Recorded") !== value("religion")) return false;
+      if (value("denomination") && (record.denomination || "Not Recorded") !== value("denomination")) return false;
+      if (value("branch") && record.branchType !== value("branch")) return false;
+      return true;
+    }
+
+    function showCatalogue(filter) {
+      currentFilter = filter || "all";
+      if (!Array.isArray(records)) records = defaultRecords;
+
+      document.body.classList.remove("view-page-open");
+      document.getElementById("cataloguePage").classList.add("active");
+      document.getElementById("treePage").classList.remove("active");
+      document.getElementById("statisticsPage").classList.remove("active");
+      document.getElementById("catalogueMenu").classList.remove("open");
+
+      var filtered = records.filter(function(record) {
+        var matchesFilter =
+          currentFilter === "all" ||
+          currentFilter === "custom" ||
+          (currentFilter === "living" && !record.deceased) ||
+          (currentFilter === "deceased" && record.deceased) ||
+          (currentFilter === "siara" && isSiaraBranchMember(record)) ||
+          record.branchType === currentFilter;
+
+        var searchable = [
+          fullName(record),
+          fullName(findRecord(record.fatherId)),
+          fullName(findRecord(record.motherId)),
+          record.occupation,
+          record.location,
+          record.honorific,
+          record.education
+        ].join(" ").toLowerCase();
+
+        var matchesMember = !selectedMemberId || record.id === selectedMemberId;
+        var matchesQuery = !customQuery || searchable.indexOf(customQuery.toLowerCase()) > -1;
+        var matchesFilterForm = currentFilter !== "custom" || matchesCustomFilter(record);
+        return matchesFilter && matchesMember && matchesQuery && matchesFilterForm;
+      });
+
+      var titles = {
+        all: "Clan Member Catalogue",
+        living: "Living Clan Members",
+        deceased: "Deceased Members",
+        heritage: "Foundational Ancestry",
+        siara: "Siara Branch Members",
+        maina: "Maina Branch Members",
+        maliti: "Maliti Family Members"
+        ,custom: "Custom Filter Results"
+      };
+
+      document.getElementById("catalogueTitle").textContent = titles[currentFilter];
+      document.getElementById("catalogueDescription").textContent =
+        filtered.length + " profile(s) displayed.";
+
+      document.getElementById("catalogueWorkspace").innerHTML = renderCatalogue(filtered);
+      document.getElementById("searchInput").value = selectedMemberId;
+      saveStoredSettings();
+      updateMetrics();
+      window.scrollTo(0, 0);
+    }
+
+    function childrenOf(id) {
+      return records.filter(function(record) {
+        return record.fatherId === id || record.motherId === id;
+      });
+    }
+
+    function treeCard(record) {
+      if (!record) return "";
+      return `
+        <div class="tree-card ${record.branchType} ${lineageClass(record)}" onclick="editRecord('${record.id}')">
+          <div class="card-identifiers">
+            <span class="member-number">${clanMemberNumber(record)}</span>
+            <span class="generation-number">${generationLabel(record)}</span>
+          </div>
+          <strong>${escapeHtml(fullName(record))}</strong>
+          <span>${escapeHtml(record.honorific || "Clan Member")}</span>
+          <span>${escapeHtml(record.birthPeriod || record.dob || "Date Not Recorded")}</span>
+          <small>${escapeHtml(ageCategory(record))}</small>
+        </div>
+      `;
+    }
+
+    function spouseCard(record) {
+      var spouse = findRecord(record.spouseId);
+
+      if (!spouse || !showSpouseRecords) return "";
+
+      return `
+        <div class="spouse-card" onclick="editRecord('${spouse.id}')">
+          <div class="card-identifiers">
+            <span class="member-number">${clanMemberNumber(spouse)}</span>
+            <span class="generation-number">${generationLabel(spouse)}</span>
+          </div>
+          <strong>${escapeHtml(fullName(spouse))}</strong>
+          <span>Spouse</span>
+          <small>${escapeHtml(ageCategory(spouse))}</small>
+        </div>
+      `;
+    }
+
+    function buildTree(memberId, filter) {
+      var descendants = childrenOf(memberId).filter(function(record) {
+        if (!filter) return true;
+
+        if (filter === "siara") {
+          return isSiaraBranchMember(record) || record.branchType === "maliti";
+        }
+
+        return record.branchType === filter;
+      });
+
+      if (!descendants.length) return "";
+
+      return `
+        <ul>
+          ${descendants.map(function(child) {
+            return `
+              <li>
+                <div class="couple">
+                  ${treeCard(child)}
+                  ${spouseCard(child)}
+                </div>
+                ${buildTree(child.id, filter)}
+              </li>
+            `;
+          }).join("")}
+        </ul>
+      `;
+    }
+
+    function showTree(type, selectedRootId) {
+      document.body.classList.add("view-page-open");
+      document.getElementById("treeMenu").classList.remove("open");
+      document.getElementById("cataloguePage").classList.remove("active");
+      document.getElementById("statisticsPage").classList.remove("active");
+      document.getElementById("treePage").classList.add("active");
+
+      window.currentTreeType = type;
+      window.currentTreeRoot = selectedRootId || "";
+      var rootId = selectedRootId || "ngowi1";
+      var filter = "";
+      var title = "SiaraMaina Clan Tree";
+
+      if (type === "siara") {
+        rootId = "siara";
+        filter = "siara";
+        title = "Siara Branch Family Tree";
+      }
+
+      if (type === "maina") {
+        rootId = "maina";
+        filter = "maina";
+        title = "Maina Branch Family Tree";
+      }
+
+      if (type === "maliti") {
+        rootId = "josephMaliti";
+        filter = "maliti";
+        title = "Maliti Family Tree";
+      }
+
+      if (type === "custom") title = "Custom Family Tree View";
+
+      var root = findRecord(rootId);
+
+      if (!root) {
+        document.getElementById("treeWorkspace").innerHTML = '<div class="empty">The selected tree root could not be found.</div>';
+        return;
+      }
+
+      document.getElementById("treeTitle").textContent = title;
+
+      document.getElementById("treeWorkspace").innerHTML = `
+        <div class="tree-tools">
+          <strong>Tree view: <span id="treeZoomLabel">100%</span></strong>
+          <button class="button secondary" type="button" onclick="adjustTreeZoom(-0.1)">Zoom Out</button>
+          <button class="button secondary" type="button" onclick="adjustTreeZoom(0.1)">Zoom In</button>
+          <button class="button secondary" type="button" onclick="resetTreeZoom()">Reset</button>
+          <button class="button primary" type="button" onclick="fitTreeToWidth()">Fit to Width</button>
+        </div>
+        <div class="tree-export">
+          <label for="treeExportFormat"><strong>Export tree</strong></label>
+          <select id="treeExportFormat">
+            <option value="png">PNG image</option>
+            <option value="jpg">JPG image</option>
+            <option value="svg">SVG document</option>
+            <option value="html">HTML document</option>
+            <option value="pdf">PDF / Print</option>
+          </select>
+          <button class="button secondary" type="button" onclick="exportTree(document.getElementById('treeExportFormat').value)">Export</button>
+          <button class="button primary" type="button" onclick="printTreeView()">Print</button>
+        </div>
+        <div id="treeViewport" class="tree-viewport">
+          <div id="treeCanvas" class="tree-canvas">
+            <div class="classical-tree">
+              <ul>
+                <li>
+                  <div class="couple">
+                    ${treeCard(root)}
+                    ${spouseCard(root)}
+                  </div>
+                  ${buildTree(root.id, filter)}
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      `;
+
+      resetTreeZoom();
+
+      window.scrollTo(0, 0);
+    }
+
+    function setTreeZoom(value) {
+      var canvas = document.getElementById("treeCanvas");
+      var label = document.getElementById("treeZoomLabel");
+      if (!canvas || !label) return;
+      var zoom = Math.max(0.25, Math.min(1.5, value));
+      canvas.style.zoom = zoom;
+      label.textContent = Math.round(zoom * 100) + "%";
+    }
+
+    function adjustTreeZoom(delta) {
+      var label = document.getElementById("treeZoomLabel");
+      var current = label ? parseInt(label.textContent, 10) / 100 : 1;
+      setTreeZoom(current + delta);
+    }
+
+    function resetTreeZoom() {
+      setTreeZoom(1);
+    }
+
+    function printTreeView() {
+      document.getElementById("printTarget").value = "tree";
+      openPrintDialog();
+    }
+
+    function fitTreeToWidth() {
+      var viewport = document.getElementById("treeViewport");
+      var canvas = document.getElementById("treeCanvas");
+      if (!viewport || !canvas) return;
+      setTreeZoom(Math.min(1, viewport.clientWidth / canvas.scrollWidth));
+    }
+
+    function downloadFile(contents, filename, type) {
+      var isDataUrl = typeof contents === "string" && contents.indexOf("data:") === 0;
+      var url = isDataUrl ? contents : URL.createObjectURL(new Blob([contents], { type:type }));
+      var link = document.createElement("a");
+      link.href = url;
+      link.download = filename;
+      link.click();
+      if (!isDataUrl) setTimeout(function() { URL.revokeObjectURL(url); }, 500);
+    }
+
+    function exportTree(format) {
+      var tree = document.querySelector("#treeCanvas .classical-tree");
+      if (!tree) return;
+      if (format === "pdf") {
+        document.getElementById("printTarget").value = "tree";
+        openPrintDialog();
+        return;
+      }
+
+      var title = document.getElementById("treeTitle").textContent.trim() || "SiaraMaina Clan Tree";
+      var width = Math.max(900, tree.scrollWidth || tree.offsetWidth);
+      var height = Math.max(500, tree.scrollHeight || tree.offsetHeight);
+      var styles = document.querySelector("style").textContent;
+      var treeMarkup = tree.outerHTML.replace(/onclick="[^"]*"/g, "");
+      var svg = '<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="' + width + '" height="' + height + '" viewBox="0 0 ' + width + ' ' + height + '"><foreignObject width="100%" height="100%"><div xmlns="http://www.w3.org/1999/xhtml"><style>' + styles + '</style>' + treeMarkup + '</div></foreignObject></svg>';
+
+      if (format === "svg") {
+        downloadFile(svg, title.replace(/[^a-z0-9]+/gi, "-").toLowerCase() + ".svg", "image/svg+xml");
+        return;
+      }
+      if (format === "html") {
+        downloadFile("<!doctype html><html><head><meta charset=\"utf-8\"><title>" + escapeHtml(title) + "</title><style>" + styles + "</style></head><body><h1>" + escapeHtml(title) + "</h1>" + treeMarkup + "</body></html>", title.replace(/[^a-z0-9]+/gi, "-").toLowerCase() + ".html", "text/html");
+        return;
+      }
+
+      var image = new Image();
+      image.onload = function() {
+        var canvas = document.createElement("canvas");
+        canvas.width = width * 2;
+        canvas.height = height * 2;
+        var context = canvas.getContext("2d");
+        context.fillStyle = "#ffffff";
+        context.fillRect(0, 0, canvas.width, canvas.height);
+        context.drawImage(image, 0, 0, canvas.width, canvas.height);
+        var extension = format === "jpg" ? "jpg" : "png";
+        var mime = extension === "jpg" ? "image/jpeg" : "image/png";
+        downloadFile(canvas.toDataURL(mime, .95), title.replace(/[^a-z0-9]+/gi, "-").toLowerCase() + "." + extension, mime);
+      };
+      image.src = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(svg);
+    }
+
+    function setViewStyle(style) {
+      viewStyle = style === "line" ? "line" : "card";
+      document.getElementById("viewMenu").classList.remove("open");
+      saveStoredSettings();
+      showCatalogue(currentFilter);
+    }
+
+    function toggleSpouses() {
+      showSpouseRecords = !showSpouseRecords;
+      document.getElementById("spouseToggle").textContent = showSpouseRecords ? "Hide Spouses" : "Show Spouses";
+      saveStoredSettings();
+      if (document.getElementById("treePage").classList.contains("active")) {
+        showTree(window.currentTreeType || "clan", window.currentTreeRoot);
+      } else if (document.getElementById("cataloguePage").classList.contains("active")) {
+        showCatalogue(currentFilter);
+      }
+    }
+
+    function openCustomSearch() {
+      document.getElementById("catalogueMenu").classList.remove("open");
+      var row = document.getElementById("catalogueCustomSearchRow");
+      if (!row.classList.contains("visible")) toggleCatalogueCustomSearch();
+      document.getElementById("catalogueCustomSearchInput").value = document.getElementById("searchInput").value || "";
+      customQuery = document.getElementById("catalogueCustomSearchInput").value.trim();
+      showCatalogue("all");
+      document.getElementById("catalogueCustomSearchInput").focus();
+    }
+
+    function runCustomSearch() {
+      var query = document.getElementById("customSearchInput").value.trim().toLowerCase();
+      var matches = records.filter(function(record) {
+        return [
+          fullName(record),
+          fullName(findRecord(record.fatherId)),
+          fullName(findRecord(record.motherId)),
+          record.occupation,
+          record.location,
+          record.honorific,
+          record.education,
+          record.religion,
+          record.denomination,
+          record.placeOfBirth
+        ].join(" ").toLowerCase().indexOf(query) > -1;
+      });
+      document.getElementById("customSearchResults").innerHTML = renderCatalogue(matches, true);
+    }
+
+    function openCustomTree() {
+      document.getElementById("treeMenu").classList.remove("open");
+      toggleTreeCustomView();
+      populateMemberSelect("customTreeMember");
+      document.getElementById("customTreeModal").classList.add("open");
+    }
+
+    function showCustomTree() {
+      var rootId = document.getElementById("customTreeMember").value;
+      if (!rootId) return;
+      closeModal("customTreeModal");
+      showTree("custom", rootId);
+    }
+
+    function openCustomFilter() {
+      var categories = ["Historical / Unknown", "Infant (0-1)", "Child (2-9)", "Adolescent (10-19)", "Young Adult (20-24)", "Adult (25-59)", "Older Adult (60+)"];
+      var select = document.getElementById("filterAgeCategory");
+      select.innerHTML = '<option value="">Any</option>' + categories.map(function(category) { return '<option>' + category + '</option>'; }).join("");
+      populateMemberSelect("filterFatherId");
+      populateMemberSelect("filterMotherId");
+      document.getElementById("filterFatherId").insertAdjacentHTML("afterbegin", '<option value="" selected>Any</option>');
+      document.getElementById("filterMotherId").insertAdjacentHTML("afterbegin", '<option value="" selected>Any</option>');
+      document.getElementById("customFilterModal").classList.add("open");
+    }
+
+    function applyCustomFilter() {
+      customFilter = {
+        minAge: document.getElementById("filterMinAge").value,
+        maxAge: document.getElementById("filterMaxAge").value,
+        name: document.getElementById("filterName").value.trim(),
+        minDeathAge: document.getElementById("filterMinDeathAge").value,
+        maxDeathAge: document.getElementById("filterMaxDeathAge").value,
+        ageCategory: document.getElementById("filterAgeCategory").value,
+        sex: document.getElementById("filterSex").value,
+        deceased: document.getElementById("filterDeceased").value,
+        education: document.getElementById("filterEducation").value,
+        placeOfBirth: document.getElementById("filterPlaceOfBirth").value.trim(),
+        fatherId: document.getElementById("filterFatherId").value,
+        motherId: document.getElementById("filterMotherId").value,
+        maritalStatus: document.getElementById("filterMaritalStatus").value,
+        religion: document.getElementById("filterReligion").value,
+        denomination: document.getElementById("filterDenomination").value,
+        branch: document.getElementById("filterBranch").value
+      };
+      customQuery = "";
+      closeModal("customFilterModal");
+      showCatalogue("custom");
+    }
+
+    function clearCustomFilter() {
+      document.querySelectorAll("#customFilterModal input, #customFilterModal select").forEach(function(field) { field.value = ""; });
+      customFilter = {};
+      closeModal("customFilterModal");
+      showCatalogue("all");
+    }
+
+    function updateAgeFields() {
+      var draft = { dob:document.getElementById("dob").value, dod:document.getElementById("dod").value, deceased:document.getElementById("deceased").value === "true" };
+      document.getElementById("ageCategory").value = ageCategory(draft);
+      document.getElementById("deathAge").value = ageAtDeath(draft);
+    }
+
+    function populateMemberSelect(id, excludeId) {
+      var select = document.getElementById(id);
+
+      select.innerHTML = '<option value="">Not Recorded</option>';
+
+      records
+        .slice()
+        .sort(function(a, b) {
+          return fullName(a).localeCompare(fullName(b));
+        })
+        .forEach(function(record) {
+          if (record.id === excludeId) return;
+
+          select.innerHTML += `
+            <option value="${record.id}">
+              ${escapeHtml(fullName(record))} — ${branchLabel(record)}
+            </option>
+          `;
+        });
+    }
+
+    function openProfile(record) {
+      var editing = !!record;
+
+      document.getElementById("modalTitle").textContent =
+        editing ? "View or Edit Clan Profile" : "Add Clan Profile";
+
+      var textFields = [
+        "firstName", "middleName", "lastName", "honorific",
+        "dob", "placeOfBirth", "birthPeriod", "dod", "deathAge",
+        "course", "occupation", "organization",
+        "denomination", "phone", "whatsapp", "email",
+        "location", "narrative"
+      ];
+
+      textFields.forEach(function(id) {
+        document.getElementById(id).value =
+          editing ? (record[id] || "") : "";
+      });
+
+      var selectFields = [
+        "sex", "branchType", "deceased", "causeOfDeath",
+        "maritalStatus", "education", "employment", "religion"
+      ];
+
+      selectFields.forEach(function(id) {
+        var select = document.getElementById(id);
+        select.value = editing
+          ? (record[id] || select.options[0].value)
+          : select.options[0].value;
+      });
+
+      document.getElementById("recordId").value = editing ? record.id : "";
+      document.getElementById("storedPhoto").value = editing ? (record.photo || "") : "";
+      document.getElementById("clanMemberNumber").value = editing ? clanMemberNumber(record) : "Assigned when saved";
+
+      populateMemberSelect("fatherId", editing ? record.id : "");
+      populateMemberSelect("motherId", editing ? record.id : "");
+      populateMemberSelect("spouseId", editing ? record.id : "");
+
+      var siblingSelect = document.getElementById("siblingIds");
+      siblingSelect.innerHTML = '<option value="">Not Recorded</option>';
+      records
+        .slice()
+        .sort(function(a, b) { return fullName(a).localeCompare(fullName(b)); })
+        .forEach(function(member) {
+          if (member.id === (editing ? record.id : "")) return;
+          var option = document.createElement("option");
+          option.value = member.id;
+          option.textContent = fullName(member) + " — " + branchLabel(member);
+          siblingSelect.appendChild(option);
+        });
+
+      if (editing && Array.isArray(record.siblingIds) && record.siblingIds.length) {
+        siblingSelect.value = record.siblingIds[0];
+      }
+
+      document.getElementById("fatherId").value = editing ? (record.fatherId || "") : "";
+      document.getElementById("motherId").value = editing ? (record.motherId || "") : "";
+      document.getElementById("spouseId").value = editing ? (record.spouseId || "") : "";
+      updateAgeFields();
+
+      var preview = document.getElementById("photoPreview");
+
+      if (editing && record.photo) {
+        preview.src = record.photo;
+        preview.style.display = "block";
+      } else {
+        preview.style.display = "none";
+      }
+
+      document.getElementById("deleteButton").style.display =
+        editing ? "inline-block" : "none";
+
+      document.getElementById("relationshipSummary").innerHTML =
+        profileRelationshipSummary(record);
+
+      document.getElementById("profileModal").classList.add("open");
+    }
+
+    function editRecord(id) {
+      var record = findRecord(id);
+      if (record) openProfile(record);
+    }
+
+    function profileRelationshipSummary(record) {
+      if (!record) {
+        return "<strong>Family Relationships</strong><br>Add each parent separately. A spouse link does not create a parent link.";
+      }
+
+      var father = findRecord(record.fatherId);
+      var mother = findRecord(record.motherId);
+      var spouse = findRecord(record.spouseId);
+      var children = childrenOf(record.id);
+
+      return `
+        <strong>Family Relationships</strong><br>
+        Father: ${escapeHtml(father ? fullName(father) : "Not Recorded")}<br>
+        Mother: ${escapeHtml(mother ? fullName(mother) : "Not Recorded")}<br>
+        Spouse: ${escapeHtml(spouse ? fullName(spouse) : "Not Recorded")}<br>
+        Siblings: ${siblingNames(record)}<br>
+        Children: ${escapeHtml(children.length ? children.map(fullName).join(", ") : "No Linked Children")}
+      `;
+    }
+
+    function saveProfile(event) {
+      event.preventDefault();
+
+      var id = document.getElementById("recordId").value || "member-" + Date.now();
+
+      var record = {
+        id: id,
+        firstName: document.getElementById("firstName").value.trim(),
+        middleName: document.getElementById("middleName").value.trim(),
+        lastName: document.getElementById("lastName").value.trim(),
+        sex: document.getElementById("sex").value,
+        branchType: document.getElementById("branchType").value,
+        honorific: document.getElementById("honorific").value.trim(),
+        dob: document.getElementById("dob").value,
+        birthPeriod: document.getElementById("birthPeriod").value.trim(),
+        placeOfBirth: document.getElementById("placeOfBirth").value.trim(),
+        deceased: document.getElementById("deceased").value === "true",
+        dod: document.getElementById("dod").value,
+        deathAge: "",
+        causeOfDeath: document.getElementById("causeOfDeath").value,
+        fatherId: document.getElementById("fatherId").value,
+        motherId: document.getElementById("motherId").value,
+        spouseId: document.getElementById("spouseId").value,
+        siblingIds: document.getElementById("siblingIds").value ? [document.getElementById("siblingIds").value] : [],
+        maritalStatus: document.getElementById("maritalStatus").value,
+        education: document.getElementById("education").value,
+        course: document.getElementById("course").value.trim(),
+        employment: document.getElementById("employment").value,
+        occupation: document.getElementById("occupation").value.trim(),
+        organization: document.getElementById("organization").value.trim(),
+        religion: document.getElementById("religion").value,
+        denomination: document.getElementById("denomination").value.trim(),
+        phone: document.getElementById("phone").value.trim(),
+        whatsapp: document.getElementById("whatsapp").value.trim(),
+        email: document.getElementById("email").value.trim(),
+        location: document.getElementById("location").value.trim(),
+        narrative: document.getElementById("narrative").value.trim(),
+        photo: document.getElementById("storedPhoto").value
+      };
+
+      record.deathAge = ageAtDeath(record);
+
+      var selectedSibling = findRecord(record.siblingIds[0]);
+      if (selectedSibling) {
+        if (!record.fatherId && selectedSibling.fatherId) record.fatherId = selectedSibling.fatherId;
+        if (!record.motherId && selectedSibling.motherId) record.motherId = selectedSibling.motherId;
+        if ((!record.fatherId || !record.motherId) && Array.isArray(selectedSibling.siblingIds)) {
+          selectedSibling.siblingIds.some(function(siblingId) {
+            var sibling = findRecord(siblingId);
+            if (!sibling) return false;
+            if (!record.fatherId && sibling.fatherId) record.fatherId = sibling.fatherId;
+            if (!record.motherId && sibling.motherId) record.motherId = sibling.motherId;
+            return !!(record.fatherId && record.motherId);
+          });
+        }
+      }
+      var index = records.findIndex(function(item) {
+        return item.id === id;
+      });
+
+      if (index > -1) {
+        records[index] = record;
+      } else {
+        records.push(record);
+      }
+
+      if (index > -1 && records[index].spouseId && records[index].spouseId !== record.spouseId) {
+        var previousSpouse = findRecord(records[index].spouseId);
+        if (previousSpouse) previousSpouse.spouseId = "";
+      }
+
+      if (record.spouseId) {
+        var spouse = findRecord(record.spouseId);
+
+        if (spouse) {
+          spouse.spouseId = record.id;
+        }
+      }
+
+      records.forEach(function(member) {
+        if (!Array.isArray(member.siblingIds)) member.siblingIds = [];
+        if (member.id === record.id) return;
+        var selected = record.siblingIds.indexOf(member.id) !== -1;
+        var position = member.siblingIds.indexOf(record.id);
+        if (selected && position === -1) member.siblingIds.push(record.id);
+        if (!selected && position !== -1) member.siblingIds.splice(position, 1);
+      });
+
+      saveRecords();
+      closeModal("profileModal");
+      showCatalogue("all");
+    }
+
+    function deleteProfile() {
+      var id = document.getElementById("recordId").value;
+      var record = findRecord(id);
+
+      if (!record) return;
+
+      if (!confirm("Delete " + fullName(record) + "?")) return;
+
+      records = records.filter(function(item) {
+        return item.id !== id;
+      });
+
+      records.forEach(function(item) {
+        if (item.fatherId === id) item.fatherId = "";
+        if (item.motherId === id) item.motherId = "";
+        if (item.spouseId === id) item.spouseId = "";
+        if (Array.isArray(item.siblingIds)) item.siblingIds = item.siblingIds.filter(function(siblingId) { return siblingId !== id; });
+      });
+
+      saveRecords();
+      closeModal("profileModal");
+      showCatalogue("all");
+    }
+
+    function loadPhoto(event) {
+      var file = event.target.files[0];
+
+      if (!file) return;
+
+      if (file.size > 650000) {
+        alert("Please use an image smaller than 650 KB.");
+        return;
+      }
+
+      var reader = new FileReader();
+
+      reader.onload = function(loadEvent) {
+        document.getElementById("storedPhoto").value =
+          loadEvent.target.result;
+
+        var preview = document.getElementById("photoPreview");
+        preview.src = loadEvent.target.result;
+        preview.style.display = "block";
+      };
+
+      reader.readAsDataURL(file);
+    }
+
+    function ancestorMap(id) {
+      var output = {};
+      var queue = [{ id:id, distance:0 }];
+
+      while (queue.length) {
+        var current = queue.shift();
+        var person = findRecord(current.id);
+
+        if (!person || output[current.id] !== undefined) continue;
+
+        output[current.id] = current.distance;
+
+        if (person.fatherId) {
+          queue.push({
+            id:person.fatherId,
+            distance:current.distance + 1
+          });
+        }
+
+        if (person.motherId) {
+          queue.push({
+            id:person.motherId,
+            distance:current.distance + 1
+          });
+        }
+      }
+
+      return output;
+    }
+
+    function genderedTerm(record, male, female, neutral) {
+      if (record.sex === "Male") return male;
+      if (record.sex === "Female") return female;
+      return neutral;
+    }
+
+    function ancestorTitle(record, distance) {
+      if (distance === 1) {
+        return genderedTerm(record, "father", "mother", "parent");
+      }
+
+      if (distance === 2) {
+        return genderedTerm(record, "grandfather", "grandmother", "grandparent");
+      }
+
+      var prefix = "";
+
+      for (var i = 0; i < distance - 2; i++) {
+        prefix += "great-";
+      }
+
+      return prefix + genderedTerm(
+        record,
+        "grandfather",
+        "grandmother",
+        "grandparent"
+      );
+    }
+
+    function areSiblings(first, second) {
+      if (!first || !second) return false;
+      return siblingRecords(first).some(function(record) { return record.id === second.id; });
+    }
+
+    function inLawTitle(record) {
+      return genderedTerm(record, "brother-in-law", "sister-in-law", "sibling-in-law");
+    }
+
+    function inLawParentTitle(record) {
+      return genderedTerm(record, "father-in-law", "mother-in-law", "parent-in-law");
+    }
+
+    function descendantTitle(record, distance) {
+      if (distance === 1) return genderedTerm(record, "son", "daughter", "child");
+      var prefix = distance === 2 ? "grand" : Array(distance - 2).fill("great-").join("") + "grand";
+      return prefix + genderedTerm(record, "son", "daughter", "child");
+    }
+
+    function relationshipDescription(first, second) {
+      var firstName = fullName(first);
+      var secondName = fullName(second);
+      if (first.spouseId === second.id || second.spouseId === first.id) return firstName + " and " + secondName + " are spouses";
+      if (areSiblings(first, second)) return firstName + " and " + secondName + " are siblings";
+
+      var firstSpouse = findRecord(first.spouseId);
+      var secondSpouse = findRecord(second.spouseId);
+      if (firstSpouse && areSiblings(firstSpouse, second)) return secondName + " is the in-law of " + firstName;
+      if (secondSpouse && areSiblings(secondSpouse, first)) return firstName + " is the in-law of " + secondName;
+
+      var firstSpouseParents = [firstSpouse && findRecord(firstSpouse.fatherId), firstSpouse && findRecord(firstSpouse.motherId)].filter(Boolean);
+      var secondSpouseParents = [secondSpouse && findRecord(secondSpouse.fatherId), secondSpouse && findRecord(secondSpouse.motherId)].filter(Boolean);
+      if (firstSpouseParents.some(function(parent) { return parent.id === second.id; })) return secondName + " is the " + inLawParentTitle(second) + " of " + firstName;
+      if (secondSpouseParents.some(function(parent) { return parent.id === first.id; })) return firstName + " is the " + inLawParentTitle(first) + " of " + secondName;
+
+      var firstAncestors = ancestorMap(first.id);
+      var secondAncestors = ancestorMap(second.id);
+      if (firstAncestors[second.id] > 0) return secondName + " is the " + ancestorTitle(second, firstAncestors[second.id]) + " of " + firstName;
+      if (secondAncestors[first.id] > 0) return secondName + " is the " + descendantTitle(second, secondAncestors[first.id]) + " of " + firstName;
+
+      var sharedAncestor = null;
+      var shortestDistance = Infinity;
+      Object.keys(firstAncestors).forEach(function(id) {
+        if (id !== first.id && id !== second.id && secondAncestors[id] !== undefined) {
+          var distance = firstAncestors[id] + secondAncestors[id];
+          if (distance < shortestDistance) {
+            sharedAncestor = id;
+            shortestDistance = distance;
+          }
+        }
+      });
+      if (!sharedAncestor) return "No direct relationship could be calculated from the recorded family links";
+
+      var firstDistance = firstAncestors[sharedAncestor];
+      var secondDistance = secondAncestors[sharedAncestor];
+      if (firstDistance === 2 && secondDistance === 1) return secondName + " is the " + genderedTerm(second, "uncle", "aunt", "aunt/uncle") + " of " + firstName;
+      if (firstDistance === 1 && secondDistance === 2) return secondName + " is the " + genderedTerm(second, "nephew", "niece", "niece/nephew") + " of " + firstName;
+
+      var cousinLevel = Math.min(firstDistance, secondDistance) - 1;
+      var labels = {1:"first", 2:"second", 3:"third", 4:"fourth"};
+      var relationship = (labels[cousinLevel] || cousinLevel + "th") + " cousins";
+      var removed = Math.abs(firstDistance - secondDistance);
+      if (removed === 1) relationship += ", once removed";
+      if (removed === 2) relationship += ", twice removed";
+      return firstName + " and " + secondName + " are " + relationship;
+    }
+
+    function openRelationship() {
+      populateMemberSelect("personA");
+      populateMemberSelect("personB");
+
+      document.getElementById("relationshipResult").textContent =
+        "Select two members to calculate their relationship.";
+
+      document.getElementById("relationshipModal").classList.add("open");
+    }
+
+    function findRelationship() {
+      var personA = findRecord(document.getElementById("personA").value);
+      var personB = findRecord(document.getElementById("personB").value);
+      var result = document.getElementById("relationshipResult");
+
+      if (!personA || !personB) {
+        result.innerHTML = "<strong>Please select two clan members.</strong>";
+        return;
+      }
+
+      if (personA.id === personB.id) {
+        result.innerHTML = "<strong>Same member</strong>";
+        return;
+      }
+
+      var description = relationshipDescription(personA, personB);
+      result.innerHTML = "<strong>" + escapeHtml(description) + ".</strong>";
+      return;
+
+      if (
+        personA.spouseId === personB.id ||
+        personB.spouseId === personA.id
+      ) {
+        result.innerHTML =
+          "<strong>" + escapeHtml(fullName(personA)) +
+          "</strong> and <strong>" +
+          escapeHtml(fullName(personB)) +
+          "</strong> are spouses.";
+        return;
+      }
+
+      if (areSiblings(personA, personB)) {
+        result.innerHTML = "<strong>" + escapeHtml(fullName(personA)) + "</strong> and <strong>" + escapeHtml(fullName(personB)) + "</strong> are siblings.";
+        return;
+      }
+
+      var spouseOfB = findRecord(personB.spouseId);
+      var spouseOfA = findRecord(personA.spouseId);
+      if (spouseOfB && areSiblings(personA, spouseOfB)) {
+        result.innerHTML = "<strong>" + escapeHtml(fullName(personB)) + "</strong> is the " + inLawTitle(personB) + " of <strong>" + escapeHtml(fullName(personA)) + "</strong>.";
+        return;
+      }
+      if (spouseOfA && areSiblings(personB, spouseOfA)) {
+        result.innerHTML = "<strong>" + escapeHtml(fullName(personA)) + "</strong> is the " + inLawTitle(personA) + " of <strong>" + escapeHtml(fullName(personB)) + "</strong>.";
+        return;
+      }
+
+      var ancestorsA = ancestorMap(personA.id);
+      var ancestorsB = ancestorMap(personB.id);
+
+      if (
+        ancestorsA[personB.id] !== undefined &&
+        ancestorsA[personB.id] > 0
+      ) {
+        result.innerHTML =
+          "<strong>" + escapeHtml(fullName(personB)) +
+          "</strong> is the " +
+          ancestorTitle(personB, ancestorsA[personB.id]) +
+          " of <strong>" +
+          escapeHtml(fullName(personA)) +
+          "</strong>.";
+
+        return;
+      }
+
+      if (
+        ancestorsB[personA.id] !== undefined &&
+        ancestorsB[personA.id] > 0
+      ) {
+        result.innerHTML =
+          "<strong>" + escapeHtml(fullName(personA)) +
+          "</strong> is the " +
+          ancestorTitle(personA, ancestorsB[personA.id]) +
+          " of <strong>" +
+          escapeHtml(fullName(personB)) +
+          "</strong>.";
+
+        return;
+      }
+
+      var sharedAncestor = null;
+      var shortestDistance = 999;
+
+      Object.keys(ancestorsA).forEach(function(id) {
+        if (
+          ancestorsB[id] !== undefined &&
+          ancestorsA[id] > 0 &&
+          ancestorsB[id] > 0 &&
+          ancestorsA[id] + ancestorsB[id] < shortestDistance
+        ) {
+          sharedAncestor = id;
+          shortestDistance = ancestorsA[id] + ancestorsB[id];
+        }
+      });
+
+      if (!sharedAncestor) {
+        result.innerHTML =
+          "No direct relationship could be calculated from the currently recorded family links.";
+
+        return;
+      }
+
+      var distanceA = ancestorsA[sharedAncestor];
+      var distanceB = ancestorsB[sharedAncestor];
+      var relationship = "";
+
+      if (distanceA === 1 && distanceB === 1) {
+        relationship = "siblings";
+      } else if (distanceA === 2 && distanceB === 1) {
+        relationship = genderedTerm(personB, "uncle", "aunt", "aunt/uncle") + " of " + fullName(personA);
+      } else if (distanceA === 1 && distanceB === 2) {
+        relationship = genderedTerm(personB, "nephew", "niece", "niece/nephew") + " of " + fullName(personA);
+      } else {
+        var cousinLevel = Math.min(distanceA, distanceB) - 1;
+        var removed = Math.abs(distanceA - distanceB);
+
+        var labels = {
+          1:"first",
+          2:"second",
+          3:"third",
+          4:"fourth"
+        };
+
+        relationship =
+          (labels[cousinLevel] || cousinLevel + "th") +
+          " cousins";
+
+        if (removed === 1) relationship += ", once removed";
+        if (removed === 2) relationship += ", twice removed";
+      }
+
+      result.innerHTML =
+        "<strong>" + escapeHtml(fullName(personA)) +
+        "</strong> and <strong>" +
+        escapeHtml(fullName(personB)) +
+        "</strong> are <strong>" +
+        escapeHtml(relationship) +
+        "</strong>.<br><br>Closest shared ancestor: <strong>" +
+        escapeHtml(fullName(findRecord(sharedAncestor))) +
+        "</strong>.";
+    }
+
+    function openBiography() {
+      var select = document.getElementById("biographyMember");
+
+      select.innerHTML = '<option value="">Select a member</option>';
+
+      records
+        .slice()
+        .sort(function(a, b) {
+          return fullName(a).localeCompare(fullName(b));
+        })
+        .forEach(function(record) {
+          select.innerHTML += `
+            <option value="${record.id}">
+              ${escapeHtml(fullName(record))} — ${branchLabel(record)}
+            </option>
+          `;
+        });
+
+      document.getElementById("biographyResult").innerHTML =
+        "Select a member to generate a biography.";
+
+      document.getElementById("biographyModal").classList.add("open");
+    }
+
+    function formatBiographyDate(value) {
+      if (!value) return "";
+
+      var date = new Date(value + "T00:00:00");
+
+      if (isNaN(date.getTime())) return value;
+
+      return date.toLocaleDateString("en-GB", {
+        day:"numeric",
+        month:"long",
+        year:"numeric"
+      });
+    }
+
+    function generateBiography() {
+      var selectedId =
+        document.getElementById("biographyMember").value;
+
+      var output =
+        document.getElementById("biographyResult");
+
+      if (!selectedId) {
+        output.innerHTML =
+          "<strong>Please select a clan member first.</strong>";
+        return;
+      }
+
+      var member = findRecord(selectedId);
+
+      if (!member) {
+        output.innerHTML =
+          "<strong>The selected member could not be found.</strong>";
+        return;
+      }
+
+      var father = member.fatherId
+        ? findRecord(member.fatherId)
+        : null;
+
+      var mother = member.motherId
+        ? findRecord(member.motherId)
+        : null;
+
+      var spouse = member.spouseId
+        ? findRecord(member.spouseId)
+        : null;
+
+      var children = records.filter(function(record) {
+        return (
+          record.fatherId === member.id ||
+          record.motherId === member.id
+        );
+      });
+
+      var personName = fullName(member);
+      var pronoun = member.sex === "Female" ? "She" : "He";
+      var biography = "";
+
+      biography +=
+        "<strong>" +
+        escapeHtml(personName) +
+        "</strong> ";
+
+      if (member.dob) {
+        biography +=
+          "was born on <strong>" +
+          escapeHtml(formatBiographyDate(member.dob)) +
+          "</strong>. ";
+      } else if (member.birthPeriod) {
+        biography +=
+          "is recorded as having lived around <strong>" +
+          escapeHtml(member.birthPeriod) +
+          "</strong>. ";
+      } else {
+        biography +=
+          "is a recorded member of the SiaraMaina Clan. ";
+      }
+
+      if (father && mother) {
+        biography +=
+          pronoun +
+          " was the child of <strong>" +
+          escapeHtml(fullName(father)) +
+          "</strong> and <strong>" +
+          escapeHtml(fullName(mother)) +
+          "</strong>. ";
+      } else if (father) {
+        biography +=
+          pronoun +
+          " was the child of <strong>" +
+          escapeHtml(fullName(father)) +
+          "</strong>. ";
+      } else if (mother) {
+        biography +=
+          pronoun +
+          " was the child of <strong>" +
+          escapeHtml(fullName(mother)) +
+          "</strong>. ";
+      }
+
+      if (member.location) {
+        biography +=
+          pronoun +
+          " was associated with <strong>" +
+          escapeHtml(member.location) +
+          "</strong>. ";
+      }
+
+      if (
+        member.education &&
+        member.education !== "Not Recorded"
+      ) {
+        biography +=
+          pronoun +
+          " attained <strong>" +
+          escapeHtml(member.education) +
+          "</strong>";
+
+        if (member.course) {
+          biography +=
+            " in <strong>" +
+            escapeHtml(member.course) +
+            "</strong>";
+        }
+
+        biography += ". ";
+      }
+
+      if (member.occupation) {
+        biography +=
+          "The recorded occupation was <strong>" +
+          escapeHtml(member.occupation) +
+          "</strong>";
+
+        if (member.organization) {
+          biography +=
+            " at <strong>" +
+            escapeHtml(member.organization) +
+            "</strong>";
+        }
+
+        biography += ". ";
+      }
+
+      if (
+        member.religion &&
+        member.religion !== "Not Recorded"
+      ) {
+        biography +=
+          pronoun +
+          " identified with <strong>" +
+          escapeHtml(member.religion) +
+          "</strong>";
+
+        if (member.denomination) {
+          biography +=
+            ", specifically <strong>" +
+            escapeHtml(member.denomination) +
+            "</strong>";
+        }
+
+        biography += ". ";
+      }
+
+      if (spouse) {
+        biography +=
+          pronoun +
+          " was married to <strong>" +
+          escapeHtml(fullName(spouse)) +
+          "</strong>. ";
+      }
+
+      if (children.length > 0) {
+        biography +=
+          pronoun +
+          " had <strong>" +
+          children.length +
+          "</strong> child" +
+          (children.length === 1 ? "" : "ren") +
+          ": <strong>" +
+          children.map(function(child) {
+            return escapeHtml(fullName(child));
+          }).join(", ") +
+          "</strong>. ";
+      }
+
+      if (member.deceased) {
+        biography += pronoun + " died";
+
+        if (member.dod) {
+          biography +=
+            " on <strong>" +
+            escapeHtml(formatBiographyDate(member.dod)) +
+            "</strong>";
+        }
+
+        var recordedAge = ageAtDeath(member);
+
+        if (recordedAge) {
+          biography +=
+            " at the age of <strong>" +
+            escapeHtml(recordedAge) +
+            "</strong>";
+        }
+
+        if (
+          member.causeOfDeath &&
+          member.causeOfDeath !== "Not Recorded"
+        ) {
+          biography +=
+            " due to <strong>" +
+            escapeHtml(member.causeOfDeath) +
+            "</strong>";
+        }
+
+        biography += ". ";
+      }
+
+      if (member.narrative) {
+        biography +=
+          "<br><br><strong>Clan Narrative:</strong> " +
+          escapeHtml(member.narrative);
+      }
+
+      output.innerHTML = biography;
+    }
+
+    function statCounts(field, values) {
+      var result = {};
+
+      values.forEach(function(value) {
+        result[value] = 0;
+      });
+
+      records.forEach(function(record) {
+        var value = field === "age"
+          ? ageGroup(record)
+          : (record[field] || "Not Recorded");
+
+        if (result[value] === undefined) {
+          result[value] = 0;
+        }
+
+        result[value]++;
+      });
+
+      return result;
+    }
+
+    function statBars(data, colour) {
+      var total = records.length || 1;
+
+      return Object.keys(data).map(function(label) {
+        return `
+          <div class="stat-row">
+            <span>${escapeHtml(label)}</span>
+            <div class="bar ${colour || ""}">
+              <span style="width:${Math.round((data[label] / total) * 100)}%"></span>
+            </div>
+            <strong>${data[label]}</strong>
+          </div>
+        `;
+      }).join("");
+    }
+
+    function showStatistics() {
+      document.body.classList.add("view-page-open");
+      document.getElementById("cataloguePage").classList.remove("active");
+      document.getElementById("treePage").classList.remove("active");
+      document.getElementById("statisticsPage").classList.add("active");
+
+      var lifeStatus = {
+        Living: records.filter(function(r) { return !r.deceased; }).length,
+        Deceased: records.filter(function(r) { return r.deceased; }).length
+      };
+
+      var ancestry = {
+        "Foundational Ancestry": records.filter(function(r) { return r.branchType === "heritage"; }).length,
+        "Siara Branch": records.filter(function(r) { return r.branchType === "siara"; }).length,
+        "Maina Branch": records.filter(function(r) { return r.branchType === "maina"; }).length,
+        "Maliti Family": records.filter(function(r) { return r.branchType === "maliti"; }).length
+      };
+
+      document.getElementById("statisticsWorkspace").innerHTML =
+        `<article class="stat-card">
+          <h3>Clan Overview</h3>
+          <p><strong>Total Recorded Members:</strong><br>${records.length}</p>
+          <p><strong>Foundational Ancestor:</strong><br>NGOWI I — Mkamba Aliyetokea Marangu Moye</p>
+        </article>
+
+        <article class="stat-card">
+          <h3>Life Status</h3>
+          ${statBars(lifeStatus, "gold")}
+        </article>
+
+        <article class="stat-card">
+          <h3>Clan Ancestry</h3>
+          ${statBars(ancestry, "siara")}
+        </article>
+
+        <article class="stat-card">
+          <h3>Sex Distribution</h3>
+          ${statBars(statCounts("sex", ["Male", "Female", "Not Recorded"]), "")}
+        </article>
+
+        <article class="stat-card">
+          <h3>WHO Age Categories</h3>
+          ${statBars(statCounts("age", ["Historical / Unknown", "Infant (0-1)", "Child (2-9)", "Adolescent (10-19)", "Young Adult (20-24)", "Adult (25-59)", "Older Adult (60+)"]), "gold")}
+        </article>
+
+        <article class="stat-card">
+          <h3>Education</h3>
+          ${statBars(statCounts("education", ["Not Recorded", "Primary Education", "Secondary Education", "Certificate", "Diploma", "Bachelor Degree", "Master Degree", "PhD / Doctorate", "Professor"]), "maina")}
+        </article>
+
+        <article class="stat-card">
+          <h3>Employment</h3>
+          ${statBars(statCounts("employment", ["Not Recorded", "Employed", "Self-employed", "Student", "Unemployed", "Retired"]), "")}
+        </article>
+
+        <article class="stat-card">
+          <h3>Marriage Status</h3>
+          ${statBars(statCounts("maritalStatus", ["Not Recorded", "Single", "Married", "Widowed", "Separated"]), "siara")}
+        </article>
+
+        <article class="stat-card">
+          <h3>Religious Affiliation</h3>
+          ${statBars(statCounts("religion", ["Not Recorded", "Christianity", "Islam", "Traditionalist / Indigenous Religion", "No Religious Affiliation"]), "gold")}
+        </article>
+
+        <article class="stat-card">
+          <h3>Family Linkage</h3>
+          ${statBars({
+            "With father or mother": records.filter(function(r) { return r.fatherId || r.motherId; }).length,
+            "With spouse": records.filter(function(r) { return r.spouseId; }).length,
+            "With sibling profiles": records.filter(function(r) { return Array.isArray(r.siblingIds) && r.siblingIds.length; }).length,
+            "With place of birth": records.filter(function(r) { return r.placeOfBirth; }).length
+          }, "siara")}
+        </article>
+
+        <article class="stat-card">
+          <h3>Birthplaces</h3>
+          ${statBars(statCounts("placeOfBirth", []), "maina") || '<p>No places of birth recorded.</p>'}
+        </article>
+
+        <article class="stat-card">
+          <h3>Cause of Death</h3>
+          ${statBars(statCounts("causeOfDeath", ["Not Recorded", "Natural Causes / Old Age", "Disease or Illness", "Cancer", "Accident", "Road Traffic Accident", "Childbirth-Related Cause", "Violence / Homicide", "Unknown", "Other"]), "gold")}
+        </article>
+
+        <article class="stat-card">
+          <h3>Religious Affiliation</h3>
+          ${statBars(statCounts("religion", ["Not Recorded", "Christianity", "Islam", "Traditionalist / Indigenous Religion", "No Religious Affiliation", "Other"]), "siara")}
+        </article>`;
+
+      window.scrollTo(0, 0);
+    }
+
+    function exportCsv() {
+      var fields = [
+        "id", "firstName", "middleName", "lastName",
+        "sex", "branchType", "honorific", "dob",
+        "birthPeriod", "placeOfBirth", "deceased", "dod", "deathAge",
+        "causeOfDeath", "fatherId", "motherId",
+        "spouseId", "siblingIds", "maritalStatus", "education",
+        "course", "employment", "occupation",
+        "organization", "religion", "denomination",
+        "phone", "whatsapp", "email", "location",
+        "narrative"
+      ];
+
+      var csv = fields.join(",") + "\n";
+
+      records.forEach(function(record) {
+        csv += fields.map(function(field) {
+          var value = record[field];
+          if (field === "siblingIds" && Array.isArray(value)) value = value.join(";");
+          if (field === "siblingIds" && value === undefined) value = "";
+          return '"' + String(value || "").replace(/"/g, '""') + '"';
+        }).join(",") + "\n";
+      });
+
+      var blob = new Blob([csv], {
+        type:"text/csv;charset=utf-8;"
+      });
+
+      var url = URL.createObjectURL(blob);
+      var link = document.createElement("a");
+
+      link.href = url;
+      link.download = "siara-maina-clan-backup.csv";
+      link.click();
+
+      URL.revokeObjectURL(url);
+    }
+
+    function parseCsvLine(line) {
+      var values = [], value = "", quoted = false;
+      for (var i = 0; i < line.length; i++) {
+        var character = line.charAt(i);
+        if (character === '"' && line.charAt(i + 1) === '"' && quoted) { value += '"'; i++; }
+        else if (character === '"') quoted = !quoted;
+        else if (character === "," && !quoted) { values.push(value); value = ""; }
+        else value += character;
+      }
+      values.push(value);
+      return values;
+    }
+
+    function importCsv(event) {
+      var file = event.target.files[0];
+      if (!file) return;
+      var reader = new FileReader();
+      reader.onload = function(loadEvent) {
+        var lines = loadEvent.target.result.split(/\r?\n/).filter(function(line) { return line.trim(); });
+        if (lines.length < 2) { alert("The CSV file has no member records."); return; }
+        var fields = parseCsvLine(lines[0]), imported = 0;
+        lines.slice(1).forEach(function(line) {
+          var values = parseCsvLine(line), row = {};
+          fields.forEach(function(field, index) { row[field] = values[index] || ""; });
+          if (!row.firstName && !row.id) return;
+          row.id = row.id || "member-" + Date.now() + "-" + imported;
+          row.deceased = row.deceased === true || row.deceased === "true";
+          row.siblingIds = Array.isArray(row.siblingIds) ? row.siblingIds : (row.siblingIds ? String(row.siblingIds).split(";").filter(Boolean) : []);
+          var existingIndex = records.findIndex(function(record) {
+            if (record.id && row.id && record.id === row.id) return true;
+            return !!(record.firstName && row.firstName && record.firstName === row.firstName && record.dob && row.dob && record.dob === row.dob);
+          });
+          if (existingIndex > -1) records[existingIndex] = Object.assign({}, records[existingIndex], row);
+          else records.push(row);
+          imported++;
+        });
+        saveRecords();
+        alert(imported + " member record(s) imported or updated.");
+        showCatalogue("all");
+      };
+      reader.readAsText(file);
+      event.target.value = "";
+    }
+
+    async function saveProjectData() {
+      var data = JSON.stringify({
+        project: "SiaraMaina Clan Informatics",
+        exportedAt: new Date().toISOString(),
+        records: records
+      }, null, 2);
+      var blob = new Blob([data], { type:"application/json" });
+
+      try {
+        if (window.showSaveFilePicker) {
+          var handle = await window.showSaveFilePicker({
+            suggestedName: "siara-maina-clan-data.json",
+            types: [{ description:"Clan project data", accept:{"application/json":[".json"]} }]
+          });
+          var writable = await handle.createWritable();
+          await writable.write(data);
+          await writable.close();
+          alert("Project data saved successfully.");
+          return;
+        }
+      } catch (error) {
+        if (error.name === "AbortError") return;
+      }
+
+      var url = URL.createObjectURL(blob);
+      var link = document.createElement("a");
+      link.href = url;
+      link.download = "siara-maina-clan-data.json";
+      link.click();
+      URL.revokeObjectURL(url);
+      alert("Project data downloaded. Keep this JSON file in the project folder as your backup.");
+    }
+
+    async function saveProjectDataToGitHub() {
+      var token = window.prompt("Enter a GitHub fine-grained token with Contents: Read and write permission. It will not be stored.");
+      if (!token) return;
+
+      var apiUrl = "https://api.github.com/repos/deodatusmaliti/SiaraMaina-Clan-Informatics/contents/siara-maina-clan-data.json";
+      var data = JSON.stringify({
+        project: "SiaraMaina Clan Informatics",
+        exportedAt: new Date().toISOString(),
+        records: records
+      }, null, 2);
+      var headers = {
+        "Accept": "application/vnd.github+json",
+        "Authorization": "Bearer " + token,
+        "X-GitHub-Api-Version": "2022-11-28",
+        "Content-Type": "application/json"
+      };
+
+      try {
+        var existingResponse = await fetch(apiUrl, {headers: headers});
+        var existing = existingResponse.ok ? await existingResponse.json() : {};
+        var response = await fetch(apiUrl, {
+          method: "PUT",
+          headers: headers,
+          body: JSON.stringify({
+            message: "Update clan project data",
+            content: btoa(unescape(encodeURIComponent(data))),
+            sha: existing.sha
+          })
+        });
+        if (!response.ok) throw new Error("GitHub save failed");
+        alert("Project data was saved to GitHub.");
+      } catch (error) {
+        alert("GitHub save failed. Check the token permission and repository access.");
+      }
+    }
+
+    function importProjectData(event) {
+      var file = event.target.files[0];
+      if (!file) return;
+      var reader = new FileReader();
+      reader.onload = function(loadEvent) {
+        try {
+          var payload = JSON.parse(loadEvent.target.result);
+          var importedRecords = Array.isArray(payload) ? payload : payload.records;
+          if (!Array.isArray(importedRecords)) throw new Error("Invalid project data");
+          records = importedRecords;
+          reconcileSiblingParents();
+          saveRecords();
+          showCatalogue("all");
+          alert(records.length + " member record(s) restored successfully.");
+        } catch (error) {
+          alert("The selected project data file is not valid.");
+        }
+      };
+      reader.readAsText(file);
+      event.target.value = "";
+    }
+
+    ["dob", "dod", "deceased"].forEach(function(id) {
+      document.getElementById(id).addEventListener("input", updateAgeFields);
+      document.getElementById(id).addEventListener("change", updateAgeFields);
+    });
+
+    function openPrintDialog() {
+      document.getElementById("printTarget").value = document.getElementById("treePage").classList.contains("active") ? "tree" : "current";
+      document.getElementById("printModal").classList.add("open");
+    }
+
+    function getPrintableMarkup(target) {
+      var title = "SiaraMaina Clan Informatics";
+      var content = "";
+
+      if (target === "tree") {
+        if (window.currentTreeType === "clan") title = "SiaraMaina Clan Tree";
+        else if (window.currentTreeType === "siara") title = "Siara Branch";
+        else if (window.currentTreeType === "maina") title = "Maina Branch";
+        else if (window.currentTreeType === "maliti") title = "Maliti Family";
+        else if (window.currentTreeType === "custom") title = fullName(findRecord(window.currentTreeRoot)) || "Custom Family Tree";
+        else title = "Family Tree";
+        content = document.getElementById("treeWorkspace").innerHTML;
+      } else if (target === "catalogue") {
+        title = "Catalogue";
+        content = document.getElementById("catalogueWorkspace").innerHTML;
+      } else {
+        title = document.getElementById("treePage").classList.contains("active") ? "Family Tree" : "Catalogue";
+        content = document.getElementById(document.getElementById("treePage").classList.contains("active") ? "treeWorkspace" : "catalogueWorkspace").innerHTML;
+      }
+
+      return `
+        <!doctype html>
+        <html>
+          <head>
+            <meta charset="utf-8">
+            <title>${title}</title>
+            <style>
+              * { box-sizing: border-box; }
+              body { font-family: Arial, sans-serif; color: #14241b; margin: 18mm; background: white; }
+              .preview-actions { display: flex; gap: 8px; justify-content: flex-end; margin-bottom: 12px; }
+              .preview-actions button { padding: 8px 14px; border: 1px solid #cad7cd; border-radius: 6px; background: #edf6ef; color: #103d2b; font-weight: 700; cursor: pointer; }
+              @media print { .preview-actions { display: none; } }
+              .profiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; }
+              .tree-tools { display: none; }
+              .tree-export { display: none; }
+              .tree-canvas { width: auto; }
+              .profile, .tree-card, .spouse-card, .line-member, .stat-card { box-sizing: border-box; }
+              .profile { break-inside: avoid; page-break-inside: avoid; border: 1px solid #d5dfd7; border-radius: 12px; padding: 14px; overflow: hidden; }
+              .profile-top { display: flex; align-items: flex-start; gap: 12px; }
+              .portrait { display: block; width: 52px; height: 52px; max-width: 52px; max-height: 52px; flex: 0 0 52px; border-radius: 50%; object-fit: cover; object-position: center; }
+              .avatar { display: grid; place-items: center; width: 52px; height: 52px; flex: 0 0 52px; border-radius: 50%; background: #103d2b; color: #e9bf52; font-weight: 900; }
+              .profile-body { padding: 4px; }
+              .profile-footer { padding-top: 11px; }
+              .data { display: grid; gap: 7px; margin: 14px 0; font-size: 11px; }
+              .classical-tree { overflow: visible; padding: 18px 8px; border: 1px solid #d5dfd7; border-radius: 12px; background: #fff; }
+              .classical-tree ul { position: relative; display: flex; justify-content: center; margin: 0; padding-top: 28px; list-style: none; }
+              .classical-tree li { position: relative; min-width: 190px; padding: 27px 7px 0; text-align: center; }
+              .classical-tree li:before, .classical-tree li:after { position: absolute; top: 0; width: 50%; height: 27px; border-top: 2px solid #7fa38c; content: ""; }
+              .classical-tree li:before { right: 50%; border-right: 2px solid #7fa38c; }
+              .classical-tree li:after { left: 50%; border-left: 2px solid #7fa38c; }
+              .classical-tree li:only-child:before, .classical-tree li:only-child:after { display: none; }
+              .classical-tree li:first-child:before, .classical-tree li:last-child:after { border: 0; }
+              .classical-tree ul ul:before { position: absolute; top: 0; left: 50%; height: 27px; border-left: 2px solid #7fa38c; content: ""; }
+              .couple { display: flex; justify-content: center; gap: 6px; }
+              .tree-card { width: 165px; padding: 9px; border: 2px solid #e9bf52; border-radius: 8px; background: #fffdf6; text-align: left; display: inline-block; }
+              .tree-card.siara { border-color: #176d8c; background: #e3f5fb; }
+              .tree-card.maina { border-color: #98591f; background: #fff1dc; }
+              .tree-card.maliti { border-color: #713b20; background: #f6e5db; }
+              .tree-card.lineage-foundation { border-color: #8b6f47; background: #f2eadb; }
+              .tree-card.lineage-siara { border-color: #176d8c; background: #e3f5fb; }
+              .tree-card.lineage-maina { border-color: #b23b54; background: #fbe7ec; }
+              .profile.lineage-foundation { border-top-color: #8b6f47; }
+              .profile.lineage-siara { border-top-color: #176d8c; }
+              .profile.lineage-maina { border-top-color: #b23b54; }
+              .tree-card strong, .spouse-card strong { display: block; font-size: 12px; }
+              .tree-card span, .spouse-card span { display: block; margin-top: 3px; color: #64746a; font-size: 11px; }
+              .tree-card small, .spouse-card small { display: block; margin-top: 3px; color: #64746a; font-size: 10px; }
+              .spouse-card { width: 125px; padding: 9px; border: 1px dashed #a8b9aa; border-radius: 8px; background: #f8faf8; text-align: left; display: inline-block; }
+              .member-number { display: inline-block; margin-bottom: 8px; padding: 3px 7px; border-radius: 5px; background: #edf6ef; color: #103d2b; font-size: 10px; font-weight: 900; letter-spacing: .04em; }
+              .spouse-card strong:before { content: "Spouse "; }
+              @page { size: ${document.getElementById("printOrientation").value}; margin: 18mm; }
+            </style>
+          </head>
+          <body>
+            <div class="preview-actions"><button type="button" onclick="sharePreview()">Share</button><button type="button" onclick="window.print()">Print</button></div>
+            <h1>${escapeHtml(title)}</h1>
+            ${content}
+            <script>
+              function sharePreview() {
+                var shareTitle = ${JSON.stringify(title)};
+                var shareText = shareTitle + " - SiaraMaina Clan Informatics";
+                var shareUrl = ${JSON.stringify(window.location.href)};
+                if (navigator.share) {
+                  navigator.share({ title: shareTitle, text: shareText, url: shareUrl }).catch(function(error) {
+                    if (error && error.name !== "AbortError") showShareOptions(shareTitle, shareText, shareUrl);
+                  });
+                  return;
+                }
+                showShareOptions(shareTitle, shareText, shareUrl);
+              }
+
+              function showShareOptions(shareTitle, shareText, shareUrl) {
+                var encodedText = encodeURIComponent(shareText + "\n" + shareUrl);
+                var choice = prompt("Share by entering: email, whatsapp, x, or copy");
+                if (!choice) return;
+                choice = choice.toLowerCase().trim();
+                if (choice === "email") location.href = "mailto:?subject=" + encodeURIComponent(shareTitle) + "&body=" + encodedText;
+                if (choice === "whatsapp") window.open("https://wa.me/?text=" + encodedText, "_blank", "noopener");
+                if (choice === "x" || choice === "twitter") window.open("https://twitter.com/intent/tweet?text=" + encodedText, "_blank", "noopener");
+                if (choice === "copy" && navigator.clipboard) navigator.clipboard.writeText(shareText + "\n" + shareUrl);
+              }
+            <\/script>
+          </body>
+        </html>
+      `;
+    }
+
+    function openPrintPreview() {
+      var target = document.getElementById("printTarget").value;
+      var scale = Number(document.getElementById("printScale").value) || 1;
+      var win = window.open("", "_blank", "width=1200,height=900");
+      if (!win) {
+        alert("Your browser blocked the print window. Please allow pop-ups and try again.");
+        return;
+      }
+      win.document.write(getPrintableMarkup(target));
+      win.document.title = "Print Preview";
+      win.document.body.style.zoom = scale;
+      win.document.close();
+      closeModal("printModal");
+      win.focus();
+      setTimeout(function() { win.print(); }, 250);
+    }
+
+    function openSharedLink() {
+      var hash = window.location.hash.replace(/^#/, "");
+      if (!hash) return;
+      var params = new URLSearchParams(hash.replace(/&/g, "&"));
+      var cardId = params.get("card");
+      var formId = params.get("form");
+      var treeType = params.get("tree");
+      var treeRoot = params.get("root") || "";
+      if (cardId && findRecord(cardId)) {
+        selectedMemberId = cardId;
+        showCatalogue("all");
+        return;
+      }
+      if (formId && findRecord(formId)) {
+        selectedMemberId = formId;
+        openProfile(findRecord(formId));
+        return;
+      }
+      if (treeType && ["clan", "siara", "maina", "maliti", "custom"].indexOf(treeType) !== -1) {
+        showTree(treeType, treeRoot);
+      }
+    }
+
+    populateArchiveMemberSelect();
+    showCatalogue("all");
+    openSharedLink();
+  </script>
+</body>
+</html>
