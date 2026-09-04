@@ -51,7 +51,7 @@
 
             try {
                 // 2. Send the data to your backend 'functions/submit-data.js' file
-                const response = await fetch('/submit-data', {
+                const response = await fetch('/api/submit-data', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(payload)
