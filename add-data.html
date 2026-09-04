@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add New Entry</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 400px; margin: 50px auto; padding: 20px; }
+        .form-group { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 5px; font-weight: bold; }
+        input, textarea { width: 100%; padding: 8px; box-sizing: border-box; }
+        button { background-color: #0070f3; color: white; border: none; padding: 10px 15px; cursor: pointer; width: 100%; }
+        button:hover { background-color: #0051a8; }
+        #message { margin-top: 15px; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+    <h2>Add New Data Entry</h2>
+    
+    <!-- This is the visual form users will see -->
+    <form id="dataForm">
+        <div class="form-group">
+            <label for="name">Name:</label>
+            <input type="text" id="name" required placeholder="Enter your name">
+        </div>
+        <div class="form-group">
+            <label for="content">Content:</label>
+            <textarea id="content" required placeholder="Enter some details" rows="4"></textarea>
+        </div>
+        <button type="submit">Save to Database</button>
+    </form>
+
+    <!-- This shows if the save succeeded or failed -->
+    <p id="message"></p>
+
+    <script>
+        // This JavaScript code handles the logic automatically when the form is submitted
+        document.getElementById('dataForm').addEventListener('submit', async function(event) {
+            event.preventDefault(); // Prevents the page from reloading
+            
+            const messageElement = document.getElementById('message');
+            messageElement.style.color = "blue";
+            messageElement.textContent = "Saving data...";
+
+            // 1. Gather the data typed into the form boxes
+            const payload = {
+                name: document.getElementById('name').value,
+                content: document.getElementById('content').value
+            };
+
+            try {
+                // 2. Send the data to your backend 'functions/submit-data.js' file
+                const response = await fetch('/submit-data', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                const result = await response.json();
+                
+                // 3. Display the result to the user
+                if (result.success) {
+                    messageElement.style.color = "green";
+                    messageElement.textContent = "🎉 Success! Your data is stored in Cloudflare.";
+                    document.getElementById('dataForm').reset(); // Clear the form
+                } else {
+                    messageElement.style.color = "red";
+                    messageElement.textContent = "Database Error: " + result.error;
+                }
+            } catch (error) {
+                messageElement.style.color = "red";
+                messageElement.textContent = "Could not connect to backend. Make sure the backend function is deployed.";
+            }
+        });
+    </script>
+</body>
+</html>
