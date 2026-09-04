@@ -57,6 +57,10 @@
                     body: JSON.stringify(payload)
                 });
 
+                if (!response.ok) {
+                    throw new Error(`Backend request failed with HTTP ${response.status}.`);
+                }
+
                 const result = await response.json();
                 
                 // 3. Display the result to the user
@@ -70,7 +74,7 @@
                 }
             } catch (error) {
                 messageElement.style.color = "red";
-                messageElement.textContent = "Could not connect to backend. Make sure the backend function is deployed.";
+                messageElement.textContent = error.message;
             }
         });
     </script>
