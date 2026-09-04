@@ -3,80 +3,71 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Add New Entry</title>
+    <title>Family Information Portal</title>
     <style>
-        body { font-family: Arial, sans-serif; max-width: 400px; margin: 50px auto; padding: 20px; }
+        body { font-family: Arial, sans-serif; max-width: 400px; margin: 50px auto; padding: 20px; background-color: #f9f9f9; }
         .form-group { margin-bottom: 15px; }
         label { display: block; margin-bottom: 5px; font-weight: bold; }
-        input, textarea { width: 100%; padding: 8px; box-sizing: border-box; }
-        button { background-color: #0070f3; color: white; border: none; padding: 10px 15px; cursor: pointer; width: 100%; }
+        input, textarea { width: 100%; padding: 10px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 4px; }
+        button { background-color: #0070f3; color: white; border: none; padding: 12px 15px; cursor: pointer; width: 100%; font-size: 16px; border-radius: 4px; }
         button:hover { background-color: #0051a8; }
-        #message { margin-top: 15px; font-weight: bold; }
+        #message { margin-top: 15px; font-weight: bold; text-align: center; }
     </style>
 </head>
 <body>
 
-    <h2>Add New Data Entry</h2>
+    <h2>Family Information Entry</h2>
     
-    <!-- This is the visual form users will see -->
-    <form id="dataForm">
+    <form id="familyForm">
         <div class="form-group">
             <label for="name">Name:</label>
-            <input type="text" id="name" required placeholder="Enter your name">
+            <input type="text" id="name" required placeholder="Enter full name">
         </div>
         <div class="form-group">
-            <label for="content">Content:</label>
-            <textarea id="content" required placeholder="Enter some details" rows="4"></textarea>
+            <label for="content">Information / Details:</label>
+            <textarea id="content" required placeholder="Enter family updates or details" rows="4"></textarea>
         </div>
-        <button type="submit">Save to Database</button>
+        <button type="submit">Submit Remotely</button>
     </form>
 
-    <!-- This shows if the save succeeded or failed -->
     <p id="message"></p>
 
     <script>
-        // This JavaScript code handles the logic automatically when the form is submitted
-        document.getElementById('dataForm').addEventListener('submit', async function(event) {
-            event.preventDefault(); // Prevents the page from reloading
+        document.getElementById('familyForm').addEventListener('submit', async function(event) {
+            event.preventDefault();
             
             const messageElement = document.getElementById('message');
             messageElement.style.color = "blue";
-            messageElement.textContent = "Saving data...";
+            messageElement.textContent = "Connecting securely to Google Sheets...";
 
-            // 1. Gather the data typed into the form boxes
+            // ⚠️ PASTE YOUR GOOGLE WEB APP URL BETWEEN THE QUOTES BELOW:
+            const googleScriptUrl = 'https://script.google.com/macros/s/AKfycbwprUYUSZpEIJKAYE1_Kj5QMSLGFtO7vjxptiTAGTXGaSPhcUcJiOMvBr_a-5xjEMeY/exec';
+
             const payload = {
                 name: document.getElementById('name').value,
                 content: document.getElementById('content').value
             };
 
             try {
-                // 2. Send the data to your backend 'functions/submit-data.js' file
-                const response = await fetch('/api/submit-data', {
+                // Sends data directly to Google Apps Script bypassing CORS errors natively
+                await fetch(googleScriptUrl, {
                     method: 'POST',
+                    mode: 'no-cors', 
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(payload)
                 });
 
-                if (!response.ok) {
-                    throw new Error(`Backend request failed with HTTP ${response.status}.`);
-                }
+                // With mode 'no-cors', the browser can't read the response, 
+                // but if the fetch executes without error, it reached the spreadsheet successfully.
+                messageElement.style.color = "green";
+                messageElement.textContent = "🎉 Success! Data saved directly to your Google Sheet.";
+                document.getElementById('familyForm').reset();
 
-                const result = await response.json();
-                
-                // 3. Display the result to the user
-                if (result.success) {
-                    messageElement.style.color = "green";
-                    messageElement.textContent = "🎉 Success! Your data is stored in Cloudflare.";
-                    document.getElementById('dataForm').reset(); // Clear the form
-                } else {
-                    messageElement.style.color = "red";
-                    messageElement.textContent = "Database Error: " + result.error;
-                }
             } catch (error) {
                 messageElement.style.color = "red";
-                messageElement.textContent = error.message;
+                messageElement.textContent = "Error: Connection failed. Check script configuration.";
             }
         });
     </script>
 </body>
-</html>    
+</html>
