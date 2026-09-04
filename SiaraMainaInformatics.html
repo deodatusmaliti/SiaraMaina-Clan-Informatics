@@ -224,6 +224,24 @@ new siara maina file push
     .command-groups{display:flex;align-items:center;justify-content:flex-end;gap:10px;min-width:0;flex-wrap:wrap}.command-group{display:flex;align-items:center;gap:6px;padding:5px 8px;border:1px solid rgba(255,255,255,.14);border-radius:11px;background:rgba(255,255,255,.06)}.command-label{padding:0 3px;color:#cce5d1;font-size:.59rem;font-weight:900;letter-spacing:.11em;text-transform:uppercase}
     .commandbar .top-button{min-height:34px;padding:8px 10px;border-radius:8px;background:rgba(255,255,255,.08);font-size:.7rem;white-space:nowrap;transition:transform .16s ease,background .16s ease,border-color .16s ease}.commandbar .top-button:hover{transform:translateY(-1px);background:rgba(255,255,255,.18);border-color:rgba(233,191,82,.9);color:#fff}.commandbar .command-add{background:var(--gold);color:var(--forest);border-color:var(--gold);box-shadow:0 5px 13px rgba(0,0,0,.18)}.commandbar .command-add:hover{background:#f3ce70;color:#08291b}.commandbar .dropdown-menu{top:40px;min-width:210px;padding:8px;border-radius:11px;box-shadow:0 16px 36px rgba(4,31,20,.26)}.commandbar .dropdown-menu button{padding:10px;border-radius:7px}
     @media(max-width:1120px){.commandbar{grid-template-columns:1fr}.command-groups{justify-content:flex-start}.topbar-inner{display:block;padding:12px 0}.brand{margin-bottom:10px}}@media(max-width:720px){.commandbar{display:grid;grid-template-columns:minmax(0,1fr) auto}.command-groups{display:none}.commandbar.mobile-open{grid-template-columns:repeat(2,minmax(0,1fr))}.commandbar.mobile-open .command-search{grid-column:1/-1}.commandbar.mobile-open .command-groups{display:flex;grid-column:1/-1;align-items:stretch;flex-direction:column}.commandbar.mobile-open .command-group{display:grid;grid-template-columns:1fr 1fr;padding:8px}.commandbar.mobile-open .command-label{grid-column:1/-1}.commandbar.mobile-open .dropdown,.commandbar.mobile-open .top-button{width:100%}.commandbar.mobile-open .command-add{min-height:44px}.commandbar .dropdown-menu{left:0;right:auto;top:45px}.commandbar.mobile-open .inline-toolbar.visible{grid-column:1/-1}}
+    @media(max-width:720px){
+      .commandbar{display:grid;grid-template-columns:minmax(0,1fr) auto;width:100%;margin:0;gap:8px}
+      .command-search{display:contents}
+      .commandbar .search{grid-column:1;width:100%;margin:0}
+      .command-groups{display:none}
+      .commandbar.mobile-open{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}
+      .commandbar.mobile-open .command-search{display:contents}
+      .commandbar.mobile-open .search{grid-column:1/-1}
+      .commandbar.mobile-open .command-groups{display:contents}
+      .commandbar.mobile-open .command-group{display:contents}
+      .commandbar.mobile-open .command-label{display:none}
+      .commandbar.mobile-open .inline-toolbar.visible{display:flex;grid-column:1/-1;min-width:0;flex-wrap:wrap}
+      .commandbar.mobile-open .inline-toolbar.visible input,.commandbar.mobile-open .inline-toolbar.visible select{min-width:0;flex:1;width:100%}
+      .commandbar.mobile-open .dropdown,.commandbar.mobile-open .top-button{display:block;width:100%}
+      .commandbar.mobile-open .dropdown>.top-button{width:100%;min-height:42px;padding:10px 8px;font-size:.7rem}
+      .commandbar.mobile-open .top-button:not(.mobile-menu-toggle){min-height:42px;padding:10px 8px;font-size:.7rem}
+      .commandbar .dropdown-menu{left:0;right:0;top:47px;min-width:0}
+    }
 
   </style>
 </head>
