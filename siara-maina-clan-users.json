@@ -1,12 +1,20 @@
 {
   "project": "SiaraMaina Clan Informatics",
-  "updatedAt": "2026-09-05T00:00:00.000Z",
+  "updatedAt": "2026-09-05T18:28:51.606Z",
   "users": [
     {
       "id": "admin-1",
       "username": "admin",
       "passwordHash": "db6d64cf523810bc2cb8f98f37965f4225ac65ef68a263715b1bd633fd047ad1",
       "displayName": "Clan Administrator",
+      "role": "admin",
+      "active": true
+    },
+    {
+      "id": "user-1788623201341",
+      "username": "Deodatus",
+      "passwordHash": "df2f628a281adca5d643c42ad1cd55c65c9ec56cc05aecaf905d81063b64ef13",
+      "displayName": "Deodatus",
       "role": "admin",
       "active": true
     }
