@@ -1,6 +1,6 @@
 {
   "project": "SiaraMaina Clan Informatics",
-  "updatedAt": "2026-09-05T18:28:51.606Z",
+  "updatedAt": "2026-09-05T18:40:43.032Z",
   "users": [
     {
       "id": "admin-1",
@@ -11,7 +11,7 @@
       "active": true
     },
     {
-      "id": "user-1788623201341",
+      "id": "user-1788633497081",
       "username": "Deodatus",
       "passwordHash": "df2f628a281adca5d643c42ad1cd55c65c9ec56cc05aecaf905d81063b64ef13",
       "displayName": "Deodatus",
