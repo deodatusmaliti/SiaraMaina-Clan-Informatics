@@ -3010,6 +3010,14 @@ new siara maina file push
       return values;
     }
 
+    function parseImportedDeceased(value) {
+      var normalized = String(value === undefined || value === null ? "" : value).trim().toLowerCase();
+      if (!normalized) return null;
+      if (["true", "1", "yes", "y", "deceased", "dead"].indexOf(normalized) !== -1) return true;
+      if (["false", "0", "no", "n", "living", "alive"].indexOf(normalized) !== -1) return false;
+      return null;
+    }
+
     function importCsv(event) {
       if (!requirePermission("importCsv", "You do not have permission to import CSV member records.")) { event.target.value = ""; return; }
       var file = event.target.files[0];
@@ -3018,24 +3026,35 @@ new siara maina file push
       reader.onload = function(loadEvent) {
         var lines = loadEvent.target.result.split(/\r?\n/).filter(function(line) { return line.trim(); });
         if (lines.length < 2) { alert("The CSV file has no member records."); return; }
-        var fields = parseCsvLine(lines[0]), imported = 0;
+        var fields = parseCsvLine(lines[0]).map(function(field, index) {
+          return String(field).replace(/^\uFEFF/, "").trim() || "column" + index;
+        }), imported = 0, added = 0, updated = 0;
         lines.slice(1).forEach(function(line) {
           var values = parseCsvLine(line), row = {};
-          fields.forEach(function(field, index) { row[field] = values[index] || ""; });
+          fields.forEach(function(field, index) { row[field] = (values[index] || "").trim(); });
           if (!row.firstName && !row.id) return;
           row.id = row.id || "member-" + Date.now() + "-" + imported;
-          row.deceased = row.deceased === true || row.deceased === "true";
+          var importedDeceased = parseImportedDeceased(row.deceased);
+          if (importedDeceased === null) delete row.deceased;
+          else row.deceased = importedDeceased;
           row.siblingIds = Array.isArray(row.siblingIds) ? row.siblingIds : (row.siblingIds ? String(row.siblingIds).split(";").filter(Boolean) : []);
           var existingIndex = records.findIndex(function(record) {
             if (record.id && row.id && record.id === row.id) return true;
             return !!(record.firstName && row.firstName && record.firstName === row.firstName && record.dob && row.dob && record.dob === row.dob);
           });
-          if (existingIndex > -1) records[existingIndex] = Object.assign({}, records[existingIndex], row);
-          else records.push(row);
+          if (existingIndex > -1) {
+            records[existingIndex] = Object.assign({}, records[existingIndex], row);
+            updated++;
+          } else {
+            if (row.deceased === undefined) row.deceased = false;
+            records.push(row);
+            added++;
+          }
           imported++;
         });
         saveRecords();
-        alert(imported + " member record(s) imported or updated.");
+        populateArchiveMemberSelect();
+        alert(imported + " CSV row(s) processed: " + added + " added, " + updated + " updated. Blank life-status cells preserved existing status.");
         showCatalogue("all");
       };
       reader.readAsText(file);
