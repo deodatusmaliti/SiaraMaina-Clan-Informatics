@@ -222,7 +222,7 @@ new siara maina file push
     body.auth-locked .login-screen{display:flex}
     .login-box{width:min(460px,100%);padding:34px;border:1px solid #ffffff38;border-top:5px solid var(--gold);border-radius:16px;background:#fff;box-shadow:0 24px 70px #04160e66}
     .login-brand{display:flex;align-items:center;gap:12px;margin-bottom:24px;color:var(--forest);font-weight:900}.login-brand .brand-mark{flex:0 0 auto}.login-brand small{display:block;margin-top:3px;color:var(--muted);font-size:.68rem;font-weight:700}
-    .login-box h1{margin:0 0 8px;font-size:1.65rem;letter-spacing:-.03em}.login-box p{color:var(--muted);font-size:.88rem}.login-box .field{margin-top:18px}.password-field{position:relative}.password-field input{padding-right:78px}.password-toggle{position:absolute;right:6px;bottom:6px;padding:6px 8px;border:0;border-radius:5px;background:#edf6ef;color:var(--forest);font-size:.7rem;font-weight:900}.login-error{min-height:22px;margin:12px 0 0;color:#a43b3b;font-size:.78rem;font-weight:700}.login-note{margin:20px 0 0!important;font-size:.72rem!important;text-align:center}
+    .login-box h1{margin:0 0 8px;font-size:1.65rem;letter-spacing:-.03em}.login-box p{color:var(--muted);font-size:.88rem}.login-box .field{margin-top:18px}.password-field{position:relative}.password-field input{padding-right:78px}.password-toggle{position:absolute;right:6px;bottom:6px;padding:6px 8px;border:0;border-radius:5px;background:#edf6ef;color:var(--forest);font-size:.7rem;font-weight:900}.login-error{min-height:22px;margin:12px 0 0;color:#a43b3b;font-size:.78rem;font-weight:700}.login-note{margin:20px 0 0!important;font-size:.72rem!important;text-align:center}.login-help{margin:10px 0 0;text-align:center;font-size:.75rem!important}.login-help button{padding:0;border:0;background:transparent;color:var(--green);font-size:.75rem;font-weight:900}.login-help button:hover{text-decoration:underline}.login-credentials{padding:10px 12px;border-radius:7px;background:#f1f8f2;color:#435c4c;font-size:.75rem}.login-credentials strong{color:var(--forest)}
     .account-area{display:flex;align-items:center;gap:9px;padding:5px 8px;border:1px solid #ffffff2b;border-radius:9px;background:#ffffff0d;color:#fff;font-size:.67rem;line-height:1.25}.account-area strong{display:block}.role-badge{display:inline-block;margin-top:3px;padding:3px 6px;border-radius:99px;font-size:.6rem;font-weight:900}.role-admin{background:var(--gold);color:var(--forest)}.role-editor{background:#b9e3c5;color:#15583d}.role-viewer{background:#dbe4ec;color:#425465}
     .user-list{width:100%;border-collapse:collapse;font-size:.76rem}.user-list th,.user-list td{padding:9px 7px;border-bottom:1px solid var(--line);text-align:left;vertical-align:middle}.user-list th{color:var(--muted);font-size:.66rem;text-transform:uppercase}.user-actions{display:flex;gap:5px;flex-wrap:wrap}.user-actions button{padding:5px 7px;border:1px solid var(--line);border-radius:5px;background:#fff;color:var(--forest);font-size:.68rem;font-weight:900}.user-actions .danger{color:#a43b3b}.user-note{padding:11px;border-left:3px solid var(--gold);background:#fff9e8;color:#66551b;font-size:.72rem}.user-form{margin-top:18px;padding-top:18px;border-top:1px solid var(--line)}
     @media(max-width:720px){.login-box{padding:25px 18px}.account-area{grid-column:1/-1;justify-content:space-between}.user-list{display:block;overflow-x:auto;white-space:nowrap}}
@@ -267,9 +267,12 @@ new siara maina file push
       <form onsubmit="signIn(event)">
         <div class="field"><label for="loginUsername">Username</label><input id="loginUsername" autocomplete="username" required></div>
         <div class="field password-field"><label for="loginPassword">Password</label><input id="loginPassword" type="password" autocomplete="current-password" required><button class="password-toggle" type="button" onclick="togglePassword('loginPassword', this)">Show</button></div>
+        <label style="display:flex;align-items:center;gap:7px;margin:14px 0;color:#41574a;font-size:.76rem"><input id="keepSignedIn" type="checkbox"> Keep me signed in on this browser</label>
         <div id="loginError" class="login-error" role="alert"></div>
         <button class="button primary" style="width:100%;min-height:44px" type="submit">Sign In</button>
       </form>
+      <div class="login-credentials">First-time login: username <strong>admin</strong>, password <strong>CHANGE_THIS_PASSWORD_IMMEDIATELY</strong>.</div>
+      <p class="login-help"><button type="button" onclick="openRecovery('username')">Forgot username?</button> · <button type="button" onclick="openRecovery('password')">Forgot password?</button></p>
       <p class="login-note">Private access control for authorised family users.</p>
     </div>
   </section>
@@ -699,6 +702,15 @@ new siara maina file push
     </div>
   </section>
 
+  <section id="recoveryModal" class="modal">
+    <div class="modal-box" style="max-width:560px">
+      <div class="modal-head"><h2>Local Account Recovery</h2><button class="close" type="button" onclick="closeModal('recoveryModal')">×</button></div>
+      <p id="recoveryMessage" class="user-note"></p>
+      <p style="color:#64746a;font-size:.76rem">Accounts are stored only in this browser. There is no server-side email recovery. Resetting accounts removes locally created users and restores the default administrator account.</p>
+      <div class="modal-actions"><button class="button secondary" type="button" onclick="showLocalUsernames()">Show Local Usernames</button><button class="button danger" type="button" onclick="resetLocalAccounts()">Reset to Default Admin</button></div>
+    </div>
+  </section>
+
   <script>
     /*
       SIMPLE PERSONAL LOGIN CONFIGURATION
@@ -759,14 +771,47 @@ new siara maina file push
       button.textContent = input.type === "password" ? "Show" : "Hide";
     }
 
+    function openRecovery(type) {
+      document.getElementById("recoveryMessage").textContent = type === "username"
+        ? "Usernames are local account names, not email addresses. You can reveal the usernames saved in this browser."
+        : "There is no email-based password reset for this front-end-only system. You can reset local accounts to the default administrator, then sign in and create new users.";
+      document.getElementById("recoveryModal").classList.add("open");
+    }
+
+    function showLocalUsernames() {
+      loadUsers();
+      var names = users.map(function(user) { return user.username + (user.active ? "" : " (inactive)"); });
+      document.getElementById("recoveryMessage").textContent = names.length
+        ? "Local usernames in this browser: " + names.join(", ")
+        : "No local usernames were found.";
+    }
+
+    function resetLocalAccounts() {
+      if (!confirm("This will remove all locally created users and restore the default admin account. Continue?")) return;
+      users = DEFAULT_USERS.slice();
+      saveUsers();
+      localStorage.removeItem(SESSION_STORAGE_KEY);
+      sessionStorage.removeItem(SESSION_STORAGE_KEY);
+      currentUser = null;
+      document.body.classList.add("auth-locked");
+      document.getElementById("loginUsername").value = "admin";
+      document.getElementById("loginPassword").value = "";
+      document.getElementById("recoveryMessage").textContent = "Accounts reset. Use username admin and the default password shown on the login screen.";
+      closeModal("recoveryModal");
+    }
+
     function signIn(event) {
       event.preventDefault();
       var username = document.getElementById("loginUsername").value.trim();
       var password = document.getElementById("loginPassword").value;
       var user = users.find(function(item) { return item.active && item.username === username && item.password === password; });
-      if (!user) { document.getElementById("loginError").textContent = "Invalid username or password."; return; }
+      if (!user) { document.getElementById("loginError").textContent = "Invalid username or password. Use the local username, not an email address."; return; }
       currentUser = {userId:user.id, username:user.username, displayName:user.displayName, role:user.role, loggedInAt:new Date().toISOString()};
-      localStorage.setItem(SESSION_STORAGE_KEY, JSON.stringify(currentUser));
+      var sessionData = JSON.stringify(currentUser);
+      localStorage.removeItem(SESSION_STORAGE_KEY);
+      sessionStorage.removeItem(SESSION_STORAGE_KEY);
+      if (document.getElementById("keepSignedIn").checked) localStorage.setItem(SESSION_STORAGE_KEY, sessionData);
+      else sessionStorage.setItem(SESSION_STORAGE_KEY, sessionData);
       document.body.classList.remove("auth-locked");
       document.getElementById("loginError").textContent = "";
       applyRolePermissions();
@@ -775,7 +820,7 @@ new siara maina file push
     function restoreSession() {
       loadUsers();
       try {
-        var saved = JSON.parse(localStorage.getItem(SESSION_STORAGE_KEY) || "null");
+        var saved = JSON.parse(localStorage.getItem(SESSION_STORAGE_KEY) || sessionStorage.getItem(SESSION_STORAGE_KEY) || "null");
         var user = saved && users.find(function(item) { return item.id === saved.userId && item.active; });
         if (user) currentUser = {userId:user.id, username:user.username, displayName:user.displayName, role:user.role, loggedInAt:saved.loggedInAt};
       } catch (error) { currentUser = null; }
@@ -785,6 +830,7 @@ new siara maina file push
 
     function logOut() {
       localStorage.removeItem(SESSION_STORAGE_KEY);
+      sessionStorage.removeItem(SESSION_STORAGE_KEY);
       currentUser = null;
       document.body.classList.add("auth-locked");
       closeModal("userManagementModal");
@@ -828,7 +874,9 @@ new siara maina file push
       if (currentUser && currentUser.userId === user.id) {
         if (!user.active) { alert("You cannot deactivate your own signed-in account."); if (existing) users[users.indexOf(user)] = existing; else users.pop(); return; }
         currentUser.username = user.username; currentUser.displayName = user.displayName; currentUser.role = user.role;
-        localStorage.setItem(SESSION_STORAGE_KEY, JSON.stringify(currentUser));
+        var updatedSession = JSON.stringify(currentUser);
+        if (localStorage.getItem(SESSION_STORAGE_KEY)) localStorage.setItem(SESSION_STORAGE_KEY, updatedSession);
+        else sessionStorage.setItem(SESSION_STORAGE_KEY, updatedSession);
         applyRolePermissions();
       }
       saveUsers(); renderUserList(); resetUserForm();
