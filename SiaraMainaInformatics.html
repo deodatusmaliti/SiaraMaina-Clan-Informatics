@@ -685,8 +685,8 @@ new siara maina file push
   <section id="userManagementModal" class="modal">
     <div class="modal-box" style="max-width:850px">
       <div class="modal-head"><h2>User Management</h2><button class="close" type="button" onclick="closeModal('userManagementModal')">×</button></div>
-      <p class="user-note">This is a simple local access-control system for trusted personal use. It is not secure server-side authentication.</p>
-      <p style="color:#64746a;font-size:.76rem">Users and role settings are stored in this browser only. They are not published in the shared clan-data JSON file.</p>
+      <p class="user-note">This is a simple shared access-control system for trusted personal use. Account hashes are published in a separate public JSON file, not in the shared clan-data file.</p>
+      <p style="color:#64746a;font-size:.76rem">Use Publish Users to GitHub after changing accounts so the same credentials work on other browsers and devices. The default admin account remains available as a recovery account.</p>
       <div id="userList"></div>
       <form class="user-form" onsubmit="saveUser(event)">
         <input id="userEditId" type="hidden">
@@ -697,7 +697,7 @@ new siara maina file push
           <div class="field"><label for="userRole">Role</label><select id="userRole"><option value="admin">Admin</option><option value="editor">Editor</option><option value="viewer">Viewer</option></select></div>
           <div class="field"><label><input id="userActive" type="checkbox" checked> Active</label></div>
         </div>
-        <div class="modal-actions"><button class="button secondary" type="button" onclick="resetUserForm()">New User</button><button class="button primary" type="submit">Save User</button></div>
+        <div class="modal-actions"><button class="button secondary" type="button" onclick="resetUserForm()">New User</button><button class="button primary" type="submit">Save User</button><button class="button gold" type="button" onclick="publishUsersToGitHub()">Publish Users to GitHub</button></div>
       </form>
     </div>
   </section>
@@ -706,7 +706,7 @@ new siara maina file push
     <div class="modal-box" style="max-width:560px">
       <div class="modal-head"><h2>Local Account Recovery</h2><button class="close" type="button" onclick="closeModal('recoveryModal')">×</button></div>
       <p id="recoveryMessage" class="user-note"></p>
-      <p style="color:#64746a;font-size:.76rem">Accounts are stored only in this browser. There is no server-side email recovery. Resetting accounts removes locally created users and restores the default administrator account.</p>
+      <p style="color:#64746a;font-size:.76rem">The shared recovery administrator is available on every browser. If you forget a changed account, sign in with the default recovery account, open User Management, and publish a new password.</p>
       <div class="modal-actions"><button class="button secondary" type="button" onclick="showLocalUsernames()">Show Local Usernames</button><button class="button danger" type="button" onclick="resetLocalAccounts()">Reset to Default Admin</button></div>
     </div>
   </section>
@@ -733,8 +733,10 @@ new siara maina file push
     ];
     var USERS_STORAGE_KEY = "siaraMainaClanUsers";
     var SESSION_STORAGE_KEY = "siaraMainaClanSession";
+    var SHARED_USERS_FILE = "./siara-maina-clan-users.json";
     var users = [];
     var currentUser = null;
+    var sharedUsersLoaded = false;
 
     function loadUsers() {
       try {
@@ -746,6 +748,39 @@ new siara maina file push
     function saveUsers() {
       try { localStorage.setItem(USERS_STORAGE_KEY, JSON.stringify(users)); }
       catch (error) { alert("Browser storage is unavailable. User changes were not saved."); }
+    }
+
+    function defaultUserWithHash() {
+      return {id:DEFAULT_USERS[0].id, username:DEFAULT_USERS[0].username, passwordHash:"", displayName:DEFAULT_USERS[0].displayName, role:"admin", active:true};
+    }
+
+    async function hashPassword(password) {
+      if (window.crypto && window.crypto.subtle) {
+        var data = new TextEncoder().encode(password);
+        var digest = await window.crypto.subtle.digest("SHA-256", data);
+        return Array.from(new Uint8Array(digest)).map(function(byte) { return byte.toString(16).padStart(2, "0"); }).join("");
+      }
+      return "plain:" + password;
+    }
+
+    async function loadSharedUsers() {
+      try {
+        var response = await fetch(SHARED_USERS_FILE + "?updated=" + new Date().getTime(), {cache:"no-store"});
+        if (!response.ok) throw new Error("Shared users unavailable");
+        var payload = await response.json();
+        if (!Array.isArray(payload.users)) throw new Error("Invalid shared users file");
+        users = payload.users.concat([defaultUserWithHash()]).filter(function(user, index, list) {
+          return list.findIndex(function(item) { return item.id === user.id; }) === index;
+        });
+        sharedUsersLoaded = true;
+      } catch (error) {
+        loadUsers();
+      }
+    }
+
+    async function userPasswordMatches(user, password) {
+      if (user.passwordHash) return user.passwordHash === await hashPassword(password);
+      return user.password === password;
     }
 
     function getCurrentUser() { return currentUser; }
@@ -800,11 +835,12 @@ new siara maina file push
       closeModal("recoveryModal");
     }
 
-    function signIn(event) {
+    async function signIn(event) {
       event.preventDefault();
       var username = document.getElementById("loginUsername").value.trim();
       var password = document.getElementById("loginPassword").value;
-      var user = users.find(function(item) { return item.active && item.username === username && item.password === password; });
+      var user = users.find(function(item) { return item.active && item.username === username; });
+      if (user && !(await userPasswordMatches(user, password))) user = null;
       if (!user) { document.getElementById("loginError").textContent = "Invalid username or password. Use the local username, not an email address."; return; }
       currentUser = {userId:user.id, username:user.username, displayName:user.displayName, role:user.role, loggedInAt:new Date().toISOString()};
       var sessionData = JSON.stringify(currentUser);
@@ -860,7 +896,7 @@ new siara maina file push
     }
 
     function resetUserForm() { document.getElementById("userEditId").value = ""; document.getElementById("userDisplayName").value = ""; document.getElementById("userUsername").value = ""; document.getElementById("userPassword").value = ""; document.getElementById("userRole").value = "viewer"; document.getElementById("userActive").checked = true; }
-    function editUser(id) { var user = users.find(function(item) { return item.id === id; }); if (!user) return; document.getElementById("userEditId").value = user.id; document.getElementById("userDisplayName").value = user.displayName; document.getElementById("userUsername").value = user.username; document.getElementById("userPassword").value = user.password; document.getElementById("userRole").value = user.role; document.getElementById("userActive").checked = user.active; }
+    function editUser(id) { var user = users.find(function(item) { return item.id === id; }); if (!user) return; document.getElementById("userEditId").value = user.id; document.getElementById("userDisplayName").value = user.displayName; document.getElementById("userUsername").value = user.username; document.getElementById("userPassword").value = user.password || ""; document.getElementById("userRole").value = user.role; document.getElementById("userActive").checked = user.active; }
     function activeAdminCount() { return users.filter(function(user) { return user.active && user.role === "admin"; }).length; }
     function saveUser(event) {
       event.preventDefault(); if (!requirePermission("manageUsers", "You do not have permission to manage users.")) return;
@@ -868,8 +904,9 @@ new siara maina file push
       var existing = users.find(function(user) { return user.id === id; });
       var role = document.getElementById("userRole").value;
       if (existing && existing.role === "admin" && existing.active && (role !== "admin" || !document.getElementById("userActive").checked) && activeAdminCount() < 2) { alert("At least one active administrator must remain."); return; }
-      var user = {id:id, displayName:document.getElementById("userDisplayName").value.trim(), username:document.getElementById("userUsername").value.trim(), password:document.getElementById("userPassword").value, role:role, active:document.getElementById("userActive").checked};
-      if (!user.displayName || !user.username || !user.password || users.some(function(item) { return item.username === user.username && item.id !== id; })) { alert("Enter all fields and use a unique username."); return; }
+      var enteredPassword = document.getElementById("userPassword").value;
+      var user = {id:id, displayName:document.getElementById("userDisplayName").value.trim(), username:document.getElementById("userUsername").value.trim(), password:enteredPassword, passwordHash:existing && !enteredPassword ? existing.passwordHash : "", role:role, active:document.getElementById("userActive").checked};
+      if (!user.displayName || !user.username || (!user.password && !user.passwordHash) || users.some(function(item) { return item.username === user.username && item.id !== id; })) { alert("Enter all fields and use a unique username."); return; }
       if (existing) users[users.indexOf(existing)] = user; else users.push(user);
       if (currentUser && currentUser.userId === user.id) {
         if (!user.active) { alert("You cannot deactivate your own signed-in account."); if (existing) users[users.indexOf(user)] = existing; else users.pop(); return; }
@@ -887,6 +924,48 @@ new siara maina file push
       if (user.id === currentUser.userId) { alert("You cannot delete your own signed-in account."); return; }
       if (user.active && user.role === "admin" && activeAdminCount() < 2) { alert("The final active administrator cannot be deleted."); return; }
       users = users.filter(function(item) { return item.id !== id; }); saveUsers(); renderUserList();
+    }
+
+    async function publishUsersToGitHub() {
+      if (!requirePermission("manageUsers", "You do not have permission to publish users.")) return;
+      var token = window.prompt("Enter a GitHub fine-grained token with Contents: Read and write permission. It will not be stored.");
+      if (!token) return;
+      var sharedUsers = [];
+      var localDefault = users.find(function(user) { return user.id === DEFAULT_USERS[0].id; });
+      var defaultWasChanged = localDefault && (localDefault.username !== DEFAULT_USERS[0].username || localDefault.passwordHash || localDefault.password !== DEFAULT_USERS[0].password);
+      var recoveryUser = defaultUserWithHash();
+      if (defaultWasChanged) {
+        recoveryUser.id = "admin-recovery";
+        recoveryUser.username = "admin-recovery";
+      }
+      recoveryUser.passwordHash = await hashPassword(DEFAULT_USERS[0].password);
+      sharedUsers.push(recoveryUser);
+      for (var index = 0; index < users.length; index++) {
+        var user = users[index];
+        if (user.id === recoveryUser.id && !defaultWasChanged) continue;
+        sharedUsers.push({
+          id:user.id,
+          username:user.username,
+          passwordHash:user.passwordHash || await hashPassword(user.password || ""),
+          displayName:user.displayName,
+          role:user.role,
+          active:user.active
+        });
+      }
+      var apiUrl = "https://api.github.com/repos/deodatusmaliti/SiaraMaina-Clan-Informatics/contents/siara-maina-clan-users.json";
+      var headers = {"Accept":"application/vnd.github+json", "Authorization":"Bearer " + token, "X-GitHub-Api-Version":"2022-11-28", "Content-Type":"application/json"};
+      var data = JSON.stringify({project:"SiaraMaina Clan Informatics", updatedAt:new Date().toISOString(), users:sharedUsers}, null, 2);
+      try {
+        var existingResponse = await fetch(apiUrl, {headers:headers});
+        var existing = existingResponse.ok ? await existingResponse.json() : {};
+        var response = await fetch(apiUrl, {method:"PUT", headers:headers, body:JSON.stringify({message:"Update shared clan user access", content:btoa(unescape(encodeURIComponent(data))), sha:existing.sha, branch:"main"})});
+        if (!response.ok) throw new Error("User publish failed");
+        users = sharedUsers;
+        saveUsers();
+        alert("Shared users were published. The same credentials can now work on other browsers and devices.");
+      } catch (error) {
+        alert("User publishing failed. Check the token permission and repository access.");
+      }
     }
     var STORAGE_KEY = "siaraMainaClanRecordsUpdated";
     var SETTINGS_KEY = "siaraMainaClanSettings";
@@ -3346,12 +3425,14 @@ new siara maina file push
       }
     }
 
-    restoreSession();
-    populateArchiveMemberSelect();
-    showCatalogue("all");
-    openSharedLink();
-
-    loadSharedProjectData();
+    document.body.classList.add("auth-locked");
+    loadSharedUsers().then(function() {
+      restoreSession();
+      populateArchiveMemberSelect();
+      showCatalogue("all");
+      openSharedLink();
+      loadSharedProjectData();
+    });
   </script>
 </body>
 </html>

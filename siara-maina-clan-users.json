@@ -1,0 +1,14 @@
+{
+  "project": "SiaraMaina Clan Informatics",
+  "updatedAt": "2026-09-05T00:00:00.000Z",
+  "users": [
+    {
+      "id": "admin-1",
+      "username": "admin",
+      "passwordHash": "db6d64cf523810bc2cb8f98f37965f4225ac65ef68a263715b1bd633fd047ad1",
+      "displayName": "Clan Administrator",
+      "role": "admin",
+      "active": true
+    }
+  ]
+}
