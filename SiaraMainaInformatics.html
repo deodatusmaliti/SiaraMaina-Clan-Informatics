@@ -1139,7 +1139,7 @@ new siara maina file push
       It is saved in the same GitHub repository as this HTML page.
       The cache-busting query ensures browsers request the newest copy.
     */
-    var SHARED_DATA_FILE = "./siara-maina-clan-data.json";
+    var SHARED_DATA_FILE = "https://raw.githubusercontent.com/deodatusmaliti/SiaraMaina-Clan-Informatics/main/siara-maina-clan-data.json";
 
     async function loadSharedProjectData() {
       try {
@@ -1161,17 +1161,6 @@ new siara maina file push
 
         if (!Array.isArray(remoteRecords)) {
           throw new Error("The shared JSON file does not contain a valid records array.");
-        }
-
-        if (
-          remoteRecords.length === 0 &&
-          Array.isArray(records) &&
-          records.length > 0
-        ) {
-          console.warn(
-            "The shared JSON file is empty, so existing browser data was preserved."
-          );
-          return;
         }
 
         records = remoteRecords.map(function(record) {
@@ -3224,6 +3213,10 @@ new siara maina file push
           })
         });
         if (!response.ok) throw new Error("GitHub save failed");
+        var savedCommit = await response.json();
+        if (!savedCommit.content || !savedCommit.commit) {
+          throw new Error("GitHub did not confirm the saved file.");
+        }
         alert("Project data was saved to GitHub.");
       } catch (error) {
         alert("GitHub save failed. Check the token permission and repository access.");
