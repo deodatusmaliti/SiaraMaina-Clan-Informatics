@@ -3018,6 +3018,20 @@ new siara maina file push
       return null;
     }
 
+    function csvIdentity(record) {
+      return [record.firstName, record.middleName, record.lastName].map(function(value) {
+        return String(value || "").trim().toLowerCase();
+      }).join("|");
+    }
+
+    function uniqueImportedId() {
+      var id;
+      do {
+        id = "member-" + Date.now() + "-" + Math.random().toString(36).slice(2, 8);
+      } while (records.some(function(record) { return record.id === id; }));
+      return id;
+    }
+
     function importCsv(event) {
       if (!requirePermission("importCsv", "You do not have permission to import CSV member records.")) { event.target.value = ""; return; }
       var file = event.target.files[0];
@@ -3033,19 +3047,20 @@ new siara maina file push
           var values = parseCsvLine(line), row = {};
           fields.forEach(function(field, index) { row[field] = (values[index] || "").trim(); });
           if (!row.firstName && !row.id) return;
-          row.id = row.id || "member-" + Date.now() + "-" + imported;
+          var importedId = row.id;
           var importedDeceased = parseImportedDeceased(row.deceased);
           if (importedDeceased === null) delete row.deceased;
           else row.deceased = importedDeceased;
           row.siblingIds = Array.isArray(row.siblingIds) ? row.siblingIds : (row.siblingIds ? String(row.siblingIds).split(";").filter(Boolean) : []);
           var existingIndex = records.findIndex(function(record) {
-            if (record.id && row.id && record.id === row.id) return true;
-            return !!(record.firstName && row.firstName && record.firstName === row.firstName && record.dob && row.dob && record.dob === row.dob);
+            return !!(importedId && record.id === importedId && csvIdentity(record) === csvIdentity(row));
           });
           if (existingIndex > -1) {
+            row.id = records[existingIndex].id;
             records[existingIndex] = Object.assign({}, records[existingIndex], row);
             updated++;
           } else {
+            row.id = uniqueImportedId();
             if (row.deceased === undefined) row.deceased = false;
             records.push(row);
             added++;
