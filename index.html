@@ -270,7 +270,7 @@ new siara maina file push
           </div>
           <div class="command-group"><span class="command-label">Tools</span>
             <div class="dropdown"><button class="top-button" type="button" onclick="toggleMenu('viewMenu')">View <span aria-hidden="true">▾</span></button><div id="viewMenu" class="dropdown-menu"><button type="button" onclick="setViewStyle('card')">Card View</button><button type="button" onclick="setViewStyle('line')">Line View</button><button id="spouseToggle" type="button" onclick="toggleSpouses()">Hide Spouses</button></div></div>
-            <div class="dropdown"><button class="top-button" type="button" onclick="toggleMenu('utilitiesMenu')">Utilities <span aria-hidden="true">▾</span></button><div id="utilitiesMenu" class="dropdown-menu"><button type="button" onclick="openRelationship()">Relationship Finder</button><button type="button" onclick="openBiography()">Biography</button><button type="button" onclick="openPrintDialog()">Print / Export</button><button type="button" onclick="exportCsv()">CSV Backup</button><button type="button" onclick="document.getElementById('csvImport').click()">Import CSV</button><button type="button" onclick="saveProjectData()">Save Project Data</button><button type="button" onclick="saveProjectDataToGitHub()">Save to GitHub</button><button type="button" onclick="document.getElementById('projectImport').click()">Restore Project Data</button></div></div>
+            <div class="dropdown"><button class="top-button" type="button" onclick="toggleMenu('utilitiesMenu')">Utilities <span aria-hidden="true">▾</span></button><div id="utilitiesMenu" class="dropdown-menu"><button type="button" onclick="openRelationship()">Relationship Finder</button><button type="button" onclick="openBiography()">Biography</button><button type="button" onclick="openPrintDialog()">Print / Export</button><button type="button" onclick="exportCsv()">CSV Backup</button><button type="button" onclick="document.getElementById('csvImport').click()">Import CSV</button><button type="button" onclick="saveProjectData()">Save Project Data</button><button type="button" onclick="saveProjectDataToGitHub()">Save to GitHub</button><button type="button" onclick="refreshSharedProjectData()">Refresh Shared Data</button><button type="button" onclick="document.getElementById('projectImport').click()">Restore Project Data</button></div></div>
           </div>
           <button class="top-button add command-add" type="button" onclick="openProfile(null)">+ Add Member</button>
         </div>
@@ -818,6 +818,86 @@ new siara maina file push
         localStorage.setItem(STORAGE_KEY, JSON.stringify(records));
       } catch (error) {
         alert("Browser storage is unavailable. Use Save Project Data to create a project backup.");
+      }
+    }
+
+    /*
+      Central shared project data file.
+
+      It is saved in the same GitHub repository as this HTML page.
+      The cache-busting query ensures browsers request the newest copy.
+    */
+    var SHARED_DATA_FILE = "./siara-maina-clan-data.json";
+
+    async function loadSharedProjectData() {
+      try {
+        var response = await fetch(
+          SHARED_DATA_FILE +
+          "?updated=" +
+          new Date().getTime(),
+          {
+            cache: "no-store"
+          }
+        );
+
+        if (!response.ok) {
+          throw new Error("Could not find the shared project JSON file.");
+        }
+
+        var payload = await response.json();
+        var remoteRecords = Array.isArray(payload) ? payload : payload.records;
+
+        if (!Array.isArray(remoteRecords)) {
+          throw new Error("The shared JSON file does not contain a valid records array.");
+        }
+
+        if (
+          remoteRecords.length === 0 &&
+          Array.isArray(records) &&
+          records.length > 0
+        ) {
+          console.warn(
+            "The shared JSON file is empty, so existing browser data was preserved."
+          );
+          return;
+        }
+
+        records = remoteRecords.map(function(record) {
+          var cleanRecord = Object.assign({}, record);
+
+          if (!Array.isArray(cleanRecord.siblingIds)) {
+            cleanRecord.siblingIds = cleanRecord.siblingIds
+              ? String(cleanRecord.siblingIds)
+                  .split(",")
+                  .map(function(id) {
+                    return id.trim();
+                  })
+                  .filter(Boolean)
+              : [];
+          }
+
+          if (!cleanRecord.photo) {
+            cleanRecord.photo = "";
+          }
+
+          return cleanRecord;
+        });
+
+        saveRecords();
+        populateArchiveMemberSelect();
+        showCatalogue("all");
+
+        console.log(
+          "Shared GitHub project data loaded successfully:",
+          records.length,
+          "member record(s)."
+        );
+      } catch (error) {
+        console.warn(
+          "Shared GitHub JSON could not be loaded. " +
+          "Using existing local/default browser data instead.",
+          error
+        );
       }
     }
 
@@ -2753,7 +2833,10 @@ new siara maina file push
       var token = window.prompt("Enter a GitHub fine-grained token with Contents: Read and write permission. It will not be stored.");
       if (!token) return;
 
-      var apiUrl = "https://api.github.com/repos/deodatusmaliti/SiaraMaina-Clan-Informatics/contents/siara-maina-clan-data.json";
+      var apiUrl =
+        "https://api.github.com/repos/" +
+        "deodatusmaliti/SiaraMaina-Clan-Informatics" +
+        "/contents/siara-maina-clan-data.json";
       var data = JSON.stringify({
         project: "SiaraMaina Clan Informatics",
         exportedAt: new Date().toISOString(),
@@ -2773,9 +2856,10 @@ new siara maina file push
           method: "PUT",
           headers: headers,
           body: JSON.stringify({
-            message: "Update clan project data",
+            message: "Update shared SiaraMaina clan project data",
             content: btoa(unescape(encodeURIComponent(data))),
-            sha: existing.sha
+            sha: existing && existing.sha ? existing.sha : undefined,
+            branch: "main"
           })
         });
         if (!response.ok) throw new Error("GitHub save failed");
@@ -2783,6 +2867,21 @@ new siara maina file push
       } catch (error) {
         alert("GitHub save failed. Check the token permission and repository access.");
       }
+    }
+
+    async function refreshSharedProjectData() {
+      var confirmed = confirm(
+        "Refresh from GitHub shared data? " +
+        "Unsaved changes in this browser may be replaced."
+      );
+
+      if (!confirmed) {
+        return;
+      }
+
+      await loadSharedProjectData();
+
+      alert("Shared project data refresh completed.");
     }
 
     function importProjectData(event) {
@@ -2967,6 +3066,8 @@ new siara maina file push
     populateArchiveMemberSelect();
     showCatalogue("all");
     openSharedLink();
+
+    loadSharedProjectData();
   </script>
 </body>
 </html>
