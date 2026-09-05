@@ -1,6 +1,6 @@
 {
   "project": "SiaraMaina Clan Informatics",
-  "exportedAt": "2026-09-05T20:26:21.860Z",
+  "exportedAt": "2026-09-05T20:32:26.353Z",
   "records": [
     {
       "id": "ngowi1",
@@ -1778,39 +1778,6 @@
       "location": "",
       "narrative": "",
       "photo": ""
-    },
-    {
-      "id": "member-1788639967123-k9vksm",
-      "firstName": "WORKED!",
-      "middleName": "",
-      "lastName": "test",
-      "sex": "Male",
-      "branchType": "heritage",
-      "honorific": "Foundational Ancestor",
-      "dob": "",
-      "birthPeriod": "c. 1600s",
-      "placeOfBirth": "",
-      "deceased": true,
-      "dod": "",
-      "deathAge": "",
-      "causeOfDeath": "Not Recorded",
-      "fatherId": "Deodatus Vincent Maliti",
-      "motherId": "",
-      "spouseId": "",
-      "siblingIds": [],
-      "maritalStatus": "Not Recorded",
-      "education": "Not Recorded",
-      "course": "",
-      "employment": "Not Recorded",
-      "occupation": "Clan Founder",
-      "organization": "",
-      "religion": "Not Recorded",
-      "denomination": "",
-      "phone": "",
-      "whatsapp": "",
-      "email": "",
-      "location": "Marangu Moye, Kilimanjaro, Tanzania",
-      "narrative": "Known foundational ancestor of the recorded lineage."
     }
   ]
 }
