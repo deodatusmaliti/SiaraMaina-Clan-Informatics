@@ -297,7 +297,7 @@ new siara maina file push
           </div>
           <div class="command-group"><span class="command-label">Tools</span>
             <div class="dropdown"><button class="top-button" type="button" onclick="toggleMenu('viewMenu')">View <span aria-hidden="true">▾</span></button><div id="viewMenu" class="dropdown-menu"><button type="button" onclick="setViewStyle('card')">Card View</button><button type="button" onclick="setViewStyle('line')">Line View</button><button id="spouseToggle" type="button" onclick="toggleSpouses()">Hide Spouses</button></div></div>
-            <div class="dropdown"><button class="top-button" type="button" onclick="toggleMenu('utilitiesMenu')">Utilities <span aria-hidden="true">▾</span></button><div id="utilitiesMenu" class="dropdown-menu"><button type="button" onclick="openRelationship()">Relationship Finder</button><button type="button" onclick="openBiography()">Biography</button><button type="button" onclick="openPrintDialog()">Print / Export</button><button type="button" onclick="exportCsv()">CSV Export</button><button id="importCsvButton" type="button" onclick="document.getElementById('csvImport').click()">Import CSV</button><button id="saveProjectButton" type="button" onclick="saveProjectData()">Save Project Data</button><button id="saveGithubButton" type="button" onclick="synchronizeProjectDataWithGitHub()">Synchronize with GitHub</button><button id="restoreProjectButton" type="button" onclick="document.getElementById('projectImport').click()">Restore Project Data</button></div></div>
+            <div class="dropdown"><button class="top-button" type="button" onclick="toggleMenu('utilitiesMenu')">Utilities <span aria-hidden="true">▾</span></button><div id="utilitiesMenu" class="dropdown-menu"><button type="button" onclick="openRelationship()">Relationship Finder</button><button type="button" onclick="openBiography()">Biography</button><button type="button" onclick="openPrintDialog()">Print / Export</button><button type="button" onclick="exportCsv()">Export CSV</button><button id="importCsvButton" type="button" onclick="document.getElementById('csvImport').click()">Import CSV</button><button id="saveProjectButton" type="button" onclick="saveProjectData()">Save Project Data</button><button id="restoreProjectButton" type="button" onclick="document.getElementById('projectImport').click()">Restore Project Data</button><button id="saveGithubButton" type="button" onclick="synchronizeProjectDataWithGitHub()">Synchronize with GitHub</button></div></div>
           </div>
           <button class="top-button add command-add" type="button" onclick="openProfile(null)">+ Add Member</button>
         </div>
@@ -953,7 +953,7 @@ new siara maina file push
       var data = JSON.stringify({project:"SiaraMaina Clan Informatics", updatedAt:new Date().toISOString(), users:sharedUsers}, null, 2);
       try {
         var response = await fetch(GITHUB_SYNC_API, {method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify({action:"write", file:"users", value:JSON.parse(data), message:"Update shared clan user access"})});
-        if (!response.ok) throw new Error((await response.json()).error || "User publish failed");
+        if (!response.ok) throw new Error(await getSyncResponseError(response, "User publish failed."));
         users = sharedUsers;
         saveUsers();
         alert("Shared users were published. The same credentials can now work on other browsers and devices.");
@@ -1120,7 +1120,20 @@ new siara maina file push
     }
 
     var LOCAL_DATA_UPDATED_AT_KEY = "siaraMainaClanDataUpdatedAt";
-    var GITHUB_SYNC_API = "/api/github-sync";
+    var GITHUB_SYNC_API = window.GITHUB_SYNC_API || "/api/github-sync";
+
+    async function getSyncResponseError(response, fallbackMessage) {
+      var responseText = await response.text();
+      try {
+        var errorPayload = JSON.parse(responseText);
+        return errorPayload.error || fallbackMessage;
+      } catch (error) {
+        if (responseText.trim().toLowerCase().indexOf("<html") === 0 || responseText.trim().indexOf("<!doctype") === 0) {
+          return "The synchronization service is not available at this website. Deploy this project on Vercel or Netlify and configure GITHUB_TOKEN.";
+        }
+        return fallbackMessage + " (HTTP " + response.status + ")";
+      }
+    }
 
     function saveRecords(markAsLocalChange) {
       try {
@@ -1141,7 +1154,7 @@ new siara maina file push
       try {
         var response = await fetch(GITHUB_SYNC_API, {method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify({action:"read", file:"data"})});
         if (!response.ok) {
-          throw new Error((await response.json()).error || "Could not load the shared project JSON file.");
+          throw new Error(await getSyncResponseError(response, "Could not load the shared project JSON file."));
         }
         var payload = await response.json();
         var remoteRecords = Array.isArray(payload) ? payload : payload.records;
@@ -3345,13 +3358,13 @@ new siara maina file push
       };
       try {
         var remoteResponse = await fetch(GITHUB_SYNC_API, {method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify({action:"read", file:"data"})});
-        if (!remoteResponse.ok) throw new Error((await remoteResponse.json()).error || "GitHub read failed.");
+        if (!remoteResponse.ok) throw new Error(await getSyncResponseError(remoteResponse, "GitHub read failed."));
         var remotePayload = await remoteResponse.json();
         var remoteUpdatedAt = remotePayload.updatedAt || "1970-01-01T00:00:00.000Z";
         if (new Date(localUpdatedAt) > new Date(remoteUpdatedAt)) {
           localPayload.exportedAt = new Date().toISOString();
           var writeResponse = await fetch(GITHUB_SYNC_API, {method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify({action:"write", file:"data", value:localPayload, message:"Update shared SiaraMaina clan project data"})});
-          if (!writeResponse.ok) throw new Error((await writeResponse.json()).error || "GitHub save failed.");
+          if (!writeResponse.ok) throw new Error(await getSyncResponseError(writeResponse, "GitHub save failed."));
           localStorage.setItem(LOCAL_DATA_UPDATED_AT_KEY, localPayload.exportedAt);
           alert("Browser changes were synchronized to GitHub.");
           return;
