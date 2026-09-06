@@ -1,6 +1,6 @@
 {
   "project": "SiaraMaina Clan Informatics",
-  "exportedAt": "2026-09-06T17:06:26.872Z",
+  "exportedAt": "2026-09-06T17:08:13.495Z",
   "records": [
     {
       "id": "ngowi1",
@@ -2458,39 +2458,6 @@
       "spouseId": "",
       "siblingIds": [],
       "photo": ""
-    },
-    {
-      "firstName": "Patric",
-      "middleName": "",
-      "lastName": "Kessy",
-      "sex": "Male",
-      "branchType": "maliti",
-      "honorific": "",
-      "dob": "",
-      "birthPeriod": "",
-      "placeOfBirth": "Arusha",
-      "dod": "",
-      "deathAge": "",
-      "causeOfDeath": "",
-      "maritalStatus": "Single",
-      "education": "Certificate",
-      "course": "",
-      "employment": "Self-employed",
-      "occupation": "",
-      "organization": "",
-      "religion": "Christianity",
-      "denomination": "Catholic",
-      "phone": "",
-      "whatsapp": "",
-      "email": "",
-      "location": "",
-      "narrative": "",
-      "deceased": false,
-      "id": "member-1788714275179-a629hi",
-      "fatherId": "",
-      "motherId": "member-1788357649403",
-      "spouseId": "",
-      "siblingIds": []
     }
   ]
 }
