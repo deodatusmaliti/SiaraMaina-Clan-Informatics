@@ -1,6 +1,6 @@
 {
   "project": "SiaraMaina Clan Informatics",
-  "exportedAt": "2026-09-06T11:51:18.322Z",
+  "exportedAt": "2026-09-06T15:03:56.645Z",
   "records": [
     {
       "id": "ngowi1",
@@ -1810,7 +1810,8 @@
       "fatherId": "",
       "motherId": "",
       "spouseId": "",
-      "siblingIds": []
+      "siblingIds": [],
+      "photo": ""
     },
     {
       "firstName": "Witness",
@@ -1843,7 +1844,8 @@
       "fatherId": "",
       "motherId": "member-1788357812808",
       "spouseId": "",
-      "siblingIds": []
+      "siblingIds": [],
+      "photo": ""
     },
     {
       "firstName": "Kelvin",
@@ -1876,7 +1878,8 @@
       "fatherId": "member-1788353051545",
       "motherId": "",
       "spouseId": "",
-      "siblingIds": []
+      "siblingIds": [],
+      "photo": ""
     },
     {
       "firstName": "Kathbert",
@@ -1909,7 +1912,8 @@
       "fatherId": "member-1788353051545",
       "motherId": "",
       "spouseId": "",
-      "siblingIds": []
+      "siblingIds": [],
+      "photo": ""
     },
     {
       "firstName": "Karren",
@@ -1942,7 +1946,8 @@
       "fatherId": "member-1788353051545",
       "motherId": "",
       "spouseId": "",
-      "siblingIds": []
+      "siblingIds": [],
+      "photo": ""
     }
   ]
 }
