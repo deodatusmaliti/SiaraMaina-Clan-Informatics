@@ -1,6 +1,6 @@
 {
   "project": "SiaraMaina Clan Informatics",
-  "exportedAt": "2026-09-06T06:56:29.594Z",
+  "exportedAt": "2026-09-06T09:45:33.184Z",
   "records": [
     {
       "id": "ngowi1",
@@ -1777,40 +1777,6 @@
       "email": "",
       "location": "",
       "narrative": "",
-      "photo": ""
-    },
-    {
-      "id": "member-1788677212048-mwpzhk",
-      "firstName": "NewMan",
-      "middleName": "",
-      "lastName": "Maliti",
-      "sex": "Male",
-      "branchType": "",
-      "honorific": "",
-      "dob": "",
-      "birthPeriod": "2000s",
-      "placeOfBirth": "",
-      "dod": "",
-      "deathAge": "",
-      "causeOfDeath": "",
-      "fatherId": "Deodatus Vincent Maliti",
-      "motherId": "",
-      "spouseId": "",
-      "siblingIds": [],
-      "maritalStatus": "Not Recorded",
-      "education": "Not Recorded",
-      "course": "",
-      "employment": "Not Recorded",
-      "occupation": "student",
-      "organization": "",
-      "religion": "Not Recorded",
-      "denomination": "",
-      "phone": "",
-      "whatsapp": "",
-      "email": "",
-      "location": "Marangu Moye, Kilimanjaro, Tanzania",
-      "narrative": "new generation",
-      "deceased": false,
       "photo": ""
     }
   ]
