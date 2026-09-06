@@ -772,6 +772,7 @@ new siara maina file push
         users = payload.users.concat([defaultUserWithHash()]).filter(function(user, index, list) {
           return list.findIndex(function(item) { return item.id === user.id; }) === index;
         });
+        saveUsers();
         sharedUsersLoaded = true;
       } catch (error) {
         loadUsers();
@@ -786,9 +787,9 @@ new siara maina file push
     function getCurrentUser() { return currentUser; }
     function hasPermission(permissionName) {
       var permissions = {
-        admin: {view:true, addMember:true, editMember:true, deleteMember:true, importCsv:true, restoreProject:true, saveProjectData:true, saveToGitHub:true, manageUsers:true},
-        editor: {view:true, addMember:true, editMember:true, deleteMember:false, importCsv:false, restoreProject:false, saveProjectData:true, saveToGitHub:false, manageUsers:false},
-        viewer: {view:true, addMember:false, editMember:false, deleteMember:false, importCsv:false, restoreProject:false, saveProjectData:false, saveToGitHub:false, manageUsers:false}
+        admin: {view:true, addMember:true, editMember:true, deleteMember:true, importCsv:true, restoreProject:true, saveProjectData:true, saveToGitHub:true, synchronizeWithGitHub:true, manageUsers:true},
+        editor: {view:true, addMember:true, editMember:true, deleteMember:false, importCsv:false, restoreProject:false, saveProjectData:true, saveToGitHub:false, synchronizeWithGitHub:true, manageUsers:false},
+        viewer: {view:true, addMember:false, editMember:false, deleteMember:false, importCsv:false, restoreProject:false, saveProjectData:false, saveToGitHub:false, synchronizeWithGitHub:true, manageUsers:false}
       };
       return !!(currentUser && permissions[currentUser.role] && permissions[currentUser.role][permissionName]);
     }
@@ -883,7 +884,7 @@ new siara maina file push
       document.getElementById("importCsvButton").style.display = hasPermission("importCsv") ? "" : "none";
       document.getElementById("restoreProjectButton").style.display = hasPermission("restoreProject") ? "" : "none";
       document.getElementById("saveProjectButton").style.display = hasPermission("saveProjectData") ? "" : "none";
-      document.getElementById("saveGithubButton").style.display = hasPermission("saveToGitHub") ? "" : "none";
+      document.getElementById("saveGithubButton").style.display = hasPermission("synchronizeWithGitHub") ? "" : "none";
     }
 
     function openUserManagement() {
@@ -3378,16 +3379,26 @@ new siara maina file push
     }
 
     async function synchronizeProjectDataWithGitHub() {
-      if (!requirePermission("saveToGitHub", "You do not have permission to save shared data to GitHub.")) return;
-      var token = window.prompt("Enter a GitHub fine-grained token with Contents: Read and write permission. It will not be stored.");
-      if (!token) return;
-      var localUpdatedAt = localStorage.getItem(LOCAL_DATA_UPDATED_AT_KEY) || "1970-01-01T00:00:00.000Z";
-      var localPayload = {
-        project: "SiaraMaina Clan Informatics",
-        exportedAt: localUpdatedAt,
-        records: records
-      };
+      if (!requirePermission("synchronizeWithGitHub", "You do not have permission to synchronize with GitHub.")) return;
       try {
+        await loadSharedUsers();
+        restoreSession();
+        if (!currentUser) return;
+
+        if (!hasPermission("saveToGitHub")) {
+          await loadSharedProjectData();
+          alert("Shared users and project data were synchronized from GitHub.");
+          return;
+        }
+
+        var token = window.prompt("Enter a GitHub fine-grained token with Contents: Read and write permission. It will not be stored.");
+        if (!token) return;
+        var localUpdatedAt = localStorage.getItem(LOCAL_DATA_UPDATED_AT_KEY) || "1970-01-01T00:00:00.000Z";
+        var localPayload = {
+          project: "SiaraMaina Clan Informatics",
+          exportedAt: localUpdatedAt,
+          records: records
+        };
         var remoteFile = await githubReadFile("siara-maina-clan-data.json", token);
         var remotePayload = remoteFile.value;
         var remoteUpdatedAt = remotePayload.updatedAt || "1970-01-01T00:00:00.000Z";
