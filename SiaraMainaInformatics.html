@@ -1548,8 +1548,9 @@ new siara maina file push
     }
 
     function shareContent(title, text, url) {
+      var message = text ? text + "\n\nOpen link:\n" + url : url;
       if (navigator.share) {
-        navigator.share({title: title, text: text, url: url}).catch(function(error) {
+        navigator.share({title: title, text: message, url: url}).catch(function(error) {
           if (error && error.name !== "AbortError") showShareOptions(title, text, url);
         });
         return;
@@ -2086,7 +2087,9 @@ new siara maina file push
       return new Promise(function(resolve, reject) {
         var image = new Image();
         image.onload = function() {
-          var canvas = document.createElement("canvas"); canvas.width = width * 2; canvas.height = height * 2;
+          var imageScale = Math.min(4, Math.sqrt(32000000 / (width * height)));
+          imageScale = Math.max(1, imageScale);
+          var canvas = document.createElement("canvas"); canvas.width = Math.round(width * imageScale); canvas.height = Math.round(height * imageScale);
           var context = canvas.getContext("2d"); context.fillStyle = "#ffffff"; context.fillRect(0, 0, canvas.width, canvas.height); context.drawImage(image, 0, 0, canvas.width, canvas.height);
           var mime = format === "jpg" ? "image/jpeg" : "image/png";
           canvas.toBlob(function(blob) { resolve(new File([blob], filename + "." + (format === "jpg" ? "jpg" : "png"), {type:mime})); }, mime, .95);
