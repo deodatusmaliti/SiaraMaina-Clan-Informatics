@@ -297,7 +297,7 @@ new siara maina file push
           </div>
           <div class="command-group"><span class="command-label">Tools</span>
             <div class="dropdown"><button class="top-button" type="button" onclick="toggleMenu('viewMenu')">View <span aria-hidden="true">▾</span></button><div id="viewMenu" class="dropdown-menu"><button type="button" onclick="setViewStyle('card')">Card View</button><button type="button" onclick="setViewStyle('line')">Line View</button><button id="spouseToggle" type="button" onclick="toggleSpouses()">Hide Spouses</button></div></div>
-            <div class="dropdown"><button class="top-button" type="button" onclick="toggleMenu('utilitiesMenu')">Utilities <span aria-hidden="true">▾</span></button><div id="utilitiesMenu" class="dropdown-menu"><button type="button" onclick="openRelationship()">Relationship Finder</button><button type="button" onclick="openBiography()">Biography</button><button type="button" onclick="openPrintDialog()">Print / Export</button><button type="button" onclick="exportCsv()">Export CSV</button><button id="importCsvButton" type="button" onclick="document.getElementById('csvImport').click()">Import CSV</button><button id="saveProjectButton" type="button" onclick="saveProjectData()">Save Project Data</button><button id="restoreProjectButton" type="button" onclick="document.getElementById('projectImport').click()">Restore Project Data</button><button id="saveGithubButton" type="button" onclick="synchronizeProjectDataWithGitHub()">Synchronize with GitHub</button></div></div>
+            <div class="dropdown"><button class="top-button" type="button" onclick="toggleMenu('utilitiesMenu')">Utilities <span aria-hidden="true">▾</span></button><div id="utilitiesMenu" class="dropdown-menu"><button type="button" onclick="openRelationship()">Relationship Finder</button><button type="button" onclick="openBiography()">Biography</button><button type="button" onclick="openPrintDialog()">Print / Export</button><button type="button" onclick="exportCsv()">Export CSV</button><button id="shareProjectButton" type="button" onclick="openProjectShare()">Share Project</button><button id="importCsvButton" type="button" onclick="document.getElementById('csvImport').click()">Import CSV</button><button id="saveProjectButton" type="button" onclick="saveProjectData()">Save Project Data</button><button id="restoreProjectButton" type="button" onclick="document.getElementById('projectImport').click()">Restore Project Data</button><button id="saveGithubButton" type="button" onclick="synchronizeProjectDataWithGitHub()">Synchronize with GitHub</button></div></div>
           </div>
           <button class="top-button add command-add" type="button" onclick="openProfile(null)">+ Add Member</button>
         </div>
@@ -711,6 +711,16 @@ new siara maina file push
     </div>
   </section>
 
+  <section id="projectShareModal" class="modal">
+    <div class="modal-box" style="max-width:620px">
+      <div class="modal-head"><h2>Share Project</h2><button class="close" type="button" onclick="closeModal('projectShareModal')">×</button></div>
+      <p class="user-note">Create a project link with a default role. This front-end app uses the role in the link for convenience; it is not a secure server-side invitation or authentication token.</p>
+      <div class="field"><label for="projectShareRole">Recipient privilege</label><select id="projectShareRole" onchange="updateProjectShareLink()"><option value="viewer">Viewer: view only</option><option value="editor">Editor: add and edit members</option><option value="admin">Admin: full project controls</option></select></div>
+      <div class="field"><label for="projectShareLink">Clickable project link</label><input id="projectShareLink" readonly onclick="this.select()"></div>
+      <div class="modal-actions"><button class="button secondary" type="button" onclick="copyProjectShareLink()">Copy Link</button><button class="button primary" type="button" onclick="shareProjectLink()">Share Link</button></div>
+    </div>
+  </section>
+
   <script>
     /*
       SIMPLE PERSONAL LOGIN CONFIGURATION
@@ -856,6 +866,13 @@ new siara maina file push
 
     function restoreSession() {
       loadUsers();
+      var invitedRole = projectInviteRole();
+      if (invitedRole) {
+        currentUser = {userId:"project-invite-" + invitedRole, username:"project-invite", displayName:"Project Invite", role:invitedRole, loggedInAt:new Date().toISOString()};
+        document.body.classList.remove("auth-locked");
+        applyRolePermissions();
+        return;
+      }
       try {
         var saved = JSON.parse(localStorage.getItem(SESSION_STORAGE_KEY) || sessionStorage.getItem(SESSION_STORAGE_KEY) || "null");
         var user = saved && users.find(function(item) { return item.id === saved.userId && item.active; });
@@ -1454,6 +1471,40 @@ new siara maina file push
       return window.location.href.split("#")[0] + hash;
     }
 
+    function projectInviteRole() {
+      var params = new URLSearchParams(window.location.hash.replace(/^#/, ""));
+      var role = params.get("access");
+      return ["admin", "editor", "viewer"].indexOf(role) !== -1 && params.get("project") === "siaramaina" ? role : "";
+    }
+
+    function projectShareUrl() {
+      var role = document.getElementById("projectShareRole").value;
+      var tree = window.currentTreeType || "clan";
+      return buildShareUrl("#project=siaramaina&access=" + encodeURIComponent(role) + "&tree=" + encodeURIComponent(tree));
+    }
+
+    function updateProjectShareLink() {
+      document.getElementById("projectShareLink").value = projectShareUrl();
+    }
+
+    function openProjectShare() {
+      if (!requirePermission("view", "You do not have permission to share this project.")) return;
+      updateProjectShareLink();
+      document.getElementById("projectShareModal").classList.add("open");
+    }
+
+    function copyProjectShareLink() {
+      var link = document.getElementById("projectShareLink").value;
+      if (navigator.clipboard) navigator.clipboard.writeText(link).then(function() { alert("Project link copied."); });
+      else window.prompt("Copy this project link:", link);
+    }
+
+    function shareProjectLink() {
+      var link = document.getElementById("projectShareLink").value;
+      var role = document.getElementById("projectShareRole").value;
+      shareContent("SiaraMaina Clan Informatics project", "You have been invited as a " + role + ". Open this link to access the project.", link);
+    }
+
     function shareVisibleView(title, elementId) {
       var view = document.getElementById(elementId);
       var text = view.innerText.replace(/\s+/g, " ").trim();
@@ -1895,6 +1946,7 @@ new siara maina file push
             <option value="pdf">PDF / Print</option>
           </select>
           <button class="button secondary" type="button" onclick="exportTree(document.getElementById('treeExportFormat').value)">Export</button>
+          <button class="button primary" type="button" onclick="shareTreeFile()">Share Tree</button>
           <button class="button primary" type="button" onclick="printTreeView()">Print</button>
         </div>
         <div id="treeViewport" class="tree-viewport">
@@ -1964,8 +2016,8 @@ new siara maina file push
       var tree = document.querySelector("#treeCanvas .classical-tree");
       if (!tree) return;
       if (format === "pdf") {
-        document.getElementById("printTarget").value = "tree";
-        openPrintDialog();
+        var pdfTitle = document.getElementById("treeTitle").textContent.trim() || "SiaraMaina Clan Tree";
+        downloadFile(URL.createObjectURL(buildTreePdf(pdfTitle, tree)), pdfTitle.replace(/[^a-z0-9]+/gi, "-").toLowerCase() + ".pdf", "application/pdf");
         return;
       }
 
@@ -1999,6 +2051,61 @@ new siara maina file push
         downloadFile(canvas.toDataURL(mime, .95), title.replace(/[^a-z0-9]+/gi, "-").toLowerCase() + "." + extension, mime);
       };
       image.src = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(svg);
+    }
+
+    function buildTreePdf(title, tree) {
+      var names = Array.from(tree.querySelectorAll(".tree-card strong, .spouse-card strong")).map(function(node) { return node.textContent.trim(); });
+      var lines = [title, "SiaraMaina Clan Informatics", "", "Family tree members:"].concat(names);
+      var escapePdf = function(value) { return value.replace(/[^\x20-\x7E]/g, "?").replace(/\\/g, "\\\\").replace(/\(/g, "\\(").replace(/\)/g, "\\)"); };
+      var commands = ["BT", "/F1 16 Tf", "50 760 Td", "(" + escapePdf(lines[0]) + ") Tj", "/F1 10 Tf"];
+      lines.slice(1).forEach(function(line) { commands.push("0 -16 Td"); commands.push("(" + escapePdf(line.slice(0, 110)) + ") Tj"); });
+      commands.push("ET");
+      var stream = commands.join("\n");
+      var objects = ["<< /Type /Catalog /Pages 2 0 R >>", "<< /Type /Pages /Kids [3 0 R] /Count 1 >>", "<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 4 0 R >> >> /Contents 5 0 R >>", "<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>", "<< /Length " + stream.length + " >>\nstream\n" + stream + "\nendstream"];
+      var pdf = "%PDF-1.4\n", offsets = [0];
+      objects.forEach(function(object, index) { offsets[index + 1] = pdf.length; pdf += (index + 1) + " 0 obj\n" + object + "\nendobj\n"; });
+      var xref = pdf.length; pdf += "xref\n0 " + (objects.length + 1) + "\n0000000000 65535 f \n";
+      offsets.slice(1).forEach(function(offset) { pdf += String(offset).padStart(10, "0") + " 00000 n \n"; });
+      pdf += "trailer\n<< /Size " + (objects.length + 1) + " /Root 1 0 R >>\nstartxref\n" + xref + "\n%%EOF";
+      return new Blob([pdf], {type:"application/pdf"});
+    }
+
+    function createTreeShareFile(format) {
+      var tree = document.querySelector("#treeCanvas .classical-tree");
+      if (!tree) return Promise.reject(new Error("Open a family tree before sharing it."));
+      var title = document.getElementById("treeTitle").textContent.trim() || "SiaraMaina Clan Tree";
+      var filename = title.replace(/[^a-z0-9]+/gi, "-").replace(/^-|-$/g, "").toLowerCase();
+      if (format === "pdf") return Promise.resolve(new File([buildTreePdf(title, tree)], filename + ".pdf", {type:"application/pdf"}));
+      var width = Math.max(900, tree.scrollWidth || tree.offsetWidth);
+      var height = Math.max(500, tree.scrollHeight || tree.offsetHeight);
+      var styles = document.querySelector("style").textContent;
+      var treeMarkup = tree.outerHTML.replace(/onclick="[^"]*"/g, "");
+      var svg = '<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="' + width + '" height="' + height + '" viewBox="0 0 ' + width + ' ' + height + '"><foreignObject width="100%" height="100%"><div xmlns="http://www.w3.org/1999/xhtml"><style>' + styles + '</style>' + treeMarkup + '</div></foreignObject></svg>';
+      if (format === "svg") return Promise.resolve(new File([svg], filename + ".svg", {type:"image/svg+xml"}));
+      if (format === "html") return Promise.resolve(new File(["<!doctype html><html><head><meta charset=\"utf-8\"><title>" + escapeHtml(title) + "</title><style>" + styles + "</style></head><body><h1>" + escapeHtml(title) + "</h1>" + treeMarkup + "</body></html>"], filename + ".html", {type:"text/html"}));
+      return new Promise(function(resolve, reject) {
+        var image = new Image();
+        image.onload = function() {
+          var canvas = document.createElement("canvas"); canvas.width = width * 2; canvas.height = height * 2;
+          var context = canvas.getContext("2d"); context.fillStyle = "#ffffff"; context.fillRect(0, 0, canvas.width, canvas.height); context.drawImage(image, 0, 0, canvas.width, canvas.height);
+          var mime = format === "jpg" ? "image/jpeg" : "image/png";
+          canvas.toBlob(function(blob) { resolve(new File([blob], filename + "." + (format === "jpg" ? "jpg" : "png"), {type:mime})); }, mime, .95);
+        };
+        image.onerror = function() { reject(new Error("The tree image could not be created in this browser.")); };
+        image.src = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(svg);
+      });
+    }
+
+    async function shareTreeFile() {
+      try {
+        var file = await createTreeShareFile(document.getElementById("treeExportFormat").value);
+        if (navigator.share && (!navigator.canShare || navigator.canShare({files:[file]}))) {
+          await navigator.share({title:document.getElementById("treeTitle").textContent, text:"Family tree from SiaraMaina Clan Informatics", files:[file]});
+          return;
+        }
+        downloadFile(URL.createObjectURL(file), file.name, file.type);
+        showShareOptions(document.getElementById("treeTitle").textContent, "The tree file was downloaded. Attach " + file.name + " to your email or WhatsApp message.", buildShareUrl("#tree=" + encodeURIComponent(window.currentTreeType || "clan")));
+      } catch (error) { if (!error || error.name !== "AbortError") alert(error.message || "The tree could not be shared."); }
     }
 
     function setViewStyle(style) {
