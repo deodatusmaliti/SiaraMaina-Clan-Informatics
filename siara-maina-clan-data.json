@@ -1,6 +1,6 @@
 {
   "project": "SiaraMaina Clan Informatics",
-  "exportedAt": "2026-09-06T15:06:09.285Z",
+  "exportedAt": "2026-09-06T15:11:31.734Z",
   "records": [
     {
       "id": "ngowi1",
@@ -1980,7 +1980,8 @@
       "fatherId": "member-1788353967530",
       "motherId": "",
       "spouseId": "",
-      "siblingIds": []
+      "siblingIds": [],
+      "photo": ""
     },
     {
       "firstName": "Brenda",
@@ -2013,7 +2014,8 @@
       "fatherId": "member-1788353967530",
       "motherId": "",
       "spouseId": "",
-      "siblingIds": []
+      "siblingIds": [],
+      "photo": ""
     },
     {
       "firstName": "Helena",
@@ -2046,7 +2048,8 @@
       "fatherId": "member-1788356990949",
       "motherId": "",
       "spouseId": "",
-      "siblingIds": []
+      "siblingIds": [],
+      "photo": ""
     },
     {
       "firstName": "Edina",
@@ -2079,7 +2082,8 @@
       "fatherId": "member-1788356990949",
       "motherId": "",
       "spouseId": "",
-      "siblingIds": []
+      "siblingIds": [],
+      "photo": ""
     },
     {
       "firstName": "Magreth",
@@ -2112,7 +2116,8 @@
       "fatherId": "member-1788356990949",
       "motherId": "",
       "spouseId": "",
-      "siblingIds": []
+      "siblingIds": [],
+      "photo": ""
     },
     {
       "firstName": "Mary",
@@ -2145,7 +2150,8 @@
       "fatherId": "member-1788356990949",
       "motherId": "",
       "spouseId": "",
-      "siblingIds": []
+      "siblingIds": [],
+      "photo": ""
     },
     {
       "firstName": "Colman",
@@ -2178,7 +2184,8 @@
       "fatherId": "member-1788356990949",
       "motherId": "",
       "spouseId": "",
-      "siblingIds": []
+      "siblingIds": [],
+      "photo": ""
     },
     {
       "firstName": "Tonia",
@@ -2211,7 +2218,8 @@
       "fatherId": "",
       "motherId": "member-1788357928256",
       "spouseId": "",
-      "siblingIds": []
+      "siblingIds": [],
+      "photo": ""
     },
     {
       "firstName": "Sonita",
@@ -2244,7 +2252,8 @@
       "fatherId": "",
       "motherId": "member-1788357928256",
       "spouseId": "",
-      "siblingIds": []
+      "siblingIds": [],
+      "photo": ""
     },
     {
       "firstName": "Brighton",
@@ -2277,7 +2286,8 @@
       "fatherId": "member-1788354790047",
       "motherId": "",
       "spouseId": "",
-      "siblingIds": []
+      "siblingIds": [],
+      "photo": ""
     },
     {
       "firstName": "Prudensiana",
@@ -2310,7 +2320,8 @@
       "fatherId": "member-1788354790047",
       "motherId": "",
       "spouseId": "",
-      "siblingIds": []
+      "siblingIds": [],
+      "photo": ""
     },
     {
       "firstName": "Kendrick",
@@ -2343,7 +2354,8 @@
       "fatherId": "",
       "motherId": "",
       "spouseId": "",
-      "siblingIds": []
+      "siblingIds": [],
+      "photo": ""
     },
     {
       "firstName": "Name",
@@ -2376,7 +2388,8 @@
       "fatherId": "",
       "motherId": "",
       "spouseId": "",
-      "siblingIds": []
+      "siblingIds": [],
+      "photo": ""
     },
     {
       "firstName": "Mario",
@@ -2409,7 +2422,8 @@
       "fatherId": "",
       "motherId": "member-1788695113675-ev4ynl",
       "spouseId": "",
-      "siblingIds": []
+      "siblingIds": [],
+      "photo": ""
     },
     {
       "firstName": "Abdul",
@@ -2442,7 +2456,8 @@
       "fatherId": "",
       "motherId": "member-1788695113675-ev4ynl",
       "spouseId": "",
-      "siblingIds": []
+      "siblingIds": [],
+      "photo": ""
     }
   ]
 }
