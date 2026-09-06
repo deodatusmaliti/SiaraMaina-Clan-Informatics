@@ -1,6 +1,6 @@
 {
   "project": "SiaraMaina Clan Informatics",
-  "exportedAt": "2026-09-06T06:47:23.248Z",
+  "exportedAt": "2026-09-06T06:56:29.594Z",
   "records": [
     {
       "id": "ngowi1",
@@ -1810,7 +1810,8 @@
       "email": "",
       "location": "Marangu Moye, Kilimanjaro, Tanzania",
       "narrative": "new generation",
-      "deceased": false
+      "deceased": false,
+      "photo": ""
     }
   ]
 }
