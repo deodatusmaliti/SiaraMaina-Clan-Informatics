@@ -1138,6 +1138,7 @@ new siara maina file push
       var response = await fetch(GITHUB_API_BASE + githubFilePath(file), {headers:githubHeaders(token)});
       if (!response.ok) {
         if (response.status === 401 || response.status === 403) throw new Error("The GitHub token is invalid or expired. Enter a new token and try again.");
+        if (response.status === 404) throw new Error("GitHub could not access the shared file. Check that the token has access to this repository and Contents: Read and write permission.");
         throw new Error("GitHub could not read the shared file (HTTP " + response.status + ").");
       }
       var payload = await response.json();
@@ -1150,6 +1151,7 @@ new siara maina file push
       var response = await fetch(GITHUB_API_BASE + githubFilePath(file), {method:"PUT", headers:githubHeaders(token), body:JSON.stringify({message:message, content:content, sha:existing.sha, branch:"main"})});
       if (!response.ok) {
         if (response.status === 401 || response.status === 403) throw new Error("The GitHub token is invalid or expired. Enter a new token and try again.");
+        if (response.status === 404) throw new Error("GitHub could not update the shared file. Check that the token has access to this repository and Contents: Read and write permission.");
         throw new Error("GitHub could not save the shared file (HTTP " + response.status + ").");
       }
       return response.json();
