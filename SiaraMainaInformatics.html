@@ -3155,6 +3155,11 @@ new siara maina file push
       return [record.firstName, record.middleName, record.lastName].map(function(value) { return csvText(value).trim().toLowerCase(); }).join("|");
     }
 
+    function csvNameDuplicateKey(record) {
+      var identity = [record && record.firstName, record && record.middleName, record && record.lastName].map(normalizedName).join("|");
+      return identity.replace(/^\|+|\|+$/g, "") ? "name:" + identity : "";
+    }
+
     function uniqueImportedId() {
       var id;
       do { id = "member-" + Date.now() + "-" + Math.random().toString(36).slice(2, 8); }
@@ -3282,6 +3287,7 @@ new siara maina file push
       reader.onload = function(loadEvent) {
         var rows = parseCsvText(loadEvent.target.result);
         if (rows.length < 2) { alert("The CSV file has no member records."); return; }
+        var originalRecords = JSON.parse(JSON.stringify(records));
         var headers = rows[0].map(normalizeCsvHeader), imported = 0, added = 0, updated = 0;
         csvPendingRelationships = []; csvImportWarnings = []; csvRelationshipCount = 0;
         rows.slice(1).forEach(function(values, index) {
@@ -3290,6 +3296,10 @@ new siara maina file push
           if (!row.firstName && !row.id && !row.lastName) return;
           var normalized = normalizeImportedMember(row, records), importedId = csvText(row.id).trim();
           var existingIndex = importedId ? records.findIndex(function(record) { return record.id === importedId; }) : -1;
+          var nameKey = csvNameDuplicateKey(normalized.member);
+          if (existingIndex === -1 && nameKey) {
+            existingIndex = records.findIndex(function(record) { return csvNameDuplicateKey(record) === nameKey; });
+          }
           if (existingIndex > -1) {
             normalized.member.id = records[existingIndex].id;
             var existingRecord = records[existingIndex];
@@ -3313,15 +3323,21 @@ new siara maina file push
           imported++;
         });
         reconcileImportedRelationships();
+        var summary = "CSV Import Summary\n- Rows read: " + (rows.length - 1) + "\n- New members created: " + added + "\n- Existing members updated: " + updated + "\n- Relationships resolved: " + csvRelationshipCount + "\n- Warnings: " + csvImportWarnings.length + "\n\nFor relationships, use the exported \"Full Name [Member ID]\" format. Do not change Member ID values unless you understand the relationship effects.";
+        if (csvImportWarnings.length) summary += "\n\n" + csvImportWarnings.slice(0, 20).join("\n") + (csvImportWarnings.length > 20 ? "\n...and more warnings." : "");
+        if (!confirm(summary + "\n\nSelect OK to accept this import or Cancel to reject it.")) {
+          records = originalRecords;
+          csvPendingRelationships = [];
+          csvImportWarnings = [];
+          csvRelationshipCount = 0;
+          return;
+        }
         saveRecords();
         populateArchiveMemberSelect();
         var treeWasOpen = document.getElementById("treePage").classList.contains("active"), statsWereOpen = document.getElementById("statisticsPage").classList.contains("active");
         if (treeWasOpen) showTree(window.currentTreeType || "clan", window.currentTreeRoot || "");
         else if (statsWereOpen) showStatistics();
         else showCatalogue("all");
-        var summary = "CSV Import Summary\n- Rows read: " + (rows.length - 1) + "\n- New members created: " + added + "\n- Existing members updated: " + updated + "\n- Relationships resolved: " + csvRelationshipCount + "\n- Warnings: " + csvImportWarnings.length + "\n\nFor relationships, use the exported \"Full Name [Member ID]\" format. Do not change Member ID values unless you understand the relationship effects.";
-        if (csvImportWarnings.length) summary += "\n\n" + csvImportWarnings.slice(0, 20).join("\n") + (csvImportWarnings.length > 20 ? "\n...and more warnings." : "");
-        alert(summary);
       };
       reader.readAsText(file);
       event.target.value = "";
