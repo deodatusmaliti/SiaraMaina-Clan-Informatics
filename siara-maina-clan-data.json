@@ -1,6 +1,6 @@
 {
   "project": "SiaraMaina Clan Informatics",
-  "exportedAt": "2026-09-06T10:25:21.387Z",
+  "exportedAt": "2026-09-06T11:32:20.645Z",
   "records": [
     {
       "id": "ngowi1",
@@ -1778,39 +1778,6 @@
       "location": "",
       "narrative": "",
       "photo": ""
-    },
-    {
-      "firstName": "Joy",
-      "middleName": "",
-      "lastName": "",
-      "sex": "Female",
-      "branchType": "maliti",
-      "honorific": "",
-      "dob": "",
-      "birthPeriod": "",
-      "placeOfBirth": "",
-      "dod": "",
-      "deathAge": "",
-      "causeOfDeath": "",
-      "maritalStatus": "",
-      "education": "",
-      "course": "",
-      "employment": "",
-      "occupation": "",
-      "organization": "",
-      "religion": "",
-      "denomination": "",
-      "phone": "",
-      "whatsapp": "",
-      "email": "",
-      "location": "",
-      "narrative": "",
-      "deceased": false,
-      "id": "member-1788690173536-z5j13h",
-      "fatherId": "member-1788353967530",
-      "motherId": "",
-      "spouseId": "",
-      "siblingIds": []
     }
   ]
 }
