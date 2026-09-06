@@ -297,7 +297,7 @@ new siara maina file push
           </div>
           <div class="command-group"><span class="command-label">Tools</span>
             <div class="dropdown"><button class="top-button" type="button" onclick="toggleMenu('viewMenu')">View <span aria-hidden="true">▾</span></button><div id="viewMenu" class="dropdown-menu"><button type="button" onclick="setViewStyle('card')">Card View</button><button type="button" onclick="setViewStyle('line')">Line View</button><button id="spouseToggle" type="button" onclick="toggleSpouses()">Hide Spouses</button></div></div>
-            <div class="dropdown"><button class="top-button" type="button" onclick="toggleMenu('utilitiesMenu')">Utilities <span aria-hidden="true">▾</span></button><div id="utilitiesMenu" class="dropdown-menu"><button type="button" onclick="openRelationship()">Relationship Finder</button><button type="button" onclick="openBiography()">Biography</button><button type="button" onclick="openPrintDialog()">Print / Export</button><button type="button" onclick="exportCsv()">CSV Backup</button><button id="importCsvButton" type="button" onclick="document.getElementById('csvImport').click()">Import CSV</button><button id="saveProjectButton" type="button" onclick="saveProjectData()">Save Project Data</button><button id="saveGithubButton" type="button" onclick="saveProjectDataToGitHub()">Save to GitHub</button><button type="button" onclick="refreshSharedProjectData()">Refresh Shared Data</button><button id="restoreProjectButton" type="button" onclick="document.getElementById('projectImport').click()">Restore Project Data</button></div></div>
+            <div class="dropdown"><button class="top-button" type="button" onclick="toggleMenu('utilitiesMenu')">Utilities <span aria-hidden="true">▾</span></button><div id="utilitiesMenu" class="dropdown-menu"><button type="button" onclick="openRelationship()">Relationship Finder</button><button type="button" onclick="openBiography()">Biography</button><button type="button" onclick="openPrintDialog()">Print / Export</button><button type="button" onclick="exportCsv()">CSV Export</button><button id="importCsvButton" type="button" onclick="document.getElementById('csvImport').click()">Import CSV</button><button id="saveProjectButton" type="button" onclick="saveProjectData()">Save Project Data</button><button id="saveGithubButton" type="button" onclick="saveProjectDataToGitHub()">Save to GitHub</button><button type="button" onclick="refreshSharedProjectData()">Refresh Shared Data</button><button id="restoreProjectButton" type="button" onclick="document.getElementById('projectImport').click()">Restore Project Data</button></div></div>
           </div>
           <button class="top-button add command-add" type="button" onclick="openProfile(null)">+ Add Member</button>
         </div>
@@ -3027,59 +3027,110 @@ new siara maina file push
       window.scrollTo(0, 0);
     }
 
+    var CSV_FIELD_MAP = {
+      "Member ID":"id", "First Name":"firstName", "Middle Name":"middleName", "Last Name":"lastName",
+      "Sex":"sex", "Family Classification":"branchType", "Title / Honorific":"honorific", "Date of Birth":"dob",
+      "Historical Period":"birthPeriod", "Place of Birth":"placeOfBirth", "Life Status":"deceased", "Date of Death":"dod",
+      "Age at Death":"deathAge", "Cause of Death":"causeOfDeath", "Father Profile":"fatherId", "Mother Profile":"motherId",
+      "Spouse Profile":"spouseId", "Sibling Profiles":"siblingIds", "Marital Status":"maritalStatus", "Education Level":"education",
+      "Course / Area of Study":"course", "Employment Status":"employment", "Occupation":"occupation", "Organisation / Employer":"organization",
+      "Religious Affiliation":"religion", "Denomination / Tradition":"denomination", "Telephone Number":"phone", "WhatsApp Number":"whatsapp",
+      "Email Address":"email", "Current Location":"location", "Historical Narrative / Notes":"narrative"
+    };
+    var CSV_HEADERS = Object.keys(CSV_FIELD_MAP);
+    var CSV_LEGACY_HEADER_ALIASES = {
+      "id":"id", "firstName":"firstName", "middleName":"middleName", "lastName":"lastName", "sex":"sex", "branchType":"branchType",
+      "honorific":"honorific", "dob":"dob", "birthPeriod":"birthPeriod", "placeOfBirth":"placeOfBirth", "deceased":"deceased", "dod":"dod",
+      "deathAge":"deathAge", "causeOfDeath":"causeOfDeath", "fatherId":"fatherId", "motherId":"motherId", "spouseId":"spouseId",
+      "siblingIds":"siblingIds", "maritalStatus":"maritalStatus", "education":"education", "course":"course", "employment":"employment",
+      "occupation":"occupation", "organization":"organization", "religion":"religion", "denomination":"denomination", "phone":"phone",
+      "whatsapp":"whatsapp", "email":"email", "location":"location", "narrative":"narrative"
+    };
+    var CSV_BRANCH_LABELS = {heritage:"Foundational Ancestry", siara:"Siara Branch", maina:"Maina Branch", maliti:"Maliti Family"};
+    var CSV_BRANCH_VALUES = {"foundational ancestry":"heritage", "siara branch":"siara", "maina branch":"maina", "maliti family":"maliti"};
+    var csvPendingRelationships = [];
+    var csvImportWarnings = [];
+    var csvRelationshipCount = 0;
+
+    function csvText(value) {
+      return value === undefined || value === null ? "" : String(value);
+    }
+
+    function escapeCsvValue(value) {
+      return '"' + csvText(value).replace(/"/g, '""') + '"';
+    }
+
+    function normalizeCsvHeader(header, index) {
+      var value = csvText(header).replace(/^\uFEFF/, "").trim();
+      var friendly = CSV_HEADERS.find(function(label) { return label.toLowerCase() === value.toLowerCase(); });
+      if (friendly) return CSV_FIELD_MAP[friendly];
+      var legacy = Object.keys(CSV_LEGACY_HEADER_ALIASES).find(function(label) { return label.toLowerCase() === value.toLowerCase(); });
+      return legacy ? CSV_LEGACY_HEADER_ALIASES[legacy] : "column" + index;
+    }
+
+    function normalizeCsvDate(value) {
+      var normalized = csvText(value).trim();
+      return /^\d{4}-\d{2}-\d{2}$/.test(normalized) ? normalized : normalized;
+    }
+
+    function formatRelationshipForCsv(memberId) {
+      if (!memberId) return "";
+      var linked = findRecord(memberId);
+      return linked ? fullName(linked) + " [" + linked.id + "]" : String(memberId);
+    }
+
+    function formatSiblingRelationshipsForCsv(memberIds) {
+      return (Array.isArray(memberIds) ? memberIds : []).filter(function(id, index, list) {
+        return id && list.indexOf(id) === index;
+      }).map(formatRelationshipForCsv).filter(Boolean).join("; ");
+    }
+
     function exportCsv() {
-      var fields = [
-        "id", "firstName", "middleName", "lastName",
-        "sex", "branchType", "honorific", "dob",
-        "birthPeriod", "placeOfBirth", "deceased", "dod", "deathAge",
-        "causeOfDeath", "fatherId", "motherId",
-        "spouseId", "siblingIds", "maritalStatus", "education",
-        "course", "employment", "occupation",
-        "organization", "religion", "denomination",
-        "phone", "whatsapp", "email", "location",
-        "narrative"
-      ];
-
-      var csv = fields.join(",") + "\n";
-
+      var csv = CSV_HEADERS.map(escapeCsvValue).join(",") + "\r\n";
       records.forEach(function(record) {
-        csv += fields.map(function(field) {
-          var value = record[field];
-          if (field === "siblingIds" && Array.isArray(value)) value = value.join(";");
-          if (field === "siblingIds" && value === undefined) value = "";
-          return '"' + String(value || "").replace(/"/g, '""') + '"';
-        }).join(",") + "\n";
+        var values = CSV_HEADERS.map(function(header) {
+          var field = CSV_FIELD_MAP[header], value = record[field];
+          if (field === "branchType") value = CSV_BRANCH_LABELS[value] || value || "";
+          if (field === "deceased") value = record.deceased ? "Deceased" : "Living";
+          if (field === "fatherId" || field === "motherId" || field === "spouseId") value = formatRelationshipForCsv(value);
+          if (field === "siblingIds") value = formatSiblingRelationshipsForCsv(value);
+          if (field === "dob" || field === "dod") value = normalizeCsvDate(value);
+          return escapeCsvValue(value);
+        });
+        csv += values.join(",") + "\r\n";
       });
-
-      var blob = new Blob([csv], {
-        type:"text/csv;charset=utf-8;"
-      });
-
+      var blob = new Blob([csv], {type:"text/csv;charset=utf-8;"});
       var url = URL.createObjectURL(blob);
       var link = document.createElement("a");
-
       link.href = url;
-      link.download = "siara-maina-clan-backup.csv";
+      link.download = "siara-maina-clan-members-" + new Date().toISOString().slice(0, 10) + ".csv";
       link.click();
-
       URL.revokeObjectURL(url);
     }
 
-    function parseCsvLine(line) {
-      var values = [], value = "", quoted = false;
-      for (var i = 0; i < line.length; i++) {
-        var character = line.charAt(i);
-        if (character === '"' && line.charAt(i + 1) === '"' && quoted) { value += '"'; i++; }
+    function parseCsvText(text) {
+      var rows = [], row = [], value = "", quoted = false;
+      text = csvText(text).replace(/^\uFEFF/, "");
+      for (var i = 0; i < text.length; i++) {
+        var character = text.charAt(i), next = text.charAt(i + 1);
+        if (character === '"' && quoted && next === '"') { value += '"'; i++; }
         else if (character === '"') quoted = !quoted;
-        else if (character === "," && !quoted) { values.push(value); value = ""; }
-        else value += character;
+        else if (character === "," && !quoted) { row.push(value); value = ""; }
+        else if ((character === "\n" || character === "\r") && !quoted) {
+          if (character === "\r" && next === "\n") i++;
+          row.push(value); value = "";
+          if (row.some(function(cell) { return String(cell).trim(); })) rows.push(row);
+          row = [];
+        } else value += character;
       }
-      values.push(value);
-      return values;
+      if (value || row.length) { row.push(value); if (row.some(function(cell) { return String(cell).trim(); })) rows.push(row); }
+      return rows;
     }
 
+    function parseCsvLine(line) { return parseCsvText(line)[0] || []; }
+
     function parseImportedDeceased(value) {
-      var normalized = String(value === undefined || value === null ? "" : value).trim().toLowerCase();
+      var normalized = csvText(value).trim().toLowerCase();
       if (!normalized) return null;
       if (["true", "1", "yes", "y", "deceased", "dead"].indexOf(normalized) !== -1) return true;
       if (["false", "0", "no", "n", "living", "alive"].indexOf(normalized) !== -1) return false;
@@ -3087,17 +3138,126 @@ new siara maina file push
     }
 
     function csvIdentity(record) {
-      return [record.firstName, record.middleName, record.lastName].map(function(value) {
-        return String(value || "").trim().toLowerCase();
-      }).join("|");
+      return [record.firstName, record.middleName, record.lastName].map(function(value) { return csvText(value).trim().toLowerCase(); }).join("|");
     }
 
     function uniqueImportedId() {
       var id;
-      do {
-        id = "member-" + Date.now() + "-" + Math.random().toString(36).slice(2, 8);
-      } while (records.some(function(record) { return record.id === id; }));
+      do { id = "member-" + Date.now() + "-" + Math.random().toString(36).slice(2, 8); }
+      while (records.some(function(record) { return record.id === id; }));
       return id;
+    }
+
+    function normalizedName(value) {
+      return csvText(value).trim().replace(/\s+/g, " ").toLowerCase();
+    }
+
+    function addCsvWarning(message) { if (csvImportWarnings.indexOf(message) === -1) csvImportWarnings.push(message); }
+
+    function resolveMemberReference(value, members, context) {
+      var raw = csvText(value).trim();
+      if (!raw) return "";
+      var exact = members.find(function(member) { return member.id === raw; });
+      if (exact) return exact.id;
+      var bracketMatch = raw.match(/\[\s*([^\]]+)\s*\]\s*$/), nameValue = raw;
+      if (bracketMatch) {
+        var bracketId = members.find(function(member) { return member.id === bracketMatch[1].trim(); });
+        if (bracketId) return bracketId.id;
+        nameValue = raw.slice(0, bracketMatch.index).trim();
+      }
+      var wanted = normalizedName(nameValue);
+      var fullMatches = members.filter(function(member) { return normalizedName(fullName(member)) === wanted; });
+      if (fullMatches.length === 1) return fullMatches[0].id;
+      if (fullMatches.length > 1) {
+        addCsvWarning("Row " + context.rowNumber + ': ' + context.label + ' "' + raw + '" matched more than one member. Use "Full Name [Member ID]" to identify the correct person.');
+        return "";
+      }
+      var firstMatches = members.filter(function(member) { return normalizedName(member.firstName) === wanted; });
+      if (firstMatches.length === 1) return firstMatches[0].id;
+      if (firstMatches.length > 1) addCsvWarning("Row " + context.rowNumber + ': ' + context.label + ' "' + raw + '" is ambiguous. Use "Full Name [Member ID]" to identify the correct person.');
+      else addCsvWarning("Row " + context.rowNumber + ': ' + context.label + ' "' + raw + '" could not be matched. The member was imported, but the link was left blank.');
+      return "";
+    }
+
+    function resolveSiblingReferences(value, members, context) {
+      var values = csvText(value).split(/[;,\r\n]+/).map(function(item) { return item.trim(); }).filter(Boolean), ids = [];
+      values.forEach(function(item) {
+        var id = resolveMemberReference(item, members, {rowNumber:context.rowNumber, label:"Sibling Profiles"});
+        if (id && ids.indexOf(id) === -1) ids.push(id);
+      });
+      return ids;
+    }
+
+    function normalizeImportedMember(row, members) {
+      var member = {}, scalarFields = Object.keys(CSV_FIELD_MAP).map(function(header) { return CSV_FIELD_MAP[header]; }).filter(function(field) {
+        return ["id", "fatherId", "motherId", "spouseId", "siblingIds", "deceased"].indexOf(field) === -1;
+      });
+      scalarFields.forEach(function(field) {
+        if (row[field] !== undefined) member[field] = field === "dob" || field === "dod" ? normalizeCsvDate(row[field]) : csvText(row[field]).trim();
+      });
+      var lifeStatus = parseImportedDeceased(row.deceased);
+      if (lifeStatus !== null) member.deceased = lifeStatus;
+      if (!member.deceased && row.deceased === undefined) member.deceased = false;
+      if (member.branchType) member.branchType = CSV_BRANCH_VALUES[member.branchType.toLowerCase()] || member.branchType;
+      if (row.deathAge !== undefined && csvText(row.deathAge).trim() !== "") member.deathAge = csvText(row.deathAge).trim();
+      return {member:member, relationships:{fatherId:row.fatherId, motherId:row.motherId, spouseId:row.spouseId, siblingIds:row.siblingIds}};
+    }
+
+    function createsParentCycle(childId, parentId, visited) {
+      var current = findRecord(parentId), seen = visited || {};
+      if (!current) return false;
+      if (current.id === childId) return true;
+      if (seen[current.id]) return false;
+      seen[current.id] = true;
+      return createsParentCycle(childId, current.fatherId, Object.assign({}, seen)) || createsParentCycle(childId, current.motherId, Object.assign({}, seen));
+    }
+
+    function reconcileImportedRelationships() {
+      var members = records;
+      csvPendingRelationships.forEach(function(item) {
+        var record = item.record, context = {rowNumber:item.rowNumber, label:"Father Profile"};
+        if (item.values.fatherId !== undefined && csvText(item.values.fatherId).trim()) {
+          var father = resolveMemberReference(item.values.fatherId, members, context);
+          if (father === record.id || (father && createsParentCycle(record.id, father))) { addCsvWarning("Row " + item.rowNumber + ": A member cannot be their own father or descendant. The invalid relationship was ignored."); father = ""; }
+          record.fatherId = father;
+          if (father) csvRelationshipCount++;
+        }
+        if (item.values.motherId !== undefined && csvText(item.values.motherId).trim()) {
+          context.label = "Mother Profile";
+          var mother = resolveMemberReference(item.values.motherId, members, context);
+          if (mother === record.id || (mother && createsParentCycle(record.id, mother))) { addCsvWarning("Row " + item.rowNumber + ": A member cannot be their own mother or descendant. The invalid relationship was ignored."); mother = ""; }
+          record.motherId = mother;
+          if (mother) csvRelationshipCount++;
+        }
+        if (item.values.spouseId !== undefined && csvText(item.values.spouseId).trim()) {
+          context.label = "Spouse Profile";
+          var spouse = resolveMemberReference(item.values.spouseId, members, context);
+          if (spouse === record.id) { addCsvWarning("Row " + item.rowNumber + ": A member cannot be their own spouse. The invalid relationship was ignored."); spouse = ""; }
+          record.spouseId = spouse;
+          if (spouse) {
+            var spouseRecord = findRecord(spouse);
+            if (spouseRecord && (!spouseRecord.spouseId || spouseRecord.spouseId === record.id)) spouseRecord.spouseId = record.id;
+            else if (spouseRecord) {
+              record.spouseId = "";
+              addCsvWarning("Row " + item.rowNumber + ': Spouse Profile "' + csvText(item.values.spouseId) + '" is already linked to another spouse; the existing link was preserved.');
+            }
+            csvRelationshipCount++;
+          }
+        }
+        if (item.values.siblingIds !== undefined && csvText(item.values.siblingIds).trim()) {
+          var siblings = resolveSiblingReferences(item.values.siblingIds, members, {rowNumber:item.rowNumber});
+          record.siblingIds = siblings.filter(function(id) { return id !== record.id; });
+          record.siblingIds.forEach(function(siblingId) {
+            var sibling = findRecord(siblingId);
+            if (sibling) {
+              if (!Array.isArray(sibling.siblingIds)) sibling.siblingIds = [];
+              if (sibling.siblingIds.indexOf(record.id) === -1) sibling.siblingIds.push(record.id);
+            }
+          });
+          csvRelationshipCount += record.siblingIds.length;
+        }
+      });
+      reconcileSiblingParents();
     }
 
     function importCsv(event) {
@@ -3106,39 +3266,48 @@ new siara maina file push
       if (!file) return;
       var reader = new FileReader();
       reader.onload = function(loadEvent) {
-        var lines = loadEvent.target.result.split(/\r?\n/).filter(function(line) { return line.trim(); });
-        if (lines.length < 2) { alert("The CSV file has no member records."); return; }
-        var fields = parseCsvLine(lines[0]).map(function(field, index) {
-          return String(field).replace(/^\uFEFF/, "").trim() || "column" + index;
-        }), imported = 0, added = 0, updated = 0;
-        lines.slice(1).forEach(function(line) {
-          var values = parseCsvLine(line), row = {};
-          fields.forEach(function(field, index) { row[field] = (values[index] || "").trim(); });
-          if (!row.firstName && !row.id) return;
-          var importedId = row.id;
-          var importedDeceased = parseImportedDeceased(row.deceased);
-          if (importedDeceased === null) delete row.deceased;
-          else row.deceased = importedDeceased;
-          row.siblingIds = Array.isArray(row.siblingIds) ? row.siblingIds : (row.siblingIds ? String(row.siblingIds).split(";").filter(Boolean) : []);
-          var existingIndex = records.findIndex(function(record) {
-            return !!(importedId && record.id === importedId && csvIdentity(record) === csvIdentity(row));
-          });
+        var rows = parseCsvText(loadEvent.target.result);
+        if (rows.length < 2) { alert("The CSV file has no member records."); return; }
+        var headers = rows[0].map(normalizeCsvHeader), imported = 0, added = 0, updated = 0;
+        csvPendingRelationships = []; csvImportWarnings = []; csvRelationshipCount = 0;
+        rows.slice(1).forEach(function(values, index) {
+          var row = {};
+          headers.forEach(function(field, fieldIndex) { if (field.indexOf("column") !== 0) row[field] = csvText(values[fieldIndex]).trim(); });
+          if (!row.firstName && !row.id && !row.lastName) return;
+          var normalized = normalizeImportedMember(row, records), importedId = csvText(row.id).trim();
+          var existingIndex = importedId ? records.findIndex(function(record) { return record.id === importedId; }) : -1;
           if (existingIndex > -1) {
-            row.id = records[existingIndex].id;
-            records[existingIndex] = Object.assign({}, records[existingIndex], row);
+            normalized.member.id = records[existingIndex].id;
+            var existingRecord = records[existingIndex];
+            Object.keys(normalized.member).forEach(function(field) {
+              if (field === "id" || csvText(normalized.member[field]).trim() !== "") existingRecord[field] = normalized.member[field];
+            });
+            records[existingIndex] = existingRecord;
+            normalized.member = records[existingIndex];
             updated++;
           } else {
-            row.id = uniqueImportedId();
-            if (row.deceased === undefined) row.deceased = false;
-            records.push(row);
+            normalized.member.id = importedId || uniqueImportedId();
+            if (normalized.member.deceased === undefined) normalized.member.deceased = false;
+            normalized.member.fatherId = "";
+            normalized.member.motherId = "";
+            normalized.member.spouseId = "";
+            if (!Array.isArray(normalized.member.siblingIds)) normalized.member.siblingIds = [];
+            records.push(normalized.member);
             added++;
           }
+          csvPendingRelationships.push({record:normalized.member, values:normalized.relationships, rowNumber:index + 2});
           imported++;
         });
+        reconcileImportedRelationships();
         saveRecords();
         populateArchiveMemberSelect();
-        alert(imported + " CSV row(s) processed: " + added + " added, " + updated + " updated. Blank life-status cells preserved existing status.");
-        showCatalogue("all");
+        var treeWasOpen = document.getElementById("treePage").classList.contains("active"), statsWereOpen = document.getElementById("statisticsPage").classList.contains("active");
+        if (treeWasOpen) showTree(window.currentTreeType || "clan", window.currentTreeRoot || "");
+        else if (statsWereOpen) showStatistics();
+        else showCatalogue("all");
+        var summary = "CSV Import Summary\n- Rows read: " + (rows.length - 1) + "\n- New members created: " + added + "\n- Existing members updated: " + updated + "\n- Relationships resolved: " + csvRelationshipCount + "\n- Warnings: " + csvImportWarnings.length + "\n\nFor relationships, use the exported \"Full Name [Member ID]\" format. Do not change Member ID values unless you understand the relationship effects.";
+        if (csvImportWarnings.length) summary += "\n\n" + csvImportWarnings.slice(0, 20).join("\n") + (csvImportWarnings.length > 20 ? "\n...and more warnings." : "");
+        alert(summary);
       };
       reader.readAsText(file);
       event.target.value = "";
