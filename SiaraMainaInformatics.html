@@ -297,7 +297,7 @@ new siara maina file push
           </div>
           <div class="command-group"><span class="command-label">Tools</span>
             <div class="dropdown"><button class="top-button" type="button" onclick="toggleMenu('viewMenu')">View <span aria-hidden="true">▾</span></button><div id="viewMenu" class="dropdown-menu"><button type="button" onclick="setViewStyle('card')">Card View</button><button type="button" onclick="setViewStyle('line')">Line View</button><button id="spouseToggle" type="button" onclick="toggleSpouses()">Hide Spouses</button></div></div>
-            <div class="dropdown"><button class="top-button" type="button" onclick="toggleMenu('utilitiesMenu')">Utilities <span aria-hidden="true">▾</span></button><div id="utilitiesMenu" class="dropdown-menu"><button type="button" onclick="openRelationship()">Relationship Finder</button><button type="button" onclick="openBiography()">Biography</button><button type="button" onclick="openPrintDialog()">Print / Export</button><button type="button" onclick="exportCsv()">CSV Export</button><button id="importCsvButton" type="button" onclick="document.getElementById('csvImport').click()">Import CSV</button><button id="saveProjectButton" type="button" onclick="saveProjectData()">Save Project Data</button><button id="saveGithubButton" type="button" onclick="saveProjectDataToGitHub()">Save to GitHub</button><button type="button" onclick="refreshSharedProjectData()">Refresh Shared Data</button><button id="restoreProjectButton" type="button" onclick="document.getElementById('projectImport').click()">Restore Project Data</button></div></div>
+            <div class="dropdown"><button class="top-button" type="button" onclick="toggleMenu('utilitiesMenu')">Utilities <span aria-hidden="true">▾</span></button><div id="utilitiesMenu" class="dropdown-menu"><button type="button" onclick="openRelationship()">Relationship Finder</button><button type="button" onclick="openBiography()">Biography</button><button type="button" onclick="openPrintDialog()">Print / Export</button><button type="button" onclick="exportCsv()">CSV Export</button><button id="importCsvButton" type="button" onclick="document.getElementById('csvImport').click()">Import CSV</button><button id="saveProjectButton" type="button" onclick="saveProjectData()">Save Project Data</button><button id="saveGithubButton" type="button" onclick="synchronizeProjectDataWithGitHub()">Synchronize with GitHub</button><button id="restoreProjectButton" type="button" onclick="document.getElementById('projectImport').click()">Restore Project Data</button></div></div>
           </div>
           <button class="top-button add command-add" type="button" onclick="openProfile(null)">+ Add Member</button>
         </div>
@@ -928,8 +928,6 @@ new siara maina file push
 
     async function publishUsersToGitHub() {
       if (!requirePermission("manageUsers", "You do not have permission to publish users.")) return;
-      var token = window.prompt("Enter a GitHub fine-grained token with Contents: Read and write permission. It will not be stored.");
-      if (!token) return;
       var sharedUsers = [];
       var localDefault = users.find(function(user) { return user.id === DEFAULT_USERS[0].id; });
       var defaultWasChanged = localDefault && (localDefault.username !== DEFAULT_USERS[0].username || localDefault.passwordHash || localDefault.password !== DEFAULT_USERS[0].password);
@@ -952,19 +950,15 @@ new siara maina file push
           active:user.active
         });
       }
-      var apiUrl = "https://api.github.com/repos/deodatusmaliti/SiaraMaina-Clan-Informatics/contents/siara-maina-clan-users.json";
-      var headers = {"Accept":"application/vnd.github+json", "Authorization":"Bearer " + token, "X-GitHub-Api-Version":"2022-11-28", "Content-Type":"application/json"};
       var data = JSON.stringify({project:"SiaraMaina Clan Informatics", updatedAt:new Date().toISOString(), users:sharedUsers}, null, 2);
       try {
-        var existingResponse = await fetch(apiUrl, {headers:headers});
-        var existing = existingResponse.ok ? await existingResponse.json() : {};
-        var response = await fetch(apiUrl, {method:"PUT", headers:headers, body:JSON.stringify({message:"Update shared clan user access", content:btoa(unescape(encodeURIComponent(data))), sha:existing.sha, branch:"main"})});
-        if (!response.ok) throw new Error("User publish failed");
+        var response = await fetch(GITHUB_SYNC_API, {method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify({action:"write", file:"users", value:JSON.parse(data), message:"Update shared clan user access"})});
+        if (!response.ok) throw new Error((await response.json()).error || "User publish failed");
         users = sharedUsers;
         saveUsers();
         alert("Shared users were published. The same credentials can now work on other browsers and devices.");
       } catch (error) {
-        alert("User publishing failed. Check the token permission and repository access.");
+        alert("User publishing failed. " + error.message);
       }
     }
     var STORAGE_KEY = "siaraMainaClanRecordsUpdated";
@@ -1125,9 +1119,13 @@ new siara maina file push
       records = defaultRecords;
     }
 
-    function saveRecords() {
+    var LOCAL_DATA_UPDATED_AT_KEY = "siaraMainaClanDataUpdatedAt";
+    var GITHUB_SYNC_API = "/api/github-sync";
+
+    function saveRecords(markAsLocalChange) {
       try {
         localStorage.setItem(STORAGE_KEY, JSON.stringify(records));
+        if (markAsLocalChange !== false) localStorage.setItem(LOCAL_DATA_UPDATED_AT_KEY, new Date().toISOString());
       } catch (error) {
         alert("Browser storage is unavailable. Use Save Project Data to create a project backup.");
       }
@@ -1139,23 +1137,12 @@ new siara maina file push
       It is saved in the same GitHub repository as this HTML page.
       The cache-busting query ensures browsers request the newest copy.
     */
-    var SHARED_DATA_FILE = "https://raw.githubusercontent.com/deodatusmaliti/SiaraMaina-Clan-Informatics/main/siara-maina-clan-data.json";
-
     async function loadSharedProjectData() {
       try {
-        var response = await fetch(
-          SHARED_DATA_FILE +
-          "?updated=" +
-          new Date().getTime(),
-          {
-            cache: "no-store"
-          }
-        );
-
+        var response = await fetch(GITHUB_SYNC_API, {method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify({action:"read", file:"data"})});
         if (!response.ok) {
-          throw new Error("Could not find the shared project JSON file.");
+          throw new Error((await response.json()).error || "Could not load the shared project JSON file.");
         }
-
         var payload = await response.json();
         var remoteRecords = Array.isArray(payload) ? payload : payload.records;
 
@@ -1184,7 +1171,8 @@ new siara maina file push
           return cleanRecord;
         });
 
-        saveRecords();
+        saveRecords(false);
+        if (payload.updatedAt) localStorage.setItem(LOCAL_DATA_UPDATED_AT_KEY, payload.updatedAt);
         populateArchiveMemberSelect();
         showCatalogue("all");
 
@@ -3347,64 +3335,32 @@ new siara maina file push
       alert("Project data downloaded. Keep this JSON file in the project folder as your backup.");
     }
 
-    async function saveProjectDataToGitHub() {
+    async function synchronizeProjectDataWithGitHub() {
       if (!requirePermission("saveToGitHub", "You do not have permission to save shared data to GitHub.")) return;
-      var token = window.prompt("Enter a GitHub fine-grained token with Contents: Read and write permission. It will not be stored.");
-      if (!token) return;
-
-      var apiUrl =
-        "https://api.github.com/repos/" +
-        "deodatusmaliti/SiaraMaina-Clan-Informatics" +
-        "/contents/siara-maina-clan-data.json";
-      var data = JSON.stringify({
+      var localUpdatedAt = localStorage.getItem(LOCAL_DATA_UPDATED_AT_KEY) || "1970-01-01T00:00:00.000Z";
+      var localPayload = {
         project: "SiaraMaina Clan Informatics",
-        exportedAt: new Date().toISOString(),
+        exportedAt: localUpdatedAt,
         records: records
-      }, null, 2);
-      var headers = {
-        "Accept": "application/vnd.github+json",
-        "Authorization": "Bearer " + token,
-        "X-GitHub-Api-Version": "2022-11-28",
-        "Content-Type": "application/json"
       };
-
       try {
-        var existingResponse = await fetch(apiUrl, {headers: headers});
-        var existing = existingResponse.ok ? await existingResponse.json() : {};
-        var response = await fetch(apiUrl, {
-          method: "PUT",
-          headers: headers,
-          body: JSON.stringify({
-            message: "Update shared SiaraMaina clan project data",
-            content: btoa(unescape(encodeURIComponent(data))),
-            sha: existing && existing.sha ? existing.sha : undefined,
-            branch: "main"
-          })
-        });
-        if (!response.ok) throw new Error("GitHub save failed");
-        var savedCommit = await response.json();
-        if (!savedCommit.content || !savedCommit.commit) {
-          throw new Error("GitHub did not confirm the saved file.");
+        var remoteResponse = await fetch(GITHUB_SYNC_API, {method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify({action:"read", file:"data"})});
+        if (!remoteResponse.ok) throw new Error((await remoteResponse.json()).error || "GitHub read failed.");
+        var remotePayload = await remoteResponse.json();
+        var remoteUpdatedAt = remotePayload.updatedAt || "1970-01-01T00:00:00.000Z";
+        if (new Date(localUpdatedAt) > new Date(remoteUpdatedAt)) {
+          localPayload.exportedAt = new Date().toISOString();
+          var writeResponse = await fetch(GITHUB_SYNC_API, {method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify({action:"write", file:"data", value:localPayload, message:"Update shared SiaraMaina clan project data"})});
+          if (!writeResponse.ok) throw new Error((await writeResponse.json()).error || "GitHub save failed.");
+          localStorage.setItem(LOCAL_DATA_UPDATED_AT_KEY, localPayload.exportedAt);
+          alert("Browser changes were synchronized to GitHub.");
+          return;
         }
-        alert("Project data was saved to GitHub.");
+        await loadSharedProjectData();
+        alert(new Date(localUpdatedAt) < new Date(remoteUpdatedAt) ? "Shared GitHub data was synchronized to this browser." : "Browser and GitHub data are already synchronized.");
       } catch (error) {
-        alert("GitHub save failed. Check the token permission and repository access.");
+        alert("GitHub synchronization failed. " + error.message);
       }
-    }
-
-    async function refreshSharedProjectData() {
-      var confirmed = confirm(
-        "Refresh from GitHub shared data? " +
-        "Unsaved changes in this browser may be replaced."
-      );
-
-      if (!confirmed) {
-        return;
-      }
-
-      await loadSharedProjectData();
-
-      alert("Shared project data refresh completed.");
     }
 
     function importProjectData(event) {
