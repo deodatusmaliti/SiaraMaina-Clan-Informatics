@@ -1,6 +1,6 @@
 {
   "project": "SiaraMaina Clan Informatics",
-  "updatedAt": "2026-09-06T17:10:02.462Z",
+  "updatedAt": "2026-09-14T17:41:44.073Z",
   "users": [
     {
       "id": "admin-recovery",
@@ -47,6 +47,14 @@
       "username": "Pius",
       "passwordHash": "03ac674216f3e15c761ee1a5e255f067953623c8b388b4459e13f978d7c846f4",
       "displayName": "Pius",
+      "role": "editor",
+      "active": true
+    },
+    {
+      "id": "user-1789407695723",
+      "username": "Honory",
+      "passwordHash": "03ac674216f3e15c761ee1a5e255f067953623c8b388b4459e13f978d7c846f4",
+      "displayName": "Honory",
       "role": "editor",
       "active": true
     }
