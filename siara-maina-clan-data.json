@@ -1,6 +1,6 @@
 {
   "project": "SiaraMaina Clan Informatics",
-  "exportedAt": "2026-09-14T17:53:53.758Z",
+  "exportedAt": "2026-09-14T18:20:30.026Z",
   "records": [
     {
       "id": "ngowi1",
@@ -279,7 +279,7 @@
       "honorific": "",
       "dob": "1931-09-26",
       "birthPeriod": "",
-      "placeOfBirth": "",
+      "placeOfBirth": "Kilema Masaera",
       "deceased": true,
       "dod": "2014-09-02",
       "deathAge": 82,
@@ -584,13 +584,15 @@
       "honorific": "",
       "dob": "",
       "birthPeriod": "",
+      "placeOfBirth": "Kilema Masaera",
       "deceased": true,
       "dod": "",
       "deathAge": "",
-      "causeOfDeath": "Natural Causes / Old Age",
+      "causeOfDeath": "Disease or Illness",
       "fatherId": "josephMaliti",
       "motherId": "member-1787931559189",
-      "spouseId": "",
+      "spouseId": "member-1787944665512",
+      "siblingIds": [],
       "maritalStatus": "Married",
       "education": "Primary Education",
       "course": "",
@@ -604,8 +606,7 @@
       "email": "",
       "location": "Kilema Masaera",
       "narrative": "",
-      "photo": "",
-      "siblingIds": []
+      "photo": ""
     },
     {
       "id": "member-1787988401738",
