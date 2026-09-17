@@ -1,6 +1,6 @@
 {
   "project": "SiaraMaina Clan Informatics",
-  "exportedAt": "2026-09-17T08:52:20.398Z",
+  "exportedAt": "2026-09-17T17:48:12.157Z",
   "records": [
     {
       "id": "ngowi1",
@@ -2046,6 +2046,7 @@
       "photo": ""
     },
     {
+      "id": "member-1788707065190-nb579a",
       "firstName": "Edina",
       "middleName": "Salvatory",
       "lastName": "Maliti",
@@ -2055,9 +2056,16 @@
       "dob": "",
       "birthPeriod": "",
       "placeOfBirth": "Kilema Masaera",
+      "deceased": false,
       "dod": "",
       "deathAge": "",
-      "causeOfDeath": "",
+      "causeOfDeath": "Not Recorded",
+      "fatherId": "member-1788356990949",
+      "motherId": "",
+      "spouseId": "",
+      "siblingIds": [
+        "member-1788707065191-y5r802"
+      ],
       "maritalStatus": "Single",
       "education": "Secondary Education",
       "course": "",
@@ -2071,12 +2079,6 @@
       "email": "",
       "location": "",
       "narrative": "",
-      "deceased": false,
-      "id": "member-1788707065190-nb579a",
-      "fatherId": "member-1788356990949",
-      "motherId": "",
-      "spouseId": "",
-      "siblingIds": [],
       "photo": ""
     },
     {
@@ -2178,7 +2180,9 @@
       "fatherId": "member-1788356990949",
       "motherId": "",
       "spouseId": "",
-      "siblingIds": [],
+      "siblingIds": [
+        "member-1788707065190-nb579a"
+      ],
       "photo": ""
     },
     {
@@ -2688,6 +2692,40 @@
       "whatsapp": "",
       "email": "",
       "location": "Kryura Marawe",
+      "narrative": "",
+      "photo": ""
+    },
+    {
+      "id": "member-1789667207840",
+      "firstName": "Abraham",
+      "middleName": "",
+      "lastName": "",
+      "sex": "Male",
+      "branchType": "maliti",
+      "honorific": "",
+      "dob": "2026-01-01",
+      "birthPeriod": "",
+      "placeOfBirth": "Majengo Moshi",
+      "deceased": false,
+      "dod": "",
+      "deathAge": 0,
+      "causeOfDeath": "Not Recorded",
+      "fatherId": "",
+      "motherId": "member-1788707065190-nb579a",
+      "spouseId": "",
+      "siblingIds": [],
+      "maritalStatus": "Not Recorded",
+      "education": "Not Recorded",
+      "course": "",
+      "employment": "Not Recorded",
+      "occupation": "",
+      "organization": "",
+      "religion": "Not Recorded",
+      "denomination": "",
+      "phone": "",
+      "whatsapp": "",
+      "email": "",
+      "location": "",
       "narrative": "",
       "photo": ""
     }
